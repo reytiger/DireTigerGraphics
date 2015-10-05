@@ -1,5 +1,5 @@
 TARGET = diretiger
-OBJECTS = main.o Bezier.o Camera.o Point.o Vector.o rocketship.o Familiar.o
+OBJECTS = main.o Bezier.o Camera.o Point.o Vector.o rocketship.o Familiar.o BezPatch.o
 
 CXX    = g++
 CFLAGS = -Wall -g

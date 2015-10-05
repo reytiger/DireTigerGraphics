@@ -15,6 +15,7 @@ class Bezier
 {
   public:
     Bezier(int resolution);
+    Bezier(int resolution, Point<T> points[4]); 
 
     void render(bool selectionMode);
 
@@ -23,6 +24,7 @@ class Bezier
                                   Point<T> p2,
                                   Point<T> p3,
                                   float t);
+    Point<T> evaluateCurve(float t);
     Point<T> getPercentageAlongCurve(float percentage);
     void setSelectedPoint(unsigned int index);
     void unsetSelectedPoint();

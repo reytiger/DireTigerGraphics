@@ -21,6 +21,17 @@ Bezier<T>::Bezier(int resolution) : resolution(resolution)
 }
 
 template <typename T>
+Bezier<T>::Bezier(int resolution, Point<T> points[4]) : resolution(resolution)
+{
+  origin = 0;
+  drawCage = drawCurve = true;
+  unsetSelectedPoint(); //indicates no control point selected
+  for(int i = 0; i < 4; ++i)
+    controlPoints.push_back(points[i]);
+}
+
+
+template <typename T>
 Point<T> Bezier<T>::evaluateCurve(Point<T> p0,
                                Point<T> p1,
                                Point<T> p2,
@@ -37,6 +48,12 @@ Point<T> Bezier<T>::evaluateCurve(Point<T> p0,
   return a * (t2*t) + b * t2 + c * t + p0;
 }
 
+template <typename T>
+Point<T> Bezier<T>::evaluateCurve(float t)
+{
+  return evaluateCurve(controlPoints.at(0), controlPoints.at(1),
+                       controlPoints.at(2), controlPoints.at(3), t);
+}
 
 //Returns the point that is a percentage of the total curve length
 template <typename T>
@@ -196,6 +213,7 @@ void Bezier<T>::render(bool selectionMode)
     if(origin)
       glTranslatePoint(*origin); //place in worldspace
 
+    if(drawCage)
     drawControlPoints(selectionMode, npoints);
 
     if(selectionMode) return; //break out early

@@ -44,6 +44,7 @@ using namespace std;
 // Headers We've Written
 #include "Point.h"
 #include "Camera.h"
+#include "BezPatch.h"
 #include "Familiar.h"
 #include "rocketship.h"
 
@@ -613,6 +614,9 @@ int main( int argc, char **argv ) {
     cam.objFollow(&mandrake.location, &mandrake.theta);
     cam.objWatch(&mandrake.location);
 
+    Point<float> a(0, 0, 0), b(1, 0, 0), c(2, 0, 0), d(3, 0, 0);
+    Point<float> arr[4] = {a, b, c, d};
+    Bezier<float> blah(2, arr);
     // and enter the GLUT loop, never to exit.
     glutMainLoop();
 
