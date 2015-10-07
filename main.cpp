@@ -77,6 +77,8 @@ rocketship mandrake(0, 40, 0, 0.3);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 
+BezPatch<GLfloat> testPatch(6, Point<GLfloat>(0.f, 40.f, 0.f));
+
 void renderScene(void); //forward declare to use in our picking mouse event
 
 // getRand() ///////////////////////////////////////////////////////////////////
@@ -354,6 +356,10 @@ void initScene()  {
 
     //attach our familiar to the ship
     myFamiliar.attachToObj(&mandrake.location, &mandrake.theta);
+
+    if(!testPatch.loadControlPoints("testPatch.csv", 10.f))
+      fprintf(stderr, "Could not load test bezier patch data from file\n");
+
     srand( time(NULL) );	// seed our random number generator
 
 }
@@ -398,11 +404,16 @@ void renderScene(void)  {
     else
     {
       //only bother drawing the grid in rendering mode
-      glPushMatrix();
+      //TODO re-enable
+      /*glPushMatrix();
         glCallList(environmentDL);
-      glPopMatrix();
+      glPopMatrix();*/
     }
 
+
+    glPushMatrix();
+    testPatch.render();
+    glPopMatrix();
 
     //draw the shipe
     mandrake.draw();
@@ -441,6 +452,11 @@ void normalKeysDown( unsigned char key, int x, int y ) {
     if(key == 'p' || key == 'P')
       myFamiliar.path.saveControlPoints();
 
+    if(key == '[')
+      testPatch.setResolution(testPatch.getResolution() - 1);
+    else if(key == ']')
+      testPatch.setResolution(testPatch.getResolution() + 1);
+
     keysDown[key] = true;
 }
 
@@ -464,6 +480,12 @@ void myTimer( int value )
   //animate the ship
   mandrake.tick(keysDown);
   myFamiliar.tick();
+
+  //camera mode changes
+  if(keysDown['1'] && cam.getCurrentMode() != FREE)
+    cam.switchMode(FREE);
+  else if(keysDown['2'] && cam.getCurrentMode() != ARCBALL)
+    cam.switchMode(ARCBALL);
 
   //camera movement
   if(cam.getCurrentMode() == FREE)
@@ -586,7 +608,7 @@ int main( int argc, char **argv ) {
     glutInitDisplayMode( GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB );
     glutInitWindowPosition( 50, 50 );
     glutInitWindowSize( windowWidth, windowHeight );
-    glutCreateWindow( "DireTIger" );
+    glutCreateWindow( "DireTiger" );
 
     //Specify the picking array
     glSelectBuffer(PICK_BUFFER_SIZE, pickBuffer);
@@ -612,11 +634,8 @@ int main( int argc, char **argv ) {
 
     //set the camera to watch the ship
     cam.objFollow(&mandrake.location, &mandrake.theta);
-    cam.objWatch(&mandrake.location);
+    //cam.objWatch(&mandrake.location);
 
-    Point<float> a(0, 0, 0), b(1, 0, 0), c(2, 0, 0), d(3, 0, 0);
-    Point<float> arr[4] = {a, b, c, d};
-    Bezier<float> blah(2, arr);
     // and enter the GLUT loop, never to exit.
     glutMainLoop();
 

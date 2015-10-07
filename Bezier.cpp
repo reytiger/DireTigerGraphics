@@ -350,7 +350,13 @@ void Bezier<T>::populateDistanceTable()
   int section = 0; //defines which set of 4 control points we're examining
   double distanceAccumulator = 0.0;
 
-  float t = 1.0 / resolution;
+  
+  float sampleDensity = 100.f;
+
+  if(resolution > 6) //use the rendering resolution as our sampling if it's high enough
+    sampleDensity = resolution;
+
+  float  t = 1.f / sampleDensity;
   while(rootPoint + 3 < npoints)
   {
     section = rootPoint / 3;
@@ -359,7 +365,7 @@ void Bezier<T>::populateDistanceTable()
     p2 = controlPoints.at(rootPoint + 2);
     p3 = controlPoints.at(rootPoint + 3);
 
-    for(; t < section + 1.0; t += 1.0 / resolution)
+    for(; t < section + 1.0; t += 1.0 / sampleDensity)
     {
       a = b; //shift the last computed point over
       b = evaluateCurve(p0, p1, p2, p3, t - section * 1.0); //be suer to keep 0 < t < 1 for each section

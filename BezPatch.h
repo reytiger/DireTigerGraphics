@@ -13,8 +13,12 @@ class BezPatch
     bool loadControlPoints(const char* const filename, float scaling);
     void render();
 
+    //getter
+    int getResolution();
+
     //setter
     void setOrigin(const Point<T>& p);
+    void setResolution(int res);
   private:
     void drawControlCage();
 

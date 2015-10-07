@@ -81,11 +81,12 @@ $(TARGET): $(OBJECTS)
 	$(CXX) $(CFLAGS) $(INCPATH) -o $@ $^ $(LIBPATH) $(LIBS)
 
 # DEPENDENCIES
+BezPatch.o: BezPatch.cpp BezPatch.h Bezier.h Point.h Vector.h
 Bezier.o: Bezier.cpp Bezier.h Point.h Vector.h
 Camera.o: Camera.cpp Camera.h Point.h Vector.h
 Familiar.o: Familiar.cpp Familiar.h Bezier.h Point.h Vector.h
 Point.o: Point.cpp Point.h Vector.h
 Vector.o: Vector.cpp Vector.h
 main.o: main.cpp /home/rey/csm/graphics/include/GL/glui.h Point.h \
- Vector.h Camera.h Bezier.h rocketship.h
-rocketship.o: rocketship.cpp rocketship.h
+ Vector.h Camera.h BezPatch.h Bezier.h Familiar.h rocketship.h
+rocketship.o: rocketship.cpp rocketship.h Point.h Vector.h

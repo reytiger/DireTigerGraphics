@@ -72,7 +72,7 @@ class Camera
     Point<GLfloat>* originObj;
     float* objHeading;
 
-    //The coordinates we are looking at
+    //The coordinates we are looking at in watch point mode
     Point<GLfloat>* watchPoint;
 };
 

@@ -7,7 +7,7 @@
 
 #define DEG2RAD M_PI / 180
 
-const float Camera::moveSpeed = 2.5f;
+const float Camera::moveSpeed = 8.5f;
 
 Camera::Camera(cameraMode startingMode, double startTheta, double startPhi, double dfo)
 {
@@ -80,10 +80,12 @@ void Camera::mouseRotate(int mouseDeltaX, double mouseDeltaY)
   }
 
   //make sure phi is in domain of spherical coordinates
-  if(phi > M_PI)
-    phi = M_PI - 0.00001;
-  if(phi < 0)
+  if(phi >= M_PI - 0.0001)
+    phi = M_PI - 0.0002;
+  if(phi <= 0)
     phi = 0.00001;
+
+  printf("Theta: %4.2f, Phi: %4.2f\n", theta, phi);
 }
 
 
@@ -145,6 +147,7 @@ void Camera::windowResize(float aspectRatio)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(45.0,aspectRatio,0.1,100000);
+  glMatrixMode(GL_MODELVIEW);
 }
 
 
@@ -189,20 +192,21 @@ void Camera::recomputeCoordsAndDirection()
                -distanceFromOrigin * cos(phi),
                -distanceFromOrigin * cos(theta) * sin(phi));
 
-    if(objFollowing)
-      worldPos += *originObj;
-
     //defaults for if we don't have an object to track
     lookAtPoint.reset();
-
-    if(objWatching)
-      //set our look at coords to that of the referenced obj
-      lookAtPoint = *watchPoint;
-
+    if(objFollowing)
+    {
+      worldPos += *originObj;
+      lookAtPoint = *originObj;
+    }
+      
     break;
 
   case THIRD_PERSON:
     break;
+    if(objWatching)
+      //set our look at coords to that of the referenced obj
+      lookAtPoint = *watchPoint;
 
   case FIRST_PERSON:
     break;
@@ -225,7 +229,7 @@ void Camera::lookStraight(bool useDTO, bool invert)
   direction = Vector<GLfloat>::normalize(direction);
 
   //Update where the camera will be looking
-  *watchPoint = worldPos + direction;
+  lookAtPoint = worldPos + direction;
 }
 
 

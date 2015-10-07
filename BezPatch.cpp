@@ -87,7 +87,7 @@ void BezPatch<T>::render()
       //draw the u curves so we can see control cages
       uBez[i].render(false);
     }
-    glColor3f(1.f, 1.f, 1.f);
+    glColor3f(0.3f, 0.3f, 0.2f);
 
     float u = 0.f;
     float v = 0.f;
@@ -113,13 +113,13 @@ void BezPatch<T>::render()
                          uBez[3].getPercentageAlongCurve(u + step)};
       Bezier<T> vBezFar(resolution, arr2);
 
-      //printf("u: %3.2f, u + stp: %3.2f\n", u, u + step);
+      printf("u: %3.2f, u + stp: %3.2f\n", u, u + step);
       glPushMatrix();
         glBegin(GL_QUAD_STRIP);
         for(int j = 0; j <= resolution; ++j)
         {
           v = j * step;
-          //printf("\tv: %3.2f\n", v);
+          printf("\tv: %3.2f\n", v);
           //Draw a quad on the surface
           glVertexPoint(vBezFar.getPercentageAlongCurve(v));
           glVertexPoint(vBezNear.getPercentageAlongCurve(v));
@@ -132,9 +132,22 @@ void BezPatch<T>::render()
 
 
 template <typename T>
+int BezPatch<T>::getResolution()
+{
+  return resolution;
+}
+
+template <typename T>
 void BezPatch<T>::setOrigin(const Point<T>& p)
 {
   origin = p;
+}
+
+
+template <typename T>
+void BezPatch<T>::setResolution(int res)
+{
+  resolution = res;
 }
 
 template class BezPatch<float>; //special instance this template
