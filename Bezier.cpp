@@ -12,6 +12,15 @@
 
 #include "Bezier.h"
 
+
+template <typename T>
+Bezier<T>::Bezier() : resolution(10)
+{
+  origin = 0;
+  drawCage = drawCurve = true;
+  unsetSelectedPoint(); //indicates no control point selected
+}
+
 template <typename T>
 Bezier<T>::Bezier(int resolution) : resolution(resolution)
 {
@@ -28,6 +37,7 @@ Bezier<T>::Bezier(int resolution, Point<T> points[4]) : resolution(resolution)
   unsetSelectedPoint(); //indicates no control point selected
   for(int i = 0; i < 4; ++i)
     controlPoints.push_back(points[i]);
+  populateDistanceTable();
 }
 
 
@@ -59,6 +69,12 @@ Point<T> Bezier<T>::evaluateCurve(float t)
 template <typename T>
 Point<T> Bezier<T>::getPercentageAlongCurve(float percentage)
 {
+  if(percentage < 0.f)
+    percentage = 0.f;
+  //lock at 100%
+  if(percentage >= 1.f)
+    return evaluateCurve(1.f);
+
   std::map<double, float>::iterator it = distanceTable.end();
   it--; //back up, since end() is actually past the end
   double totalDist = (*it).first;
@@ -163,7 +179,7 @@ bool Bezier<T>::loadControlPoints(const char* const filename)
   for(int i = 0; i < npoints; ++i)
   {
     //read a point
-    fscanf(csv, "%f,%f,%f ", &x, &y, &z);
+    fscanf(csv, "%f, %f, %f ", &x, &y, &z);
     printf("Read point %f %f %f\n", x, y, z);
     controlPoints.push_back(Point<GLfloat>(x, y, z));
   }

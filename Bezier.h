@@ -14,6 +14,7 @@ template <typename T>
 class Bezier
 {
   public:
+    Bezier();
     Bezier(int resolution);
     Bezier(int resolution, Point<T> points[4]); 
 

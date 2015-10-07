@@ -11,12 +11,17 @@
 	#include <GL/glu.h>
 #endif
 
+//Ctors
 template <typename T>
-BezPatch<T>::BezPatch(int resolution) : resolution(resolution) {};
+BezPatch<T>::BezPatch(int resolution) : resolution(resolution), origin(0, 0, 0), pointsLoaded(false) {};
 
 
 template <typename T>
-bool BezPatch<T>::loadControlPoints(const char* const filename)
+BezPatch<T>::BezPatch(int resolution, const Point<T>& startPos) : resolution(resolution), origin(startPos), pointsLoaded(false) {};
+
+
+template <typename T>
+bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
 {
   FILE* csv = fopen(filename, "r");
 
@@ -26,7 +31,6 @@ bool BezPatch<T>::loadControlPoints(const char* const filename)
     return false;
   }
 
-  int npoints;
   if(fscanf(csv, "%d ", &numPatches) != 1)
   {
     fprintf(stderr, "Unable to read number of BezPatches in file!\n");
@@ -42,16 +46,18 @@ bool BezPatch<T>::loadControlPoints(const char* const filename)
     for(int i = 0; i < 16; ++i)
     {
       //read a point
-      if(fscanf(csv, "%f,%f,%f ", &x, &y, &z) != 3)
+      int stat = fscanf(csv, "%f, %f, %f ", &x, &y, &z);
+      if(stat != 3)
         fprintf(stderr, "Warning: didn't read complete coordinate for BezPatch\n");
 
       printf("Read point %f %f %f\n", x, y, z);
-      ctrlPoints.push_back(Point<GLfloat>(x, y, z));
+      ctrlPoints.push_back(Point<GLfloat>(x * scaling, y * scaling, z * scaling));
     }
   }
 
 
   fclose(csv);
+  pointsLoaded = true;
   
   return true;
 }
@@ -60,6 +66,11 @@ bool BezPatch<T>::loadControlPoints(const char* const filename)
 template <typename T>
 void BezPatch<T>::render()
 {
+  //Don't bother rendering if we have no point data
+  if(!pointsLoaded)
+    return;
+
+  glTranslatePoint(origin);
   for(int p = 0; p < numPatches; ++p)
   {
     //construct bezier curves that run along the u axis
@@ -72,22 +83,58 @@ void BezPatch<T>::render()
       Point<T> d = ctrlPoints.at(p * 16 + i * 4 + 3);
       Point<T> arr[4] = {a, b, c, d};
       uBez[i] = Bezier<T>(resolution, arr);
-    }
 
-    //Our first axis
-    for(float u = 0.f; u <= 1.f; u += 1.f / resolution)
+      //draw the u curves so we can see control cages
+      uBez[i].render(false);
+    }
+    glColor3f(1.f, 1.f, 1.f);
+
+    float u = 0.f;
+    float v = 0.f;
+    const float step = 1.f / resolution;
+
+    //iterate through the u axis at the given resolution
+    for(int i = 0; i < resolution; ++i)
     {
-      //calculate the control points for the v bezier
-      Point<T> arr[1] = {uBez[0].evalutateCurve(u),
-                         uBez[1].evalutateCurve(u),
-                         uBez[2].evalutateCurve(u),
-                         uBez[3].evalutateCurve(u)};
-      Bezier<T> vBez(resolution, arr);
-      for(float v = 0.f; v <= 1.f; v += 1.f / resolution)
-      {
-        //Draw a point on the surface
-        glVertexPoint(vBez.evaluateCurve(v));
-      }
+      //inverse of resolution will tell us how what % of the curve
+      //length is each quad's dimensions
+      u = i * step; 
+
+      //calculate the control points for two v beziers
+      //which will determine points along each edge of the quad
+      Point<T> arr[] = {uBez[0].getPercentageAlongCurve(u),
+                        uBez[1].getPercentageAlongCurve(u),
+                        uBez[2].getPercentageAlongCurve(u),
+                        uBez[3].getPercentageAlongCurve(u)};
+      Bezier<T> vBezNear(resolution, arr);
+      Point<T> arr2[] = {uBez[0].getPercentageAlongCurve(u + step),
+                         uBez[1].getPercentageAlongCurve(u + step),
+                         uBez[2].getPercentageAlongCurve(u + step),
+                         uBez[3].getPercentageAlongCurve(u + step)};
+      Bezier<T> vBezFar(resolution, arr2);
+
+      //printf("u: %3.2f, u + stp: %3.2f\n", u, u + step);
+      glPushMatrix();
+        glBegin(GL_QUAD_STRIP);
+        for(int j = 0; j <= resolution; ++j)
+        {
+          v = j * step;
+          //printf("\tv: %3.2f\n", v);
+          //Draw a quad on the surface
+          glVertexPoint(vBezFar.getPercentageAlongCurve(v));
+          glVertexPoint(vBezNear.getPercentageAlongCurve(v));
+        }
+        glEnd();
+      glPopMatrix();
     }
   }
 }
+
+
+template <typename T>
+void BezPatch<T>::setOrigin(const Point<T>& p)
+{
+  origin = p;
+}
+
+template class BezPatch<float>; //special instance this template
