@@ -55,7 +55,7 @@ Point<T> Bezier<T>::evaluateCurve(Point<T> p0,
 
   float t2 = t * t; //reduce the recomputations of powers of t in the next line
 
-  return a * (t2*t) + b * t2 + c * t + p0;
+  return a * (t2 * t) + b * t2 + c * t + p0;
 }
 
 template <typename T>
@@ -63,6 +63,29 @@ Point<T> Bezier<T>::evaluateCurve(float t)
 {
   return evaluateCurve(controlPoints.at(0), controlPoints.at(1),
                        controlPoints.at(2), controlPoints.at(3), t);
+}
+
+
+template <typename T>
+Vector<T> Bezier<T>::getTangent(Point<T> p0,
+								Point<T> p1,
+								Point<T> p2,
+								Point<T> p3,
+								float t)
+{
+  //compute our 3-dimensional coefficients
+  Point<T> a = -p0 + 3 * p1 - 3 * p2 + p3;
+  Point<T> b = 3 * p0 - 6 * p1 + 3 * p2;
+  Point<T> c = -3 * p0 + 3 * p1;
+  
+  Point<T> res = 3 * a * t * t + 2 * b * t + c;
+  return Vector<T>(res.getX(), res.getY(), res.getZ());
+}
+
+Vector<T> getTangent(float t)
+{
+	return getTangent(controlPoints.at(0), controlPoints.at(1),
+                      controlPoints.at(2), controlPoints.at(3), t);
 }
 
 //Returns the point that is a percentage of the total curve length

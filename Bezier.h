@@ -20,12 +20,19 @@ class Bezier
 
     void render(bool selectionMode);
 
+
     static Point<T> evaluateCurve(Point<T> p0,
                                   Point<T> p1,
                                   Point<T> p2,
                                   Point<T> p3,
                                   float t);
     Point<T> evaluateCurve(float t);
+	static Vector<T> getTangent(Point<T> p0,
+							  Point<T> p1,
+							  Point<T> p2,
+							  Point<T> p3,
+							  float t);
+	Vector<T> getTangent(float t);
     Point<T> getPercentageAlongCurve(float percentage);
     void setSelectedPoint(unsigned int index);
     void unsetSelectedPoint();

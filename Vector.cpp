@@ -1,5 +1,15 @@
 #include "Vector.h"
 
+#ifdef __APPLE__			// if compiling on Mac OS
+	#include <GLUT/glut.h>
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+#else					// else compiling on Linux OS
+	#include <GL/glut.h>
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#endif
+
 template <typename T>
 Vector<T> operator-(const Vector<T>& a)
 {
@@ -28,6 +38,17 @@ template <typename T, typename S>
 Vector<T> operator*(const S& b, const Vector<T>& a)
 {
   return a * b;
+}
+
+
+template <typename T>
+void Vector<T>::draw()
+{
+  glColor3f(0.f, 1.f, 0.f);
+  glBegin(GL_LINES);
+    glVertex3i(0, 0, 0);
+    glVertex3f((GLfloat)x, (GLfloat))y, (GLfloat)z);
+  glEnd();
 }
 
 //ctors

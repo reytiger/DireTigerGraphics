@@ -15,6 +15,8 @@ class Vector
     static Vector<T> normalize(const Vector<T>& in);
 
     Vector<T>& operator*=(const T& rhs);
+	
+	void draw();
 
     //Component getters
     const T& getX() const;
