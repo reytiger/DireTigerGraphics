@@ -18,6 +18,8 @@ CFLAGS = -Wall -g
 
 # Windows Lab builds 
 ifeq ($(OS), Windows_NT)
+	INCPATH += -IC:/Strawberry/c/CSCI441-Code/DireTigerGraphics/include/
+	LIBPATH += -IC:/Strawberry/c/CSCI441-Code/DireTigerGraphics/lib/
 	INCPATH += -IZ:/CSCI441GFx/include/
 	LIBPATH += -LZ:/CSCI441GFx/lib/
 
@@ -87,6 +89,5 @@ Camera.o: Camera.cpp Camera.h Point.h Vector.h
 Familiar.o: Familiar.cpp Familiar.h Bezier.h Point.h Vector.h
 Point.o: Point.cpp Point.h Vector.h
 Vector.o: Vector.cpp Vector.h
-main.o: main.cpp /home/rey/csm/graphics/include/GL/glui.h Point.h \
- Vector.h Camera.h BezPatch.h Bezier.h Familiar.h rocketship.h
+main.o: main.cpp Point.h Vector.h Camera.h BezPatch.h Bezier.h Familiar.h rocketship.h
 rocketship.o: rocketship.cpp rocketship.h Point.h Vector.h
