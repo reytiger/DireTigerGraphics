@@ -68,10 +68,10 @@ Point<T> Bezier<T>::evaluateCurve(float t)
 
 template <typename T>
 Vector<T> Bezier<T>::getTangent(Point<T> p0,
-								Point<T> p1,
-								Point<T> p2,
-								Point<T> p3,
-								float t)
+                                Point<T> p1,
+                                Point<T> p2,
+                                Point<T> p3,
+                                float t)
 {
   //compute our 3-dimensional coefficients
   Point<T> a = -p0 + 3 * p1 - 3 * p2 + p3;
@@ -82,7 +82,8 @@ Vector<T> Bezier<T>::getTangent(Point<T> p0,
   return Vector<T>(res.getX(), res.getY(), res.getZ());
 }
 
-Vector<T> getTangent(float t)
+template <typename T>
+Vector<T> Bezier<T>::getTangent(float t)
 {
 	return getTangent(controlPoints.at(0), controlPoints.at(1),
                       controlPoints.at(2), controlPoints.at(3), t);

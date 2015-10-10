@@ -47,7 +47,7 @@ void Vector<T>::draw()
   glColor3f(0.f, 1.f, 0.f);
   glBegin(GL_LINES);
     glVertex3i(0, 0, 0);
-    glVertex3f((GLfloat)x, (GLfloat))y, (GLfloat)z);
+    glVertex3f((GLfloat)x, (GLfloat)y, (GLfloat)z);
   glEnd();
 }
 

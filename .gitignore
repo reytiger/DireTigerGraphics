@@ -28,3 +28,6 @@
 *.out
 *.app
 diretiger
+
+#storage from apple
+*.DS_STORE
