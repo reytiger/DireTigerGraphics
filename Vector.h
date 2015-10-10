@@ -14,9 +14,11 @@ class Vector
     //class level
     static Vector<T> normalize(const Vector<T>& in);
 
+    Vector<T> cross(const Vector<T>& other);
     Vector<T>& operator*=(const T& rhs);
 	
-	void draw();
+    void draw();
+    void drawNormalized();
 
     //Component getters
     const T& getX() const;
@@ -26,8 +28,11 @@ class Vector
   private:
     T x, y, z;
 
+    T determinant(T a, T b, T c, T d);
 };
 
+//OpenGL helpers
+template <typename T> void glNormalVector(Vector<T>& vec);
 //Operators
 template <typename T> Vector<T> operator-(const Vector<T>& a);
 

@@ -12,6 +12,50 @@
 #endif
 
 //Ctors
+
+template <typename T>
+SubPatch<T>::SubPatch(const std::vector<Point<T> >& ctrlPoints, int resolution) : resolution(resolution)
+{
+  if(ctrlPoints.size() != 16)
+    fprintf(stderr, "ERROR: not enough control points specified for subpatch. Probably will crash here soon.\n");
+  //generate the 4 control curves in either direction
+  genAxes(ctrlPoints);
+}
+
+template <typename T>
+void SubPatch<T>::genAxes(const std::vector<Point<T> >& ctrlPoints)
+{
+  //populates the two axis objects with 4 bezier curves
+  //using the 16 control points
+  Point<T> arr[4];
+  for(int i = 0; i < 4; ++i)
+  {
+    for(int j = 0; j < 4; ++j)
+      arr[j] = ctrlPoints.at(i * 4 + j);
+    uAxis.beziers[i] = Bezier<T>(resolution, arr);
+
+    for(int j = 0; j < 4; ++j)
+      arr[j] = ctrlPoints.at(i + 4 * j);
+    vAxis.beziers[i] = Bezier<T>(resolution, arr);
+  }
+}
+
+template <typename T>
+Bezier<T> SubPatch<T>::evalAxis(float t, bool u)
+{
+  Point<T> arr[4];
+  for(int i = 0; i < 4; ++i)
+  {
+    if(u)
+      arr[i] = uAxis.beziers[i].evaluateCurve(t);
+    else
+      arr[i] = vAxis.beziers[i].evaluateCurve(t);
+  }
+  return Bezier<T>(resolution, arr);
+}
+
+template class SubPatch<float>; //special instance of the template
+
 template <typename T>
 BezPatch<T>::BezPatch(int resolution) : resolution(resolution), origin(0, 0, 0), pointsLoaded(false) {};
 
@@ -38,10 +82,10 @@ bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
     return false;
   }
 
+  float x, y, z;
+  std::vector<Point<T> > ctrlPoints;
   for(int patch = 0; patch < numPatches; ++patch)
   {
-    float x, y, z;
-
     //Read the first patch
     for(int i = 0; i < 16; ++i)
     {
@@ -53,6 +97,8 @@ bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
       printf("Read point %f %f %f\n", x, y, z);
       ctrlPoints.push_back(Point<GLfloat>(x * scaling, y * scaling, z * scaling));
     }
+    subPatches.push_back(SubPatch<T>(ctrlPoints, resolution));
+    ctrlPoints.clear();
   }
 
 
@@ -73,61 +119,106 @@ void BezPatch<T>::render()
   glTranslatePoint(origin);
   for(int p = 0; p < numPatches; ++p)
   {
-    //construct bezier curves that run along the u axis
-    Bezier<T> uBez[4];
+    SubPatch<T>& s = subPatches.at(p);
     for(int i = 0; i < 4; ++i)
     {
-      Point<T> a = ctrlPoints.at(p * 16 + i * 4);
-      Point<T> b = ctrlPoints.at(p * 16 + i * 4 + 1);
-      Point<T> c = ctrlPoints.at(p * 16 + i * 4 + 2);
-      Point<T> d = ctrlPoints.at(p * 16 + i * 4 + 3);
-      Point<T> arr[4] = {a, b, c, d};
-      uBez[i] = Bezier<T>(resolution, arr);
-
       //draw the u curves so we can see control cages
-      uBez[i].render(false);
+      s.uAxis.beziers[i].render(false);
+      s.vAxis.beziers[i].render(false);
     }
-    glColor3f(0.3f, 0.3f, 0.2f);
 
     float u = 0.f;
     float v = 0.f;
     const float step = 1.f / resolution;
 
+    //TODO convert to a materials class
+    //setup openGL material for the curve
+    float diffcol[4] = {0.530f, 0.886f, 0.275f, 1.f};
+    float speccol[4] = {0.8f, 0.8f, 0.8f, 1.f};
+    float ambcol[4] = {0.2f, 0.2f, 0.2f, 1.f};
+    glEnable(GL_LIGHTING);
+
     //iterate through the u axis at the given resolution
     for(int i = 0; i < resolution; ++i)
     {
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffcol);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, speccol);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambcol);
       //inverse of resolution will tell us how what % of the curve
       //length is each quad's dimensions
       u = i * step; 
 
       //calculate the control points for two v beziers
       //which will determine points along each edge of the quad
-      Point<T> arr[] = {uBez[0].getPercentageAlongCurve(u),
-                        uBez[1].getPercentageAlongCurve(u),
-                        uBez[2].getPercentageAlongCurve(u),
-                        uBez[3].getPercentageAlongCurve(u)};
-      Bezier<T> vBezNear(resolution, arr);
-      Point<T> arr2[] = {uBez[0].getPercentageAlongCurve(u + step),
-                         uBez[1].getPercentageAlongCurve(u + step),
-                         uBez[2].getPercentageAlongCurve(u + step),
-                         uBez[3].getPercentageAlongCurve(u + step)};
-      Bezier<T> vBezFar(resolution, arr2);
+      Bezier<T> vBezNear = s.evalAxis(u);
+      Bezier<T> vBezFar = s.evalAxis(u + step);
 
-      printf("u: %3.2f, u + stp: %3.2f\n", u, u + step);
+      //printf("u: %3.2f, u + stp: %3.2f, step: %3.2f, res: %d\n", u, u + step, step, resolution);
       glPushMatrix();
         glBegin(GL_QUAD_STRIP);
         for(int j = 0; j <= resolution; ++j)
         {
           v = j * step;
-          printf("\tv: %3.2f\n", v);
-          //Draw a quad on the surface
-          glVertexPoint(vBezFar.getPercentageAlongCurve(v));
-          glVertexPoint(vBezNear.getPercentageAlongCurve(v));
+          //printf("\tv: %3.2f\n", v);
+          //Draw a quad on the surface, a pair of vertices at a time
+          Vector<T> norm = getNormal(p, u, v);
+          glNormalVector(norm);
+          //glVertexPoint(vBezFar.getPercentageAlongCurve(v));
+          glVertexPoint(vBezFar.evaluateCurve(v));
+
+          norm = getNormal(p, u + step, v);
+          glNormalVector(norm);
+          //glVertexPoint(vBezNear.getPercentageAlongCurve(v));
+          glVertexPoint(vBezNear.evaluateCurve(v));
         }
         glEnd();
       glPopMatrix();
+
+
+      glPushMatrix();
+      glTranslatef(0.f, 1.f, 0.f); //slightly offset so we can see
+      //iterate through v again, drawing the computed tangent
+      for(int j = 0; j <= resolution; ++j)
+      {
+        v = j * step;
+
+
+        glPushMatrix();
+          glTranslatePoint(vBezNear.getPercentageAlongCurve(v));
+          glColor3f(0.f, 1.f, 0.f);
+          //draw the tangent that is computed at this point
+          (vBezNear.getTangentByPercentage(v)).drawNormalized();
+          
+          glColor3f(0.f, 0.f, 1.f);
+          (s.evalAxis(v, false).getTangentByPercentage(v)).drawNormalized();
+          glColor3f(1.f, 0.f, 0.f);
+          //draw the normal
+          getNormal(p, u, v).draw();
+        glPopMatrix();
+
+        glPushMatrix();
+        glColor3f(0.f, 1.f, 0.f);
+        glTranslatePoint(vBezFar.getPercentageAlongCurve(v));
+        //draw the tangent that is computed at this point
+          (vBezFar.getTangentByPercentage(v)).drawNormalized();
+        glPopMatrix();
+      }
+      glPopMatrix();
     }
   }
+}
+
+
+template <typename T>
+Vector<T> BezPatch<T>::getNormal(int subPatch, float u, float v)
+{
+  SubPatch<T>& s = subPatches.at(subPatch);
+  
+  //generate the two perpendicular curves
+  Bezier<T> vBez = s.evalAxis(u, true);
+  Bezier<T> uBez = s.evalAxis(v, false);
+
+  return Vector<T>::normalize(vBez.getTangent(v).cross(uBez.getTangent(u)));
 }
 
 
@@ -136,6 +227,7 @@ int BezPatch<T>::getResolution()
 {
   return resolution;
 }
+
 
 template <typename T>
 void BezPatch<T>::setOrigin(const Point<T>& p)
@@ -147,7 +239,11 @@ void BezPatch<T>::setOrigin(const Point<T>& p)
 template <typename T>
 void BezPatch<T>::setResolution(int res)
 {
+  //don't allow a resolution of less than 1x1 quad
+  if(res < 1)
+    res = 1;
   resolution = res;
 }
+
 
 template class BezPatch<float>; //special instance this template

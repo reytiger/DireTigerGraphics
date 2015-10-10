@@ -1,4 +1,5 @@
 #include "Vector.h"
+#include <cmath>
 
 #ifdef __APPLE__			// if compiling on Mac OS
 	#include <GLUT/glut.h>
@@ -40,15 +41,29 @@ Vector<T> operator*(const S& b, const Vector<T>& a)
   return a * b;
 }
 
+template <typename T>
+void glNormalVector(Vector<T>& vec)
+{
+  glNormal3f((GLfloat) vec.getX(), (GLfloat) vec.getY(), (GLfloat) vec.getZ());
+}
+
 
 template <typename T>
 void Vector<T>::draw()
 {
-  glColor3f(0.f, 1.f, 0.f);
+  glDisable(GL_LIGHTING);
   glBegin(GL_LINES);
-    glVertex3i(0, 0, 0);
-    glVertex3f((GLfloat)x, (GLfloat)y, (GLfloat)z);
+    glVertex3i(0, 0, 0); //start from the origin
+    glVertex3f((GLfloat)x, (GLfloat)y, (GLfloat)z); //and draw out to the terminal point
   glEnd();
+  glEnable(GL_LIGHTING);
+}
+
+
+template <typename T>
+void Vector<T>::drawNormalized()
+{
+  normalize(*this).draw();
 }
 
 //ctors
@@ -62,15 +77,36 @@ Vector<T>::Vector(const T magX, const T magY, const T magZ) : x(magX), y(magY), 
 template <typename T>
 Vector<T> Vector<T>::normalize(const Vector& in)
 {
-  float mag = in.x * in.x + in.y * in.y + in.z * in.z;
+  float mag = sqrt(in.x * in.x + in.y * in.y + in.z * in.z);
   return Vector<T>(in.x / mag, in.y / mag, in.z / mag);
 }
+
+
+template <typename T>
+Vector<T> Vector<T>::cross(const Vector<T>& other)
+{
+  return Vector<T>(determinant(y, z, other.y, other.z),
+                   -determinant(x, z, other.x, other.z),
+                   determinant(x, y, other.x, other.y));
+}
+
 
 template <typename T>
 Vector<T>& Vector<T>::operator*=(const T& rhs)
 {
   *this = *this * rhs;
   return *this;
+}
+
+
+//helper function for computing cross products
+//Format is as follows:
+//| a b |
+//| c d |
+template <typename T>
+T Vector<T>::determinant(T a, T b, T c, T d)
+{
+  return a * d - b * c;
 }
 
 template <typename T>
@@ -87,3 +123,4 @@ const T& Vector<T>::getZ() const { return z; }
 
 template class Vector<float>;
 template Vector<float> operator-<float>(const Vector<float>&);
+template void glNormalVector(Vector<float>&);

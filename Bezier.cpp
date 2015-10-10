@@ -93,41 +93,34 @@ Vector<T> Bezier<T>::getTangent(float t)
 template <typename T>
 Point<T> Bezier<T>::getPercentageAlongCurve(float percentage)
 {
-  if(percentage < 0.f)
-    percentage = 0.f;
-  //lock at 100%
-  if(percentage >= 1.f)
-    return evaluateCurve(1.f);
+  float t = calcTforPercentDistance(percentage);
 
-  std::map<double, float>::iterator it = distanceTable.end();
-  it--; //back up, since end() is actually past the end
-  double totalDist = (*it).first;
-  double targetDist = totalDist * percentage;
-
-  std::pair<double, float> lower, upper;
-  //find the closet pair of points in our distance table to our target and lerp
-  it = distanceTable.upper_bound(targetDist);
-  if(it != distanceTable.begin())
-    it--;
-  lower = *it;
-  upper = *(++it);
-
-  double innerdist = upper.first - lower.first;
-  double innertime = upper.second - lower.second;
-
-  //What % of distance between our two samples is our target distance?
-  double proportion = (targetDist - lower.first) / innerdist;
-
-  //Our target time value will be the same proportion
-  float t = proportion * innertime + lower.second;
-
-  int ctrlPtGroup = t * 1; //intentionally truncate to figure out which set of 4 control points to use
+  int ctrlPtGroup = t * 0.99999f; //intentionally truncate to figure out which set of 4 control points to use
+                                  //uses not quite one, since t can be 1, even though we have only one set of
+                                  //control points
 
   return evaluateCurve(controlPoints.at(ctrlPtGroup * 3),
                        controlPoints.at(ctrlPtGroup * 3 + 1),
                        controlPoints.at(ctrlPtGroup * 3 + 2),
                        controlPoints.at(ctrlPtGroup * 3 + 3),
                        t - ctrlPtGroup * 1.0f);
+}
+
+
+template <typename T>
+Vector<T> Bezier<T>::getTangentByPercentage(float percentage)
+{
+  float t = calcTforPercentDistance(percentage);
+
+  int ctrlPtGroup = t * 0.99999f; //intentionally truncate to figure out which set of 4 control points to use
+                                  //uses not quite one, since t can be 1, even though we have only one set of
+                                  //control points
+
+  return getTangent(controlPoints.at(ctrlPtGroup * 3),
+                    controlPoints.at(ctrlPtGroup * 3 + 1),
+                    controlPoints.at(ctrlPtGroup * 3 + 2),
+                    controlPoints.at(ctrlPtGroup * 3 + 3),
+                    t - ctrlPtGroup * 1.0f);
 }
 
 template <typename T>
@@ -291,7 +284,10 @@ void Bezier<T>::renderCurve(Point<T> p0,
 
 
     glBegin(GL_LINE_STRIP);
-    for(double t = 0.0; t < 1.0; t += 1.0 / resolution)
+    const float step = 1.f / resolution;
+    float t;
+    for(int i = 0; i <= resolution; ++i)
+      t = step * i;
       glVertexPoint(evaluateCurve(p0, p1, p2, p3, t));
 
     glEnd();
@@ -375,12 +371,11 @@ void Bezier<T>::populateDistanceTable()
   double distanceAccumulator = 0.0;
 
   
-  float sampleDensity = 100.f;
+  //use half the rendering resolution as our step size
+  float sampleDensity = resolution / 2.f;
 
-  if(resolution > 6) //use the rendering resolution as our sampling if it's high enough
-    sampleDensity = resolution;
-
-  float  t = 1.f / sampleDensity;
+  float t = 0.f;
+  const float step = 1.f / sampleDensity;
   while(rootPoint + 3 < npoints)
   {
     section = rootPoint / 3;
@@ -389,10 +384,11 @@ void Bezier<T>::populateDistanceTable()
     p2 = controlPoints.at(rootPoint + 2);
     p3 = controlPoints.at(rootPoint + 3);
 
-    for(; t < section + 1.0; t += 1.0 / sampleDensity)
+    for(int i = 0; i <= sampleDensity; ++i)
     {
+      t = i * step;
       a = b; //shift the last computed point over
-      b = evaluateCurve(p0, p1, p2, p3, t - section * 1.0); //be suer to keep 0 < t < 1 for each section
+      b = evaluateCurve(p0, p1, p2, p3, t - section * 0.99999f); //be suer to keep 0 < t <= 1 for each section
       distanceAccumulator += distanceBetween(a, b);
       distanceTable.insert(std::pair<double, float>(distanceAccumulator, t));
     }
@@ -401,5 +397,40 @@ void Bezier<T>::populateDistanceTable()
   }
 }
 
+
+//Helper function to compute the value of t necessary for a given percentage
+//of the total distance along the curve
+template <typename T>
+float Bezier<T>::calcTforPercentDistance(float percentage)
+{
+  //don't allow negative percentages
+  if(percentage < 0.f)
+    percentage = 0.f;
+  //lock at 100%
+  if(percentage >= 1.f)
+    return 1.f;
+
+  std::map<double, float>::iterator it = distanceTable.end();
+  it--; //back up, since end() is actually past the end
+  double totalDist = (*it).first;
+  double targetDist = totalDist * percentage;
+
+  std::pair<double, float> lower, upper;
+  //find the closet pair of points in our distance table to our target and lerp
+  it = distanceTable.upper_bound(targetDist);
+  if(it != distanceTable.begin())
+    it--;
+  lower = *it;
+  upper = *(++it);
+
+  double innerdist = upper.first - lower.first;
+  double innertime = upper.second - lower.second;
+
+  //What % of distance between our two samples is our target distance?
+  double proportion = (targetDist - lower.first) / innerdist;
+
+  //Our target time value will be the same proportion
+  return proportion * innertime + lower.second;
+}
 
 template class Bezier<float>; //Generates all template functions for use with float/GLfloat

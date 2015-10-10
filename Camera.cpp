@@ -85,7 +85,7 @@ void Camera::mouseRotate(int mouseDeltaX, double mouseDeltaY)
   if(phi <= 0)
     phi = 0.00001;
 
-  printf("Theta: %4.2f, Phi: %4.2f\n", theta, phi);
+  //printf("Theta: %4.2f, Phi: %4.2f\n", theta, phi);
 }
 
 

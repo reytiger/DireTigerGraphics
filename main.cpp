@@ -330,16 +330,14 @@ void mouseMotion(int x, int y)
 void initScene()  {
     glEnable(GL_DEPTH_TEST);
 
-    //******************************************************************
-    // this is some code to enable a default light for the scene;
-    // feel free to play around with this, but we won't talk about
-    // lighting in OpenGL for another couple of weeks yet.
     float lightCol[4] = { 1, 1, 1, 1};
     float ambientCol[4] = { 0.0, 0.0, 0.0, 1.0 };
+    float specularCol[4] = { 0.1, 0.1, 0.1, 1.0 };
     float lPosition[4] = { 10, 10, 10, 1 };
-    glLightfv( GL_LIGHT0, GL_POSITION,lPosition );
-    glLightfv( GL_LIGHT0, GL_DIFFUSE,lightCol );
+    glLightfv( GL_LIGHT0, GL_POSITION, lPosition );
+    glLightfv( GL_LIGHT0, GL_DIFFUSE, lightCol );
     glLightfv( GL_LIGHT0, GL_AMBIENT, ambientCol );
+    glLightfv( GL_LIGHT0, GL_SPECULAR, specularCol );
     glEnable( GL_LIGHTING );
     glEnable( GL_LIGHT0 );
 	
