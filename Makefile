@@ -1,5 +1,7 @@
-TARGET = diretiger
-OBJECTS = main.o Bezier.o Camera.o Point.o Vector.o rocketship.o Familiar.o BezPatch.o
+TARGET   = diretiger
+OBJECTS  = main.o Bezier.o Camera.o Point.o Vector.o
+OBJECTS += rocketship.o Familiar.o BezPatch.o Light.o
+OBJECTS += Color.o
 
 CXX    = g++
 CFLAGS = -Wall -g
@@ -86,8 +88,12 @@ $(TARGET): $(OBJECTS)
 BezPatch.o: BezPatch.cpp BezPatch.h Bezier.h Point.h Vector.h
 Bezier.o: Bezier.cpp Bezier.h Point.h Vector.h
 Camera.o: Camera.cpp Camera.h Point.h Vector.h
+Color.o: Color.cpp Color.h
 Familiar.o: Familiar.cpp Familiar.h Bezier.h Point.h Vector.h
+Light.o: Light.cpp Light.h Point.h Vector.h Color.h
 Point.o: Point.cpp Point.h Vector.h
 Vector.o: Vector.cpp Vector.h
-main.o: main.cpp Point.h Vector.h Camera.h BezPatch.h Bezier.h Familiar.h rocketship.h
+main.o: main.cpp /home/rey/csm/graphics/include/GL/glui.h Point.h \
+ Vector.h Camera.h BezPatch.h Bezier.h Familiar.h rocketship.h Light.h \
+ Color.h
 rocketship.o: rocketship.cpp rocketship.h Point.h Vector.h

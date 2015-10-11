@@ -47,6 +47,7 @@ using namespace std;
 #include "BezPatch.h"
 #include "Familiar.h"
 #include "rocketship.h"
+#include "Light.h"
 
 //constants
 #define PICK_TOL 20
@@ -62,6 +63,7 @@ GLint leftMouseButton, rightMouseButton;    // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 
 Camera cam(ARCBALL, 0.0, 2 * M_PI / 3, 40);
+Light* mainLight = NULL;
 
 GLint menuId;				    // handle for our menu
 
@@ -330,23 +332,15 @@ void mouseMotion(int x, int y)
 void initScene()  {
     glEnable(GL_DEPTH_TEST);
 
-    float lightCol[4] = { 1, 1, 1, 1};
-    float ambientCol[4] = { 0.0, 0.0, 0.0, 1.0 };
-    float specularCol[4] = { 0.1, 0.1, 0.1, 1.0 };
-    float lPosition[4] = { 10, 10, 10, 1 };
-    glLightfv( GL_LIGHT0, GL_POSITION, lPosition );
-    glLightfv( GL_LIGHT0, GL_DIFFUSE, lightCol );
-    glLightfv( GL_LIGHT0, GL_AMBIENT, ambientCol );
-    glLightfv( GL_LIGHT0, GL_SPECULAR, specularCol );
-    glEnable( GL_LIGHTING );
-    glEnable( GL_LIGHT0 );
-	
-    // tell OpenGL not to use the material system; just use whatever we 
-    // pass with glColor*()
-    glEnable( GL_COLOR_MATERIAL );
-    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
-    //******************************************************************
+    //construct our primary light source
+    Color diffCol(1.f, 1.f, 1.f, 1.f);
+    Color ambientCol(0.1f, 0.1f, 0.1f, 1.0f);
+    Color specularCol(0.2f, 0.2f, 0.2f, 1.f);
+    Point<float> pos(10.f, 10.f, 10.f);
 
+    glEnable( GL_LIGHTING );
+    mainLight = new Light(OMNI, pos, diffCol, specularCol, ambientCol);
+	
     glShadeModel(GL_FLAT);
 
     treeTrunk = gluNewQuadric();
@@ -409,6 +403,7 @@ void renderScene(void)  {
     }
 
 
+    //Render our surface bezier patch
     glPushMatrix();
     testPatch.render();
     glPopMatrix();
