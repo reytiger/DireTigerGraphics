@@ -543,10 +543,17 @@ void myMenu( int value ) {
 ////////////////////////////////////////////////////////////////////////////////
 void createMenus() {
 	// TODO #01: Create a Simple Menu
-  glutCreateMenu(myMenu); //The menu becomes the menu when it is created
+  int id = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
+  glutAddMenuEntry("Hero1", 3);
+  glutAddMenuEntry("Hero2", 4);
+  glutAddMenuEntry("Hero3", 5);
+  glutCreateMenu(myMenu);
+  glutAddSubMenu("Show/Hide First Person Camera", id);
+  glutAddSubMenu("Show/Hide Freecam", id);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
   glutAddMenuEntry("Show/Hide Curve", 1);
   glutAddMenuEntry("Quit", 2);
+  
   glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
