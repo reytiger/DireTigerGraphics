@@ -34,7 +34,7 @@ else
 	LIBPATH += -L/Users/jpaone/Desktop/lib
 endif
 
-LIBS += -lglui
+##LIBS += -lglui
 
 #############################
 ## SETUP OpenGL & GLUT 
