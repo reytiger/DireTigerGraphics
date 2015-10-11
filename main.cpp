@@ -239,6 +239,7 @@ void resizeWindow(int w, int h) {
 
     //update the viewport to fill the window
     glViewport(0, 0, w, h);
+	//glViewport(w - 100, h-100, w, h);
 
     cam.windowResize(aspectRatio);
 }
