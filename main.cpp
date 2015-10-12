@@ -38,6 +38,7 @@
 #include <fstream>			// we'll use ifstream	
 #include <string>			// for, well strings!
 #include <vector>			// and vectors (the storage container, not directional)
+#include <iostream>
 using namespace std;
 
 
@@ -241,6 +242,7 @@ void resizeWindow(int w, int h) {
 
     //update the viewport to fill the window
     glViewport(0, 0, w, h);
+	//glViewport(w - 100, h-100, w, h);
 
     cam.windowResize(aspectRatio);
 }
@@ -475,10 +477,10 @@ void myTimer( int value )
   myFamiliar.tick();
 
   //camera mode changes
-  if(keysDown['1'] && cam.getCurrentMode() != FREE)
-    cam.switchMode(FREE);
-  else if(keysDown['2'] && cam.getCurrentMode() != ARCBALL)
-    cam.switchMode(ARCBALL);
+  //if(keysDown['1'] && cam.getCurrentMode() != FREE)
+  //  cam.switchMode(FREE);
+  //else if(keysDown['2'] && cam.getCurrentMode() != ARCBALL)
+  //  cam.switchMode(ARCBALL);
 
   //camera movement
   if(cam.getCurrentMode() == FREE)
@@ -532,6 +534,15 @@ void myMenu( int value ) {
     break;
   case 2:
     exit(EXIT_SUCCESS);
+  case 6:
+	if(cam.getCurrentMode() != FREE){
+      cam.switchMode(FREE);
+	  break;
+	}
+	else if(cam.getCurrentMode() != ARCBALL){
+      cam.switchMode(ARCBALL);
+      break;
+	}
   }
 }
 
@@ -543,13 +554,17 @@ void myMenu( int value ) {
 ////////////////////////////////////////////////////////////////////////////////
 void createMenus() {
 	// TODO #01: Create a Simple Menu
-  int id = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
-  glutAddMenuEntry("Hero1", 3);
-  glutAddMenuEntry("Hero2", 4);
-  glutAddMenuEntry("Hero3", 5);
+ // int id = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
+  //glutAddMenuEntry("Hero1", 3);
+ // glutAddMenuEntry("Hero2", 4);
+ // glutAddMenuEntry("Hero3", 5);
+  int otherSubId = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
+  glutAddMenuEntry("Hero1", 6);
+//  glutAddMenuEntry("Hero2", 7);
+//  glutAddMenuEntry("Hero3", 8);
   glutCreateMenu(myMenu);
-  glutAddSubMenu("Show/Hide First Person Camera", id);
-  glutAddSubMenu("Show/Hide Freecam", id);
+  //glutAddSubMenu("Show/Hide First Person Camera", id);
+  glutAddSubMenu("Show/Hide Freecam", otherSubId);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
   glutAddMenuEntry("Show/Hide Curve", 1);
   glutAddMenuEntry("Quit", 2);
