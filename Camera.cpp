@@ -141,12 +141,12 @@ void Camera::saveReferenceFrame()
 }
 
 
-void Camera::windowResize(float aspectRatio)
+void Camera::resetPerspective(float aspectRatio)
 {
   //update the projection matrix with the new window properties
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(45.0,aspectRatio,0.1,100000);
+  gluPerspective(45.0, aspectRatio, 0.1, 100000);
   glMatrixMode(GL_MODELVIEW);
 }
 

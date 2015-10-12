@@ -24,14 +24,12 @@
 	#include <GL/glu.h>
 #endif
 
-#include <GL/glui.h>			// include our GLUI header
-
-
 // C Libraries we need
 #include <time.h>			// for time() to seed our RNG
 #include <stdio.h>			// allow to print to terminal
 #include <stdlib.h>			// access to rand() and exit()
 #include <math.h>			// for cosf(), sinf(), etc.
+#include <string.h>
 
 
 // C++ Libraries we'll use
@@ -49,6 +47,7 @@ using namespace std;
 #include "Familiar.h"
 #include "rocketship.h"
 #include "Light.h"
+#include "FPSCounter.h"
 
 //constants
 #define PICK_TOL 20
@@ -65,6 +64,7 @@ int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 
 Camera cam(ARCBALL, 0.0, 2 * M_PI / 3, 40);
 Light* mainLight = NULL;
+FPSCounter fpsCounter;
 
 GLint menuId;				    // handle for our menu
 
@@ -244,7 +244,7 @@ void resizeWindow(int w, int h) {
     glViewport(0, 0, w, h);
 	//glViewport(w - 100, h-100, w, h);
 
-    cam.windowResize(aspectRatio);
+    cam.resetPerspective(aspectRatio);
 }
 
 
@@ -372,9 +372,12 @@ void renderScene(void)  {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     // update the modelview matrix based on the camera's position
-    glMatrixMode( GL_MODELVIEW );                           // make sure we aren't changing the projection matrix!
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     cam.updateView();
+
+    //count frames
+    //cam.resetPerspective(aspectRatio); //setup projection matrix back to 3D
 
     if(renderMode == GL_SELECT)
     {
@@ -387,7 +390,7 @@ void renderScene(void)  {
       //set up our pick matrix to be an NxN area around the mouse
       gluPickMatrix((GLdouble) mouseX, (GLdouble) (windowHeight - mouseY), PICK_TOL, PICK_TOL, viewport);
       //This call might be redundant
-      gluPerspective(45.0,aspectRatio,0.1,100000);
+      gluPerspective(45.0, aspectRatio, 0.1, 100000);
       glMatrixMode(GL_MODELVIEW);
 
       memset(pickBuffer, 0, PICK_BUFFER_SIZE); //zero our pick buffer to be safe
@@ -398,10 +401,9 @@ void renderScene(void)  {
     else
     {
       //only bother drawing the grid in rendering mode
-      //TODO re-enable
-      /*glPushMatrix();
+      glPushMatrix();
         glCallList(environmentDL);
-      glPopMatrix();*/
+      glPopMatrix();
     }
 
 
@@ -414,19 +416,23 @@ void renderScene(void)  {
     mandrake.draw();
 
     //render our familiar on its bezier curve
-    myFamiliar.draw(renderMode == GL_SELECT);
+    myFamiliar.draw(renderMode == GL_SELECT); //inline expression, not assignment
 
 
     //We don't need to bother rendering anything but the control points in select mode
     if(renderMode == GL_SELECT)
     {
+      //return to the previous perspective
       glMatrixMode(GL_PROJECTION);
-      glPopMatrix(); // return to the previous perspective
+      glPopMatrix(); 
       glMatrixMode(GL_MODELVIEW);
 
       return;
     }
 
+    
+    //2D drawing
+    fpsCounter.onRender(windowWidth, windowHeight);
     //push the back buffer to the screen
     glutSwapBuffers();
 }
@@ -635,7 +641,7 @@ int main( int argc, char **argv ) {
     fprintf(stdout, "[INFO]: |   OpenGL Version:  %40s |\n", glGetString(GL_VERSION));
     fprintf(stdout, "[INFO]: |   OpenGL Renderer: %40s |\n", glGetString(GL_RENDERER));
     fprintf(stdout, "[INFO]: |   OpenGL Vendor:   %40s |\n", glGetString(GL_VENDOR));
-    fprintf(stdout, "[INFO]: |   GLUI Version:    %40.2f |\n", GLUI_VERSION);
+    //fprintf(stdout, "[INFO]: |   GLUI Version:    %40.2f |\n", GLUI_VERSION);
     fprintf(stdout, "[INFO]: \\-------------------------------------------------------------/\n");
 
     // do some basic OpenGL setup
