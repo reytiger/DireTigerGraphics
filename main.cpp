@@ -58,6 +58,10 @@ using namespace std;
 static size_t windowWidth = 640;
 static size_t windowHeight = 480;
 static float aspectRatio;
+int updown = 1;
+bool heroArc1 = false, heroArc2 = false, heroArc3 = false;
+
+float wheelAngle = 0;
 
 GLint leftMouseButton, rightMouseButton;    // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
@@ -198,6 +202,51 @@ void drawCity() {
       }
     }
   }
+}
+
+void drawWheels(){
+	glPushMatrix();{
+		glTranslatef(-3.5, 1, 0);
+		glColor3ub(10, 10, 10);
+		glRotatef(90, 0, 1, 0);
+		glRotatef(wheelAngle, 0, 0, 1);
+		gluCylinder(gluNewQuadric(), 1, 1, 2, 15, 15);
+		glTranslatef(0, 0, 2);
+		gluDisk(gluNewQuadric(), 0, 1, 15, 15);
+		glTranslatef(0, 0, 2);
+		gluCylinder(gluNewQuadric(), 1, 1, 2, 15, 15);
+		gluDisk(gluNewQuadric(), 0, 1, 15, 15);
+	}
+	glPopMatrix();	
+	
+}
+
+//the hero function, which calls the wheels function as well.
+void drawHero(){
+	
+	for (int i = -3; i < 3; i++){
+		for (int j = -5; j < 5; j++){
+			glPushMatrix();
+			glTranslatef(0, 2, 0);
+			glColor3ub(152, 60, 175);
+			glTranslatef(i, 0, j);
+			if (i == 0 && j == 2){
+				glColor3ub(0, 60, 175);
+				glRotatef(270, 1, 0, 0);
+				glScalef(1, 1, updown);
+				glutSolidCone(1, 2, 10, 10);
+			}
+			glutSolidCube(1);
+			glPopMatrix();
+		}
+	}
+	glPushMatrix();
+	glTranslatef(0, 0, 2);
+	drawWheels();
+	glTranslatef(0, 0, -6);
+	drawWheels();
+	glPopMatrix();
+	
 }
 
 // generateEnvironmentDL() /////////////////////////////////////////////////////
@@ -400,6 +449,9 @@ void renderScene(void)  {
       //init the name stack
       glInitNames();
       glPushName(0xFFFFFFFF); //unused first entry so we have a place to load names onto
+	  if (heroArc1 == true){
+		//create the side viewport
+	  }
     }
     else
     {
@@ -417,7 +469,7 @@ void renderScene(void)  {
 
     //draw the shipe
     mandrake.draw();
-
+	drawHero();
     //render our familiar on its bezier curve
     myFamiliar.draw(renderMode == GL_SELECT);
 
@@ -545,6 +597,9 @@ void myMenu( int value ) {
 	  break;
 	}
 	else if(cam.getCurrentMode() != ARCBALL){
+	  heroArc1 = !heroArc1;
+	  heroArc2 = false;  //set other views off just in case
+	  heroArc3 = false;
       cam.switchMode(ARCBALL);
       break;
 	}
