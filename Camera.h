@@ -39,7 +39,7 @@ class Camera
     void move(bool forwards);
     
     void saveReferenceFrame();
-    void windowResize(float aspectRatio);
+    void resetPerspective(float aspectRatio);
 
     //getters/setters
     void adjustDistFromOrigin(int mouseDeltaY);
