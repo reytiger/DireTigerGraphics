@@ -40,15 +40,18 @@ void SubPatch<T>::genAxes(const std::vector<Point<T> >& ctrlPoints)
   }
 }
 
+
+//Generates a Bezier curve from the control points
+//in either the u or v axis, at time = t
 template <typename T>
 Bezier<T> SubPatch<T>::evalAxis(float t, bool u)
 {
   Point<T> arr[4];
   for(int i = 0; i < 4; ++i)
   {
-    if(u)
+    if(u) //producing a curve along V
       arr[i] = uAxis.beziers[i].evaluateCurve(t);
-    else
+    else //producing a u curve
       arr[i] = vAxis.beziers[i].evaluateCurve(t);
   }
   return Bezier<T>(resolution, arr);
@@ -185,12 +188,14 @@ void BezPatch<T>::render()
 
         glPushMatrix();
           glTranslatePoint(vBezNear.getPercentageAlongCurve(v));
+          //green u tangent
           glColor3f(0.f, 1.f, 0.f);
           //draw the tangent that is computed at this point
           (vBezNear.getTangentByPercentage(v)).drawNormalized();
           
+          //blue v tangent
           glColor3f(0.f, 0.f, 1.f);
-          (s.evalAxis(v, false).getTangentByPercentage(v)).drawNormalized();
+          (s.evalAxis(v, false).getTangentByPercentage(u)).drawNormalized();
           glColor3f(1.f, 0.f, 0.f);
           //draw the normal
           getNormal(p, u, v).draw();
