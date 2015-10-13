@@ -209,6 +209,7 @@ void Camera::recomputeCoordsAndDirection()
       lookAtPoint = *watchPoint;
 
   case FIRST_PERSON:
+	worldPos = *originObj;
     break;
   }
 }
