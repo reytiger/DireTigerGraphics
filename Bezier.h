@@ -1,25 +1,20 @@
 //Bezier.h - Defines a class for working with cubic Bezier curves
 //Kevin Carbaugh
 
-#ifndef BEZIER_H_INC
-#define BEZIER_H_INC
-
+#pragma once
 #include <vector>
 #include <map>
 
 #include "Point.h"
 #include "Vector.h"
 
+//A bezier curve composed of 4 control points
 template <typename T>
-class Bezier
+class SubCurve
 {
   public:
-    Bezier();
-    Bezier(int resolution);
-    Bezier(int resolution, Point<T> points[4]); 
-
-    void render(bool selectionMode);
-
+    SubCurve();
+    SubCurve(const int resolution, const Point<T> (&points)[4], const double startDist = 0.0);
 
     static Point<T> evaluateCurve(Point<T> p0,
                                   Point<T> p1,
@@ -27,48 +22,73 @@ class Bezier
                                   Point<T> p3,
                                   float t);
     Point<T> evaluateCurve(float t);
+    Point<T> getPercentageAlongCurve(float percentage);
+
     static Vector<T> getTangent(Point<T> p0,
                                 Point<T> p1,
                                 Point<T> p2,
                                 Point<T> p3,
                                 float t);
     Vector<T> getTangent(float t);
-    Point<T> getPercentageAlongCurve(float percentage);
     Vector<T> getTangentByPercentage(float percentage);
 
-    void setSelectedPoint(unsigned int index);
-    void unsetSelectedPoint();
+    double getEndDistance();
 
-    void moveSelectedPoint(Vector<T> v);
+    void render(bool drawCtrlCage, bool drawCurve);
+
+
+    //getters
+    void getCtrlPoints(Point<T> (&arr)[4]);
+
+    //setters
+    void setOrigin(Point<T>* pt);
+
+    std::map<double, float> distanceTable;
+
+  private:
+    float calcTforPercentDistance(float percentage);
+    void populateDistanceTable(double startDist);
+    void drawControlCage();
+    void drawControlPoints();
+
+    std::vector<Point<T> > controlPoints;
+    Point<T>* origin; //the world coordinate to draw relative to
+
+    int resolution;
+
+};
+
+
+//A composite curve made up of any number of subcurves
+template <typename T>
+class Bezier
+{
+  public:
+    Bezier();
+    Bezier(const int resolution);
+    Bezier(const int resolution, const Point<T> (&points)[4]); 
+
+    void render();
+
+    Vector<T> getTangent(int subCurve, float t);
+    Point<T> getPercentageAlongCurve(float percentage);
+    Vector<T> getTangentByPercentage(float percentage);
 
     void toggleControlCageVisible();
     void toggleCurveVisible();
 
     bool loadControlPoints(const char* const filename);
     void saveControlPoints();
+
     bool valid();
 
   private:
-    std::vector<Point<T> > controlPoints;
-    std::map<double, float> distanceTable;
+    std::vector<SubCurve<T> > subCurves;
 
-    Point<T>* origin; //the world coordinate to draw relative to
-
-    void renderCurve(Point<T> p0,
-                     Point<T> p1,
-                     Point<T> p2,
-                     Point<T> p3);
-    void drawControlCage(int npoints);
-    void drawControlPoints(bool selectionMode, int npoints);
-
-    void populateDistanceTable();
-    float calcTforPercentDistance(float percentage);
+    std::pair<int, float> calcTforPercentDistance(float percentage);
 
     bool drawCage;
     bool drawCurve;
 
-    int selectedPoint;
     int resolution;
 };
-
-#endif

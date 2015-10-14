@@ -49,6 +49,13 @@ void glNormalVector(Vector<T>& vec)
 
 
 template <typename T>
+void glRotatefVector(const float degrees, const Vector<T>& axis)
+{
+  glRotatef(degrees, axis.getX(), axis.getY(), axis.getZ());
+}
+
+
+template <typename T>
 void Vector<T>::draw()
 {
   glDisable(GL_LIGHTING);
@@ -77,11 +84,12 @@ Vector<T>::Vector(const T magX, const T magY, const T magZ) : x(magX), y(magY), 
 template <typename T>
 Vector<T> Vector<T>::normalize(const Vector& in)
 {
-  float mag = sqrt(in.x * in.x + in.y * in.y + in.z * in.z);
+  T mag = in.magnitude();
   return Vector<T>(in.x / mag, in.y / mag, in.z / mag);
 }
 
 
+//cross product
 template <typename T>
 Vector<T> Vector<T>::cross(const Vector<T>& other)
 {
@@ -91,6 +99,20 @@ Vector<T> Vector<T>::cross(const Vector<T>& other)
 }
 
 
+//dot product
+template <typename T>
+T Vector<T>::dot(const Vector<T>& other)
+{
+  return x * other.x + y * other.y + z * other.z;
+}
+
+
+template <typename T>
+double Vector<T>::angleTo(const Vector<T>& other)
+{
+  return acos(this->dot(other) / (this->magnitude() * other.magnitude()));
+}
+
 template <typename T>
 Vector<T>& Vector<T>::operator*=(const T& rhs)
 {
@@ -98,6 +120,12 @@ Vector<T>& Vector<T>::operator*=(const T& rhs)
   return *this;
 }
 
+
+template <typename T>
+T Vector<T>::magnitude() const
+{
+  return sqrt(x * x + y * y + z * z);
+}
 
 //helper function for computing cross products
 //Format is as follows:
@@ -124,3 +152,4 @@ const T& Vector<T>::getZ() const { return z; }
 template class Vector<float>;
 template Vector<float> operator-<float>(const Vector<float>&);
 template void glNormalVector(Vector<float>&);
+template void glRotatefVector(const float, const Vector<float>&);

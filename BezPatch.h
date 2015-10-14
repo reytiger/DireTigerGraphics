@@ -1,14 +1,17 @@
 //BezPatch.h - defines a Bezier patch
 //Kevin Carbaugh
 
+#pragma once
+
 #include "Bezier.h"
+#include "SceneElement.h"
 #include "Point.h" //to be explicit, even though already in Bezier
 #include "Vector.h"
 
 template <typename T>
 struct BezAxis
 {
-  Bezier<T> beziers[4];
+  SubCurve<T> beziers[4];
 };
 
 template <typename T>
@@ -16,7 +19,7 @@ class SubPatch
 {
   public:
     SubPatch(const std::vector<Point<T> >& ctrlPoints, int resolution);
-    Bezier<T> evalAxis(float f = 0.f, bool u = true);
+    SubCurve<T> evalAxis(float f = 0.f, bool u = true);
 
     struct BezAxis<T> uAxis;
     struct BezAxis<T> vAxis;
@@ -36,6 +39,9 @@ class BezPatch
     void render();
 
     Vector<T> getNormal(int subPatch, float u, float v);
+    Point<T> getCoord(int subPatch, float u, float v);
+
+    void placeOnSurface(SceneElement& elem, int subPatch, float u, float v);
 
     //getter
     int getResolution();
@@ -43,6 +49,7 @@ class BezPatch
     //setter
     void setOrigin(const Point<T>& p);
     void setResolution(int res);
+
   private:
     void drawControlCage();
     
