@@ -63,7 +63,6 @@ static float aspectRatio;
 int updown = 1;
 bool heroArc1 = false, heroArc2 = false, heroArc3 = false;
 
-float wheelAngle = 0;
 
 GLint leftMouseButton, rightMouseButton;    // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
@@ -210,51 +209,6 @@ void drawCity() {
   }
 }
 
-void drawWheels(){
-	glPushMatrix();{
-		glTranslatef(-3.5, 1, 0);
-		glColor3ub(10, 10, 10);
-		glRotatef(90, 0, 1, 0);
-		glRotatef(wheelAngle, 0, 0, 1);
-		gluCylinder(gluNewQuadric(), 1, 1, 2, 15, 15);
-		glTranslatef(0, 0, 2);
-		gluDisk(gluNewQuadric(), 0, 1, 15, 15);
-		glTranslatef(0, 0, 2);
-		gluCylinder(gluNewQuadric(), 1, 1, 2, 15, 15);
-		gluDisk(gluNewQuadric(), 0, 1, 15, 15);
-	}
-	glPopMatrix();	
-	
-}
-
-//the hero function, which calls the wheels function as well.
-void drawHero(){
-	
-	for (int i = -3; i < 3; i++){
-		for (int j = -5; j < 5; j++){
-			glPushMatrix();
-			glTranslatef(0, 2, 0);
-			glColor3ub(152, 60, 175);
-			glTranslatef(i, 0, j);
-			if (i == 0 && j == 2){
-				glColor3ub(0, 60, 175);
-				glRotatef(270, 1, 0, 0);
-				glScalef(1, 1, updown);
-				glutSolidCone(1, 2, 10, 10);
-			}
-			glutSolidCube(1);
-			glPopMatrix();
-		}
-	}
-	glPushMatrix();
-	glTranslatef(0, 0, 2);
-	drawWheels();
-	glTranslatef(0, 0, -6);
-	drawWheels();
-	glPopMatrix();
-	
-}
-
 // Code for drawing my character (Ryan) ----------------------------------------------
 // Code for drawing fire spirit
 void drawSpiritPlume() {
@@ -266,7 +220,7 @@ void drawSpiritPlume() {
 	
 	glColor3f(1.0, 0.0, 0.0);
 	
-	glutSolidCone(3 + cosf(spiritT), 4 + 2 * sinf(spiritT), 30, 30);
+	//glutSolidCone(3 + cosf(spiritT), 4 + 2 * sinf(spiritT), 30, 30);
 	
 	glRotatef(90.0, 1.0, 0.0, 0.0);
 	glTranslatef(0, -2, 0);
@@ -314,9 +268,9 @@ void drawWheel() {
 	glColor3f(0.1, 0.1, 0.1);
 	glRotatef(-90.0, 0.0, 1.0, 0.0);
 	glScalef(0.5, 0.5, 0.5);
-	glRotatef(-wheelTheta, 0.0, 0.0, 1.0);
+	//glRotatef(-1 * wheelTheta, 0.0, 0.0, 1.0);
 	glutSolidTorus(2.5, 2, 8, 8);
-	glRotatef(wheelTheta, 0.0, 0.0, 1.0);
+	//glRotatef(wheelTheta, 0.0, 0.0, 1.0);
 	glScalef(2.0, 2.0, 2.0);
 	glRotatef(90.0, 0.0, 1.0, 0.0);
 	
@@ -370,11 +324,11 @@ void drawBox() {
 	
 	glPopMatrix();
 }
-
+/*
 void drawCharacter() {
-	/* Function that calls the  functions for drawing my 'character,' 
-	 * which will be a wizard's wagon.
-	 */
+	 // Function that calls the  functions for drawing my 'character,' 
+	 // which will be a wizard's wagon.
+	 
 	 glPushMatrix();
 	 
 	 // Function for drawing the body of the wagon
@@ -395,7 +349,7 @@ void drawCharacter() {
 	 glPopMatrix();
 	 
 	 // This function is easily adapted to a more complex character construct.
-}
+}*/
 
 // End of code for drawing Ryan's character ---------------------------------------
 
@@ -646,13 +600,17 @@ if (heroArc1 == true){
 void drawStuff(){
 	
 	glPushMatrix();
+    testPatch.render();
+    glPopMatrix();
+	
+	glPushMatrix();
 	glCallList(environmentDL);
 	glPopMatrix();
 	
 	mandrake.draw();
 	vehicle.draw();
-	//drawHero();
 	myFamiliar.draw(renderMode == GL_SELECT);
+	
 	
 	
 }
