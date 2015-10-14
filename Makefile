@@ -2,7 +2,7 @@ TARGET   = diretiger
 OBJECTS  = main.o Bezier.o Camera.o Point.o Vector.o
 OBJECTS += rocketship.o Familiar.o BezPatch.o Light.o
 OBJECTS += Color.o FPSCounter.o SceneElement.o PatchHero.o
-OBJECTS += Car.o Orientation.o
+OBJECTS += Car.o Orientation.o Material.o
 
 CXX    = g++
 CFLAGS = -Wall -g

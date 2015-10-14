@@ -12,10 +12,11 @@
 
 //ctors
 SceneElement::SceneElement() : position(Point<float>(0.f, 0.f, 0.f)),
-                               orientation(0.f, 0.f, 0.f) {};
+                               orientation(0.f, 0.f, 0.f),
+                               material() {};
 
-SceneElement::SceneElement(const Point<float>& pos, const Orientation<float>& ori) :
-                           position(pos), orientation(ori) {};
+SceneElement::SceneElement(const Point<float>& pos, const Orientation<float>& ori, const Material& mat) :
+                           position(pos), orientation(ori), material(mat) {};
 
 Point<float> SceneElement::getPosition() const
 {
@@ -39,6 +40,18 @@ void SceneElement::setOrientation(const Orientation<float>& ori)
 }
 
 
+void SceneElement::glRender()
+{
+  glEmplaceObject();
+  glOrientObject();
+  glApplyMaterial();
+  
+  //TODO determine GL render mode
+  //to expand to allow picking?
+  render(false);
+}
+
+
 //rotates the openGL context according to the position and orientation data
 void SceneElement::glEmplaceObject()
 {
@@ -59,6 +72,22 @@ void SceneElement::glOrientObject()
   //glRotatefVector(-normal.angleTo(up), normal.cross(up));
   //and rotate around the normal by our heading
   //glRotatefVector(theta, normal);
+}
+
+
+void SceneElement::glApplyMaterial()
+{
+  const GLenum face = GL_FRONT_AND_BACK;
+  glMaterialfv(face, GL_DIFFUSE, material.getDiffuseColor());
+  glMaterialfv(face, GL_SPECULAR, material.getSpecularColor());
+  glMaterialfv(face, GL_AMBIENT, material.getAmbientColor());
+}
+
+
+void SceneElement::render(bool SelectionMode)
+{
+  //TODO
+  //render orientation of this object
 }
 
 const Vector<float> SceneElement::up = Vector<float>(0.f, 1.f, 0.f);

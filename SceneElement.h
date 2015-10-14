@@ -5,12 +5,13 @@
 #pragma once
 #include "Point.h"
 #include "Orientation.h"
+#include "Material.h"
 
 class SceneElement
 {
   public:
     SceneElement();
-    SceneElement(const Point<float>& position, const Orientation<float>& ori);
+    SceneElement(const Point<float>& position, const Orientation<float>& ori, const Material& mat);
 
     Point<float> getPosition() const;
     Orientation<float> getOrientation() const;
@@ -18,14 +19,20 @@ class SceneElement
     void setPosition(const Point<float>& pos);
     void setOrientation(const Orientation<float>& ori);
 
+    void glRender();
     void glEmplaceObject();
     void glOrientObject();
+    void glApplyMaterial();
 
-    virtual void render(bool SelectionMode) = 0;
+    //override with your drawing code, use glRender when you want to
+    //place the object in worldspace with the above helper functions,
+    //and then your render function will be called
+    virtual void render(bool SelectionMode);
 
   protected:
     Point<float> position;
     Orientation<float> orientation;
+    Material material;
 
     const static Vector<float> up;
 };
