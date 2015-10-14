@@ -46,6 +46,7 @@ using namespace std;
 #include "BezPatch.h"
 #include "Familiar.h"
 #include "rocketship.h"
+#include "Car.h"
 #include "Light.h"
 #include "FPSCounter.h"
 
@@ -69,7 +70,7 @@ int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 Camera cam(ARCBALL, 0.0, 2 * M_PI / 3, 40);
 Light* mainLight = NULL;
 FPSCounter fpsCounter;
-
+Camera cam2(ARCBALL, 0.0, 2 * M_PI / 3, 20);
 GLint menuId;				    // handle for our menu
 
 unsigned int pickBuffer[PICK_BUFFER_SIZE];
@@ -81,6 +82,7 @@ bool ctrlState;
 //Scene objects
 GLuint environmentDL;
 rocketship mandrake(0, 40, 0, 0.3);
+Car vehicle(0, 0, 0);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 
@@ -206,51 +208,6 @@ void drawCity() {
   }
 }
 
-void drawWheels(){
-	glPushMatrix();{
-		glTranslatef(-3.5, 1, 0);
-		glColor3ub(10, 10, 10);
-		glRotatef(90, 0, 1, 0);
-		glRotatef(wheelAngle, 0, 0, 1);
-		gluCylinder(gluNewQuadric(), 1, 1, 2, 15, 15);
-		glTranslatef(0, 0, 2);
-		gluDisk(gluNewQuadric(), 0, 1, 15, 15);
-		glTranslatef(0, 0, 2);
-		gluCylinder(gluNewQuadric(), 1, 1, 2, 15, 15);
-		gluDisk(gluNewQuadric(), 0, 1, 15, 15);
-	}
-	glPopMatrix();	
-	
-}
-
-//the hero function, which calls the wheels function as well.
-void drawHero(){
-	
-	for (int i = -3; i < 3; i++){
-		for (int j = -5; j < 5; j++){
-			glPushMatrix();
-			glTranslatef(0, 2, 0);
-			glColor3ub(152, 60, 175);
-			glTranslatef(i, 0, j);
-			if (i == 0 && j == 2){
-				glColor3ub(0, 60, 175);
-				glRotatef(270, 1, 0, 0);
-				glScalef(1, 1, updown);
-				glutSolidCone(1, 2, 10, 10);
-			}
-			glutSolidCube(1);
-			glPopMatrix();
-		}
-	}
-	glPushMatrix();
-	glTranslatef(0, 0, 2);
-	drawWheels();
-	glTranslatef(0, 0, -6);
-	drawWheels();
-	glPopMatrix();
-	
-}
-
 // generateEnvironmentDL() /////////////////////////////////////////////////////
 //
 //  This function creates a display list with the code to draw a simple 
@@ -294,6 +251,7 @@ void resizeWindow(int w, int h) {
 	//glViewport(w - 100, h-100, w, h);
 
     cam.resetPerspective(aspectRatio);
+	cam2.resetPerspective(aspectRatio);
 }
 
 
@@ -491,7 +449,7 @@ void renderScene2(void)  {
     glPopMatrix();
 	
     mandrake.draw();
-	drawHero();
+	vehicle.drawHero();
 	
 if (heroArc1 == true){
     glClear(GL_DEPTH_BUFFER_BIT );
@@ -522,7 +480,8 @@ void drawStuff(){
 	glPopMatrix();
 	
 	mandrake.draw();
-	drawHero();
+	vehicle.drawHero();
+	//drawHero();
 	myFamiliar.draw(renderMode == GL_SELECT);
 	
 	
@@ -571,6 +530,40 @@ void renderScene(){
 		glPushMatrix();
 		glLoadIdentity();
 		cam.updateView();
+		drawStuff();
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glPopMatrix();
+	}
+	
+	else if (heroArc2 == true){
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glViewport(windowWidth/2, windowHeight/2, windowWidth/2, windowHeight/2);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0, 1, 0, 1);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glBegin(GL_QUADS); {
+			glColor3f(0, 0, 0);
+			glVertex2f(0, 0);
+			glVertex2f(0, 1.0f);
+			glVertex2f(1.0f, 1.0f);
+			glVertex2f(1.0f, 0);
+		} glEnd();
+		glPopMatrix();
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluPerspective(45.0, aspectRatio, 0.1, 100000);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		cam2.updateView();
 		drawStuff();
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
@@ -630,6 +623,8 @@ void myTimer( int value )
 {
   //animate the ship
   mandrake.tick(keysDown);
+  vehicle.tick(keysDown);
+  
   myFamiliar.tick();
 
   //camera mode changes
@@ -703,6 +698,19 @@ void myMenu( int value ) {
       break;
 	}*/
 	break;
+  case 4:
+    heroArc1 = false;
+	heroArc2 = !heroArc2;  //set other views off just in case
+	heroArc3 = false;
+	/*if(cam.getCurrentMode() != FIRST_PERSON){
+      cam.switchMode(FIRST_PERSON);
+	  break;
+	}
+	else if(cam.getCurrentMode() != ARCBALL){	  
+      cam.switchMode(ARCBALL);
+      break;
+	}*/
+	break;
   case 6:
 	if(cam.getCurrentMode() != FREE){
       cam.switchMode(FREE);
@@ -725,7 +733,7 @@ void createMenus() {
 	// TODO #01: Create a Simple Menu
   int id = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
   glutAddMenuEntry("Hero1", 3);
- // glutAddMenuEntry("Hero2", 4);
+  glutAddMenuEntry("Hero2", 4);
  // glutAddMenuEntry("Hero3", 5);
   int otherSubId = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
   glutAddMenuEntry("Hero1", 6);
@@ -819,6 +827,7 @@ int main( int argc, char **argv ) {
 
     //set the camera to watch the ship
     cam.objFollow(&mandrake.location, &mandrake.theta);
+	cam2.objFollow(&vehicle.location, &vehicle.theta);
     //cam.objWatch(&mandrake.location);
 
     // and enter the GLUT loop, never to exit.
