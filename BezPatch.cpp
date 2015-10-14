@@ -141,12 +141,12 @@ void BezPatch<T>::render()
     float ambcol[4] = {0.2f, 0.2f, 0.2f, 1.f};
     glEnable(GL_LIGHTING);
 
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffcol);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, speccol);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambcol);
     //iterate through the u axis at the given resolution
     for(int i = 0; i < resolution; ++i)
     {
-      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffcol);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, speccol);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambcol);
       //inverse of resolution will tell us how what % of the curve
       //length is each quad's dimensions
       u = i * step; 
@@ -164,14 +164,15 @@ void BezPatch<T>::render()
           v = j * step;
           //printf("\tv: %3.2f\n", v);
           //Draw a quad on the surface, a pair of vertices at a time
+          
+          //set this vertex's normal
           Vector<T> norm = getNormal(p, u, v);
           glNormalVector(norm);
-          //glVertexPoint(vBezFar.getPercentageAlongCurve(v));
+          //Evaluate a point on the surface
           glVertexPoint(vBezFar.evaluateCurve(v));
 
           norm = getNormal(p, u + step, v);
           glNormalVector(norm);
-          //glVertexPoint(vBezNear.getPercentageAlongCurve(v));
           glVertexPoint(vBezNear.evaluateCurve(v));
         }
         glEnd();
@@ -224,6 +225,25 @@ Vector<T> BezPatch<T>::getNormal(int subPatch, float u, float v)
   Bezier<T> uBez = s.evalAxis(v, false);
 
   return Vector<T>::normalize(vBez.getTangent(v).cross(uBez.getTangent(u)));
+}
+
+
+//evaluates a point on the patch in uv coordinates
+template <typename T>
+Point<T> BezPatch<T>::getCoord(int subPatch, float u, float v)
+{
+  if(!pointsLoaded) return Point<T>(0., 0., 0.);
+
+  SubPatch<T>& s = subPatches.at(subPatch);
+  Bezier<T> vBez = s.evalAxis(u, true);
+  return vBez.getPercentageAlongCurve(v);
+}
+
+
+template <typename T>
+void BezPatch<T>::placeOnSurface(SceneElement& elem, int subPatch, float u, float v)
+{
+  elem.setPosition(getCoord(subPatch, u, v));
 }
 
 

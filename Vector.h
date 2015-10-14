@@ -15,7 +15,10 @@ class Vector
     static Vector<T> normalize(const Vector<T>& in);
 
     Vector<T> cross(const Vector<T>& other);
+    T dot(const Vector<T>& other);
+    double angleTo(const Vector<T>& other);
     Vector<T>& operator*=(const T& rhs);
+    T magnitude() const;
 	
     void draw();
     void drawNormalized();
@@ -33,6 +36,7 @@ class Vector
 
 //OpenGL helpers
 template <typename T> void glNormalVector(Vector<T>& vec);
+template <typename T> void glRotatefVector(const float, const Vector<T>& axis);
 //Operators
 template <typename T> Vector<T> operator-(const Vector<T>& a);
 

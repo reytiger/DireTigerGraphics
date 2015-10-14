@@ -95,7 +95,7 @@ Point<T> Bezier<T>::getPercentageAlongCurve(float percentage)
 {
   float t = calcTforPercentDistance(percentage);
 
-  int ctrlPtGroup = t * 0.99999f; //intentionally truncate to figure out which set of 4 control points to use
+  int ctrlPtGroup = t * 1.f;//0.99999f; //intentionally truncate to figure out which set of 4 control points to use
                                   //uses not quite one, since t can be 1, even though we have only one set of
                                   //control points
 
@@ -112,7 +112,7 @@ Vector<T> Bezier<T>::getTangentByPercentage(float percentage)
 {
   float t = calcTforPercentDistance(percentage);
 
-  int ctrlPtGroup = t * 0.99999f; //intentionally truncate to figure out which set of 4 control points to use
+  int ctrlPtGroup = t * 1.f;//0.99999f; //intentionally truncate to figure out which set of 4 control points to use
                                   //uses not quite one, since t can be 1, even though we have only one set of
                                   //control points
 
@@ -388,7 +388,7 @@ void Bezier<T>::populateDistanceTable()
     {
       t = i * step;
       a = b; //shift the last computed point over
-      b = evaluateCurve(p0, p1, p2, p3, t - section * 0.99999f); //be suer to keep 0 < t <= 1 for each section
+      b = evaluateCurve(p0, p1, p2, p3, t - section * 1.f);//0.99999f); //be suer to keep 0 < t <= 1 for each section
       distanceAccumulator += distanceBetween(a, b);
       distanceTable.insert(std::pair<double, float>(distanceAccumulator, t));
     }

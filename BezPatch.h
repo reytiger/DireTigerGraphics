@@ -2,6 +2,7 @@
 //Kevin Carbaugh
 
 #include "Bezier.h"
+#include "SceneElement.h"
 #include "Point.h" //to be explicit, even though already in Bezier
 #include "Vector.h"
 
@@ -36,6 +37,9 @@ class BezPatch
     void render();
 
     Vector<T> getNormal(int subPatch, float u, float v);
+    Point<T> getCoord(int subPatch, float u, float v);
+
+    void placeOnSurface(SceneElement& elem, int subPatch, float u, float v);
 
     //getter
     int getResolution();
@@ -43,6 +47,7 @@ class BezPatch
     //setter
     void setOrigin(const Point<T>& p);
     void setResolution(int res);
+
   private:
     void drawControlCage();
     
