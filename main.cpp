@@ -449,7 +449,7 @@ void renderScene2(void)  {
     glPopMatrix();
 	
     mandrake.draw();
-	vehicle.drawHero();
+	vehicle.draw();
 	
 if (heroArc1 == true){
     glClear(GL_DEPTH_BUFFER_BIT );
@@ -480,7 +480,7 @@ void drawStuff(){
 	glPopMatrix();
 	
 	mandrake.draw();
-	vehicle.drawHero();
+	vehicle.draw();
 	//drawHero();
 	myFamiliar.draw(renderMode == GL_SELECT);
 	
@@ -740,7 +740,7 @@ void createMenus() {
 //  glutAddMenuEntry("Hero2", 7);
 //  glutAddMenuEntry("Hero3", 8);
   glutCreateMenu(myMenu);
-  glutAddSubMenu("Show/Hide First Person Camera", id);
+  glutAddSubMenu("Toggle Viewport", id);
   //glutAddSubMenu("Put in upper left corner", id);
   glutAddSubMenu("Show/Hide Freecam", otherSubId);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
