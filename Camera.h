@@ -29,7 +29,7 @@ class Camera
     void updateView();
 
     //Setting where to point the view and position
-    void mouseRotate(int mouseDeltaX, double mouseDeltaY);
+    void mouseRotate(float mouseDeltaX, double mouseDeltaY);
     void objFollow(Point<GLfloat>* obj, float* objTheta);
     void objWatch(Point<GLfloat>* obj);
     void releaseObjLock();
