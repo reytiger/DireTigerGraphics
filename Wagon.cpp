@@ -105,11 +105,19 @@ void Wagon::drawWagon() {
 	 glPushMatrix();
 	 
 	 // Function for drawing the body of the wagon
+	 
+	 /// ADD ROTATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	 drawBox();
 	 
 	 glPopMatrix();
 	 
 	 // This function is easily adapted to a more complex character construct.
+}
+
+void Wagon::tick(bool* keysDown) {
+	// Function for updating character
+	
+	// Needs to be set up yet
 }
 
 void updateCharacterForward() {

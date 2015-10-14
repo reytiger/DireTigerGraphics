@@ -23,6 +23,9 @@ class Wagon {
 	void drawWheels();
 	void drawBox();
 	void drawWagon();
+	
+	void tick(bool* keysDown);
+	
 	void updateCharacterLeft();
 	void updateCharacterRight();
 	void updateCharacterForward();
