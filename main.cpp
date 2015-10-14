@@ -46,6 +46,7 @@ using namespace std;
 #include "BezPatch.h"
 #include "Familiar.h"
 #include "rocketship.h"
+#include "Car.h"
 #include "Light.h"
 #include "FPSCounter.h"
 #include "PatchHero.h"
@@ -70,7 +71,7 @@ int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 Camera cam(ARCBALL, 0.0, 2 * M_PI / 3, 40);
 Light* mainLight = NULL;
 FPSCounter fpsCounter;
-
+Camera cam2(ARCBALL, 0.0, 2 * M_PI / 3, 20);
 GLint menuId;				    // handle for our menu
 
 unsigned int pickBuffer[PICK_BUFFER_SIZE];
@@ -82,6 +83,7 @@ bool ctrlState;
 //Scene objects
 GLuint environmentDL;
 rocketship mandrake(0, 40, 0, 0.3);
+Car vehicle(0, 0, 0);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 PatchHero* pHero;
@@ -253,6 +255,151 @@ void drawHero(){
 	
 }
 
+// Code for drawing my character (Ryan) ----------------------------------------------
+// Code for drawing fire spirit
+void drawSpiritPlume() {
+	// Draw the spirit's plume
+	glPushMatrix();
+	
+	glTranslatef(0, 2, 0);
+	glRotatef(-90.0, 1.0, 0.0, 0.0);
+	
+	glColor3f(1.0, 0.0, 0.0);
+	
+	glutSolidCone(3 + cosf(spiritT), 4 + 2 * sinf(spiritT), 30, 30);
+	
+	glRotatef(90.0, 1.0, 0.0, 0.0);
+	glTranslatef(0, -2, 0);
+	
+	glPopMatrix();	
+}
+
+void drawSpiritBody() {
+	// Function for drawing the spirit's body
+	glPushMatrix();
+	
+	glColor3f(1.0, 0.0, 0.0);
+	glutSolidSphere(3, 30, 30);
+	
+	glPopMatrix();
+}
+
+void drawSpirit() {
+	// Function for drawing spirit
+	glPushMatrix();
+	
+	drawSpiritPlume();
+	drawSpiritBody();
+	
+	glPopMatrix();
+}
+
+// Code for drawing my character 
+void drawBench() {
+	// Function for drawing the bench of the wagon
+	glPushMatrix();
+	glColor3f(0.4, 0.4, 0.4);
+	
+	glScalef(3.2, 1.0, 1);
+	glutSolidCube(1);
+	glScalef(0.3125, 1.0, 1.0);
+	
+	glPopMatrix();
+}
+
+void drawWheel() {
+	// This function simply draws a single wheel
+	glPushMatrix();
+	
+	glColor3f(0.1, 0.1, 0.1);
+	glRotatef(-90.0, 0.0, 1.0, 0.0);
+	glScalef(0.5, 0.5, 0.5);
+	glRotatef(-wheelTheta, 0.0, 0.0, 1.0);
+	glutSolidTorus(2.5, 2, 8, 8);
+	glRotatef(wheelTheta, 0.0, 0.0, 1.0);
+	glScalef(2.0, 2.0, 2.0);
+	glRotatef(90.0, 0.0, 1.0, 0.0);
+	
+	glPopMatrix();	
+}
+
+void drawTheWheels() {
+	// Function for drawing the wheels of the wagon
+	glPushMatrix();
+	
+	// Draw Front Left Wheel
+	glTranslatef(3.0, 0.0, 2.1);
+	drawWheel();
+	
+	// Draw Front Right Wheel
+	glTranslatef(-6.0, 0.0, 0.0);
+	drawWheel();
+	
+	// Draw Rear Right Wheel
+	glTranslatef(0.0, 0.0, -4.2);
+	drawWheel();
+	
+	// Draw Rear Left Wheel
+	glTranslatef(6.0, 0.0, 0.0);
+	drawWheel();
+	glTranslatef(0.0, 0.0, 2.1);
+	
+	glPopMatrix();
+}
+
+void drawBox() {
+	// Function for drawing the main box of the wagon
+	glPushMatrix();
+	
+	// Draw the box
+	glColor3f(0.7, 0.0, 0.0);
+	glTranslatef(0.0, 3.0, 0.0);
+	glScalef(2.0, 1.0, 3.2);
+	glutSolidCube(2);
+	glScalef(0.50, 1.0, 0.3125);
+	
+	// Call the function for drawing the bench
+	glTranslatef(0.0, 1.0, 1.0);
+	drawBench();
+	glTranslatef(0.0, -1.0, -1.0);
+	
+	// Call the function for drawing the wheels
+	glTranslatef(0.0, -1.0, 0.0);
+	drawTheWheels();
+	glTranslatef(0.0, -2.0, 0.0);
+	
+	glPopMatrix();
+}
+
+void drawCharacter() {
+	/* Function that calls the  functions for drawing my 'character,' 
+	 * which will be a wizard's wagon.
+	 */
+	 glPushMatrix();
+	 
+	 // Function for drawing the body of the wagon
+	 drawBox();
+	 
+	 //Function for drawing accompanying fire spirit
+	 Point spiritPoint;
+	 if (controlPoints.size() == 4) {
+		spiritPoint = spiritPoint + evaluateBezierCurve(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3], (float)spiritT / (float)spiritRes);
+	 }
+	 
+	 glTranslatef(spiritPoint.getX(), spiritPoint.getY(), spiritPoint.getZ());
+	 
+	 drawSpirit();
+	 
+	 glTranslatef(-(spiritPoint.getX()), -(spiritPoint.getY()), -(spiritPoint.getZ()));
+	 
+	 glPopMatrix();
+	 
+	 // This function is easily adapted to a more complex character construct.
+}
+
+// End of code for drawing Ryan's character ---------------------------------------
+
+
 // generateEnvironmentDL() /////////////////////////////////////////////////////
 //
 //  This function creates a display list with the code to draw a simple 
@@ -296,6 +443,7 @@ void resizeWindow(int w, int h) {
 	//glViewport(w - 100, h-100, w, h);
 
     cam.resetPerspective(aspectRatio);
+	cam2.resetPerspective(aspectRatio);
 }
 
 
@@ -439,7 +587,9 @@ void renderScene2(void)  {
     glPopMatrix();
 
     //render the hero on the patch
+    glPushMatrix();
     pHero->render(false);
+    glPopMatrix();
 
     //draw the shipe
     //mandrake.draw();
@@ -469,7 +619,7 @@ void renderScene2(void)  {
     glPopMatrix();
 	
     mandrake.draw();
-	drawHero();
+	vehicle.draw();
 	
 if (heroArc1 == true){
     glClear(GL_DEPTH_BUFFER_BIT );
@@ -500,7 +650,8 @@ void drawStuff(){
 	glPopMatrix();
 	
 	mandrake.draw();
-	drawHero();
+	vehicle.draw();
+	//drawHero();
 	myFamiliar.draw(renderMode == GL_SELECT);
 	
 	
@@ -549,6 +700,40 @@ void renderScene(){
 		glPushMatrix();
 		glLoadIdentity();
 		cam.updateView();
+		drawStuff();
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glPopMatrix();
+	}
+	
+	else if (heroArc2 == true){
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glViewport(windowWidth/2, windowHeight/2, windowWidth/2, windowHeight/2);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0, 1, 0, 1);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glBegin(GL_QUADS); {
+			glColor3f(0, 0, 0);
+			glVertex2f(0, 0);
+			glVertex2f(0, 1.0f);
+			glVertex2f(1.0f, 1.0f);
+			glVertex2f(1.0f, 0);
+		} glEnd();
+		glPopMatrix();
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluPerspective(45.0, aspectRatio, 0.1, 100000);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		cam2.updateView();
 		drawStuff();
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
@@ -621,6 +806,8 @@ void myTimer( int value )
 {
   //animate the ship
   mandrake.tick(keysDown);
+  vehicle.tick(keysDown);
+  
   myFamiliar.tick();
 
   //camera mode changes
@@ -674,6 +861,19 @@ void myMenu( int value ) {
       break;
 	}*/
 	break;
+  case 4:
+    heroArc1 = false;
+	heroArc2 = !heroArc2;  //set other views off just in case
+	heroArc3 = false;
+	/*if(cam.getCurrentMode() != FIRST_PERSON){
+      cam.switchMode(FIRST_PERSON);
+	  break;
+	}
+	else if(cam.getCurrentMode() != ARCBALL){	  
+      cam.switchMode(ARCBALL);
+      break;
+	}*/
+	break;
   case 6:
 	if(cam.getCurrentMode() != FREE){
       cam.switchMode(FREE);
@@ -696,14 +896,14 @@ void createMenus() {
 	// TODO #01: Create a Simple Menu
   int id = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
   glutAddMenuEntry("Hero1", 3);
- // glutAddMenuEntry("Hero2", 4);
+  glutAddMenuEntry("Hero2", 4);
  // glutAddMenuEntry("Hero3", 5);
   int otherSubId = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
   glutAddMenuEntry("Hero1", 6);
 //  glutAddMenuEntry("Hero2", 7);
 //  glutAddMenuEntry("Hero3", 8);
   glutCreateMenu(myMenu);
-  glutAddSubMenu("Show/Hide First Person Camera", id);
+  glutAddSubMenu("Toggle Viewport", id);
   //glutAddSubMenu("Put in upper left corner", id);
   glutAddSubMenu("Show/Hide Freecam", otherSubId);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
@@ -790,6 +990,7 @@ int main( int argc, char **argv ) {
 
     //set the camera to watch the ship
     cam.objFollow(&mandrake.location, &mandrake.theta);
+	cam2.objFollow(&vehicle.location, &vehicle.theta);
     //cam.objWatch(&mandrake.location);
 
     // and enter the GLUT loop, never to exit.
