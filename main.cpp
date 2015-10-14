@@ -208,6 +208,196 @@ void drawCity() {
   }
 }
 
+void drawWheels(){
+	glPushMatrix();{
+		glTranslatef(-3.5, 1, 0);
+		glColor3ub(10, 10, 10);
+		glRotatef(90, 0, 1, 0);
+		glRotatef(wheelAngle, 0, 0, 1);
+		gluCylinder(gluNewQuadric(), 1, 1, 2, 15, 15);
+		glTranslatef(0, 0, 2);
+		gluDisk(gluNewQuadric(), 0, 1, 15, 15);
+		glTranslatef(0, 0, 2);
+		gluCylinder(gluNewQuadric(), 1, 1, 2, 15, 15);
+		gluDisk(gluNewQuadric(), 0, 1, 15, 15);
+	}
+	glPopMatrix();	
+	
+}
+
+//the hero function, which calls the wheels function as well.
+void drawHero(){
+	
+	for (int i = -3; i < 3; i++){
+		for (int j = -5; j < 5; j++){
+			glPushMatrix();
+			glTranslatef(0, 2, 0);
+			glColor3ub(152, 60, 175);
+			glTranslatef(i, 0, j);
+			if (i == 0 && j == 2){
+				glColor3ub(0, 60, 175);
+				glRotatef(270, 1, 0, 0);
+				glScalef(1, 1, updown);
+				glutSolidCone(1, 2, 10, 10);
+			}
+			glutSolidCube(1);
+			glPopMatrix();
+		}
+	}
+	glPushMatrix();
+	glTranslatef(0, 0, 2);
+	drawWheels();
+	glTranslatef(0, 0, -6);
+	drawWheels();
+	glPopMatrix();
+	
+}
+
+// Code for drawing my character (Ryan) ----------------------------------------------
+// Code for drawing fire spirit
+void drawSpiritPlume() {
+	// Draw the spirit's plume
+	glPushMatrix();
+	
+	glTranslatef(0, 2, 0);
+	glRotatef(-90.0, 1.0, 0.0, 0.0);
+	
+	glColor3f(1.0, 0.0, 0.0);
+	
+	glutSolidCone(3 + cosf(spiritT), 4 + 2 * sinf(spiritT), 30, 30);
+	
+	glRotatef(90.0, 1.0, 0.0, 0.0);
+	glTranslatef(0, -2, 0);
+	
+	glPopMatrix();	
+}
+
+void drawSpiritBody() {
+	// Function for drawing the spirit's body
+	glPushMatrix();
+	
+	glColor3f(1.0, 0.0, 0.0);
+	glutSolidSphere(3, 30, 30);
+	
+	glPopMatrix();
+}
+
+void drawSpirit() {
+	// Function for drawing spirit
+	glPushMatrix();
+	
+	drawSpiritPlume();
+	drawSpiritBody();
+	
+	glPopMatrix();
+}
+
+// Code for drawing my character 
+void drawBench() {
+	// Function for drawing the bench of the wagon
+	glPushMatrix();
+	glColor3f(0.4, 0.4, 0.4);
+	
+	glScalef(3.2, 1.0, 1);
+	glutSolidCube(1);
+	glScalef(0.3125, 1.0, 1.0);
+	
+	glPopMatrix();
+}
+
+void drawWheel() {
+	// This function simply draws a single wheel
+	glPushMatrix();
+	
+	glColor3f(0.1, 0.1, 0.1);
+	glRotatef(-90.0, 0.0, 1.0, 0.0);
+	glScalef(0.5, 0.5, 0.5);
+	glRotatef(-wheelTheta, 0.0, 0.0, 1.0);
+	glutSolidTorus(2.5, 2, 8, 8);
+	glRotatef(wheelTheta, 0.0, 0.0, 1.0);
+	glScalef(2.0, 2.0, 2.0);
+	glRotatef(90.0, 0.0, 1.0, 0.0);
+	
+	glPopMatrix();	
+}
+
+void drawTheWheels() {
+	// Function for drawing the wheels of the wagon
+	glPushMatrix();
+	
+	// Draw Front Left Wheel
+	glTranslatef(3.0, 0.0, 2.1);
+	drawWheel();
+	
+	// Draw Front Right Wheel
+	glTranslatef(-6.0, 0.0, 0.0);
+	drawWheel();
+	
+	// Draw Rear Right Wheel
+	glTranslatef(0.0, 0.0, -4.2);
+	drawWheel();
+	
+	// Draw Rear Left Wheel
+	glTranslatef(6.0, 0.0, 0.0);
+	drawWheel();
+	glTranslatef(0.0, 0.0, 2.1);
+	
+	glPopMatrix();
+}
+
+void drawBox() {
+	// Function for drawing the main box of the wagon
+	glPushMatrix();
+	
+	// Draw the box
+	glColor3f(0.7, 0.0, 0.0);
+	glTranslatef(0.0, 3.0, 0.0);
+	glScalef(2.0, 1.0, 3.2);
+	glutSolidCube(2);
+	glScalef(0.50, 1.0, 0.3125);
+	
+	// Call the function for drawing the bench
+	glTranslatef(0.0, 1.0, 1.0);
+	drawBench();
+	glTranslatef(0.0, -1.0, -1.0);
+	
+	// Call the function for drawing the wheels
+	glTranslatef(0.0, -1.0, 0.0);
+	drawTheWheels();
+	glTranslatef(0.0, -2.0, 0.0);
+	
+	glPopMatrix();
+}
+
+void drawCharacter() {
+	/* Function that calls the  functions for drawing my 'character,' 
+	 * which will be a wizard's wagon.
+	 */
+	 glPushMatrix();
+	 
+	 // Function for drawing the body of the wagon
+	 drawBox();
+	 
+	 //Function for drawing accompanying fire spirit
+	 Point spiritPoint;
+	 if (controlPoints.size() == 4) {
+		spiritPoint = spiritPoint + evaluateBezierCurve(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3], (float)spiritT / (float)spiritRes);
+	 }
+	 
+	 glTranslatef(spiritPoint.getX(), spiritPoint.getY(), spiritPoint.getZ());
+	 
+	 drawSpirit();
+	 
+	 glTranslatef(-(spiritPoint.getX()), -(spiritPoint.getY()), -(spiritPoint.getZ()));
+	 
+	 glPopMatrix();
+	 
+	 // This function is easily adapted to a more complex character construct.
+}
+
+// End of code for drawing Ryan's character ---------------------------------------
+
+
 // generateEnvironmentDL() /////////////////////////////////////////////////////
 //
 //  This function creates a display list with the code to draw a simple 
