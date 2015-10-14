@@ -1,6 +1,8 @@
 //FPSCounter.h
 //Kevin Carbaugh
 //Calculates and displays average framerate of openGL
+
+#pragma once
 #include <ctime>
 
 class FPSCounter

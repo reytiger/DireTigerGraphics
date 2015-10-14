@@ -2,8 +2,7 @@
 //Defines a set of basic camera modes for a 3D scene
 //Kevin Carbaugh
 
-#ifndef MODALCAMERA_H_INC
-#define MODALCAMERA_H_INC
+#pragma once
 
 //GL inlucdes
 #ifdef __APPLE__			// if compiling on Mac OS
@@ -75,5 +74,3 @@ class Camera
     //The coordinates we are looking at in watch point mode
     Point<GLfloat>* watchPoint;
 };
-
-#endif

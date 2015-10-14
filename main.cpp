@@ -49,6 +49,7 @@ using namespace std;
 #include "Car.h"
 #include "Light.h"
 #include "FPSCounter.h"
+#include "PatchHero.h"
 
 //constants
 #define PICK_TOL 20
@@ -84,10 +85,9 @@ rocketship mandrake(0, 40, 0, 0.3);
 Car vehicle(0, 0, 0);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
+PatchHero* pHero;
 
 BezPatch<GLfloat> testPatch(6, Point<GLfloat>(0.f, 40.f, 0.f));
-
-void renderScene(void); //forward declare to use in our picking mouse event
 
 // getRand() ///////////////////////////////////////////////////////////////////
 //
@@ -207,151 +207,6 @@ void drawCity() {
   }
 }
 
-// Code for drawing my character (Ryan) ----------------------------------------------
-// Code for drawing fire spirit
-void drawSpiritPlume() {
-	// Draw the spirit's plume
-	glPushMatrix();
-	
-	glTranslatef(0, 2, 0);
-	glRotatef(-90.0, 1.0, 0.0, 0.0);
-	
-	glColor3f(1.0, 0.0, 0.0);
-	
-	//glutSolidCone(3 + cosf(spiritT), 4 + 2 * sinf(spiritT), 30, 30);
-	
-	glRotatef(90.0, 1.0, 0.0, 0.0);
-	glTranslatef(0, -2, 0);
-	
-	glPopMatrix();	
-}
-
-void drawSpiritBody() {
-	// Function for drawing the spirit's body
-	glPushMatrix();
-	
-	glColor3f(1.0, 0.0, 0.0);
-	glutSolidSphere(3, 30, 30);
-	
-	glPopMatrix();
-}
-
-void drawSpirit() {
-	// Function for drawing spirit
-	glPushMatrix();
-	
-	drawSpiritPlume();
-	drawSpiritBody();
-	
-	glPopMatrix();
-}
-
-// Code for drawing my character 
-void drawBench() {
-	// Function for drawing the bench of the wagon
-	glPushMatrix();
-	glColor3f(0.4, 0.4, 0.4);
-	
-	glScalef(3.2, 1.0, 1);
-	glutSolidCube(1);
-	glScalef(0.3125, 1.0, 1.0);
-	
-	glPopMatrix();
-}
-
-void drawWheel() {
-	// This function simply draws a single wheel
-	glPushMatrix();
-	
-	glColor3f(0.1, 0.1, 0.1);
-	glRotatef(-90.0, 0.0, 1.0, 0.0);
-	glScalef(0.5, 0.5, 0.5);
-	//glRotatef(-1 * wheelTheta, 0.0, 0.0, 1.0);
-	glutSolidTorus(2.5, 2, 8, 8);
-	//glRotatef(wheelTheta, 0.0, 0.0, 1.0);
-	glScalef(2.0, 2.0, 2.0);
-	glRotatef(90.0, 0.0, 1.0, 0.0);
-	
-	glPopMatrix();	
-}
-
-void drawTheWheels() {
-	// Function for drawing the wheels of the wagon
-	glPushMatrix();
-	
-	// Draw Front Left Wheel
-	glTranslatef(3.0, 0.0, 2.1);
-	drawWheel();
-	
-	// Draw Front Right Wheel
-	glTranslatef(-6.0, 0.0, 0.0);
-	drawWheel();
-	
-	// Draw Rear Right Wheel
-	glTranslatef(0.0, 0.0, -4.2);
-	drawWheel();
-	
-	// Draw Rear Left Wheel
-	glTranslatef(6.0, 0.0, 0.0);
-	drawWheel();
-	glTranslatef(0.0, 0.0, 2.1);
-	
-	glPopMatrix();
-}
-
-void drawBox() {
-	// Function for drawing the main box of the wagon
-	glPushMatrix();
-	
-	// Draw the box
-	glColor3f(0.7, 0.0, 0.0);
-	glTranslatef(0.0, 3.0, 0.0);
-	glScalef(2.0, 1.0, 3.2);
-	glutSolidCube(2);
-	glScalef(0.50, 1.0, 0.3125);
-	
-	// Call the function for drawing the bench
-	glTranslatef(0.0, 1.0, 1.0);
-	drawBench();
-	glTranslatef(0.0, -1.0, -1.0);
-	
-	// Call the function for drawing the wheels
-	glTranslatef(0.0, -1.0, 0.0);
-	drawTheWheels();
-	glTranslatef(0.0, -2.0, 0.0);
-	
-	glPopMatrix();
-}
-/*
-void drawCharacter() {
-	 // Function that calls the  functions for drawing my 'character,' 
-	 // which will be a wizard's wagon.
-	 
-	 glPushMatrix();
-	 
-	 // Function for drawing the body of the wagon
-	 drawBox();
-	 
-	 //Function for drawing accompanying fire spirit
-	 Point spiritPoint;
-	 if (controlPoints.size() == 4) {
-		spiritPoint = spiritPoint + evaluateBezierCurve(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3], (float)spiritT / (float)spiritRes);
-	 }
-	 
-	 glTranslatef(spiritPoint.getX(), spiritPoint.getY(), spiritPoint.getZ());
-	 
-	 drawSpirit();
-	 
-	 glTranslatef(-(spiritPoint.getX()), -(spiritPoint.getY()), -(spiritPoint.getZ()));
-	 
-	 glPopMatrix();
-	 
-	 // This function is easily adapted to a more complex character construct.
-}*/
-
-// End of code for drawing Ryan's character ---------------------------------------
-
-
 // generateEnvironmentDL() /////////////////////////////////////////////////////
 //
 //  This function creates a display list with the code to draw a simple 
@@ -420,34 +275,6 @@ void mouseCallback(int button, int state, int thisX, int thisY) {
 
     //allow passive mouse motion to know if control is held
     ctrlState = glutGetModifiers() == GLUT_ACTIVE_CTRL;
-    
-    //shift + left click to pick
-    if(state == GLUT_DOWN && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
-    {
-      renderMode = GL_SELECT;
-      glRenderMode(renderMode);
-      //pretend to render
-      renderScene();
-      renderMode = GL_RENDER;
-      int nhits = glRenderMode(renderMode); //switch back to rendering normally
-
-      for(int i =0, index = 0; i < nhits; ++i)
-      {
-        //Hit headers
-        unsigned int nitems = pickBuffer[index++];
-        //Skip the Z information
-        index += 2;
-        /*unsigned int zmin = pickBuffer[index++];
-        unsigned int zmax = pickBuffer[index++];*/
-
-        for(unsigned int j = 0; j < nitems; ++j)
-        {
-          unsigned int item = pickBuffer[index++];
-          //this item was on the namestack when the hit occured
-          myFamiliar.path.setSelectedPoint(item);
-        }
-      }
-    }
 }
 
 // mouseMotion() ///////////////////////////////////////////////////////////////
@@ -500,6 +327,7 @@ void initScene()  {
     treeTrunk = gluNewQuadric();
     generateEnvironmentDL();
 
+    pHero = new PatchHero(testPatch, 0.5f, 0.5f);
     //attach our familiar to the ship
     myFamiliar.attachToObj(&mandrake.location, &mandrake.theta);
 
@@ -562,9 +390,14 @@ void renderScene2(void)  {
 
 
     //Render our surface bezier patch
-    //glPushMatrix();
-    //testPatch.render();
-    //glPopMatrix();
+    glPushMatrix();
+    testPatch.render();
+    glPopMatrix();
+
+    //render the hero on the patch
+    glPushMatrix();
+    pHero->render(false);
+    glPopMatrix();
 
     //draw the shipe
     //mandrake.draw();
@@ -751,10 +584,23 @@ void normalKeysDown( unsigned char key, int x, int y ) {
     if(key == 'p' || key == 'P')
       myFamiliar.path.saveControlPoints();
 
+    //change resolution of bezier patch
     if(key == '[')
       testPatch.setResolution(testPatch.getResolution() - 1);
     else if(key == ']')
       testPatch.setResolution(testPatch.getResolution() + 1);
+
+    //move hero around on patch
+    if(key == 'i')
+      pHero->incV(0.05f);
+    else if(key == 'k')
+      pHero->incV(-0.05f);
+
+    if(key == 'l')
+      pHero->incU(0.05f);
+    else if(key == 'h')
+      pHero->incU(-0.05f);
+
 
     keysDown[key] = true;
 }
@@ -796,26 +642,6 @@ void myTimer( int value )
     else if(keysDown['x'] || keysDown['X'])
       cam.move(false);
   }
-
-  //Manipulation of bezier's control points
-  //X and Y axis are controled with vim movement keys (hjkl)
-  //h & l for X axis 
-  if( keysDown['l'] || keysDown['L'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.1f, 0.f, 0.f));
-  else if( keysDown['h'] || keysDown['H'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(-0.1f, 0.f, 0.f));
-
-  //J & K for Y axis
-  if( keysDown['j'] || keysDown['J'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.f, 0.1f, 0.f));
-  else if( keysDown['k'] || keysDown['K'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.f, -0.1f, 0.f));
-
-  //I & U for Z axis
-  if( keysDown['i'] || keysDown['I'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.f, 0.f, 0.1f));
-  else if( keysDown['u'] || keysDown['U'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.f, 0.f, -0.1f));
 
   //update the camera's view and redraw
   cam.updateView();

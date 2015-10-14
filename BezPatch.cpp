@@ -32,11 +32,11 @@ void SubPatch<T>::genAxes(const std::vector<Point<T> >& ctrlPoints)
   {
     for(int j = 0; j < 4; ++j)
       arr[j] = ctrlPoints.at(i * 4 + j);
-    uAxis.beziers[i] = Bezier<T>(resolution, arr);
+    uAxis.beziers[i] = SubCurve<T>(resolution, arr);
 
     for(int j = 0; j < 4; ++j)
       arr[j] = ctrlPoints.at(i + 4 * j);
-    vAxis.beziers[i] = Bezier<T>(resolution, arr);
+    vAxis.beziers[i] = SubCurve<T>(resolution, arr);
   }
 }
 
@@ -44,7 +44,7 @@ void SubPatch<T>::genAxes(const std::vector<Point<T> >& ctrlPoints)
 //Generates a Bezier curve from the control points
 //in either the u or v axis, at time = t
 template <typename T>
-Bezier<T> SubPatch<T>::evalAxis(float t, bool u)
+SubCurve<T> SubPatch<T>::evalAxis(float t, bool u)
 {
   Point<T> arr[4];
   for(int i = 0; i < 4; ++i)
@@ -54,7 +54,7 @@ Bezier<T> SubPatch<T>::evalAxis(float t, bool u)
     else //producing a u curve
       arr[i] = vAxis.beziers[i].evaluateCurve(t);
   }
-  return Bezier<T>(resolution, arr);
+  return SubCurve<T>(resolution, arr);
 }
 
 template class SubPatch<float>; //special instance of the template
@@ -126,8 +126,8 @@ void BezPatch<T>::render()
     for(int i = 0; i < 4; ++i)
     {
       //draw the u curves so we can see control cages
-      s.uAxis.beziers[i].render(false);
-      s.vAxis.beziers[i].render(false);
+      s.uAxis.beziers[i].render(true, false);
+      s.vAxis.beziers[i].render(true, false);
     }
 
     float u = 0.f;
@@ -141,20 +141,22 @@ void BezPatch<T>::render()
     float ambcol[4] = {0.2f, 0.2f, 0.2f, 1.f};
     glEnable(GL_LIGHTING);
 
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffcol);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, speccol);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambcol);
+
+    //iterate through all subpatches
     //iterate through the u axis at the given resolution
     for(int i = 0; i < resolution; ++i)
     {
-      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffcol);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, speccol);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambcol);
       //inverse of resolution will tell us how what % of the curve
       //length is each quad's dimensions
       u = i * step; 
 
       //calculate the control points for two v beziers
       //which will determine points along each edge of the quad
-      Bezier<T> vBezNear = s.evalAxis(u);
-      Bezier<T> vBezFar = s.evalAxis(u + step);
+      SubCurve<T> vBezNear = s.evalAxis(u);
+      SubCurve<T> vBezFar = s.evalAxis(u + step);
 
       //printf("u: %3.2f, u + stp: %3.2f, step: %3.2f, res: %d\n", u, u + step, step, resolution);
       glPushMatrix();
@@ -164,14 +166,15 @@ void BezPatch<T>::render()
           v = j * step;
           //printf("\tv: %3.2f\n", v);
           //Draw a quad on the surface, a pair of vertices at a time
+          
+          //set this vertex's normal
           Vector<T> norm = getNormal(p, u, v);
           glNormalVector(norm);
-          //glVertexPoint(vBezFar.getPercentageAlongCurve(v));
+          //Evaluate a point on the surface
           glVertexPoint(vBezFar.evaluateCurve(v));
 
           norm = getNormal(p, u + step, v);
           glNormalVector(norm);
-          //glVertexPoint(vBezNear.getPercentageAlongCurve(v));
           glVertexPoint(vBezNear.evaluateCurve(v));
         }
         glEnd();
@@ -220,10 +223,29 @@ Vector<T> BezPatch<T>::getNormal(int subPatch, float u, float v)
   SubPatch<T>& s = subPatches.at(subPatch);
   
   //generate the two perpendicular curves
-  Bezier<T> vBez = s.evalAxis(u, true);
-  Bezier<T> uBez = s.evalAxis(v, false);
+  SubCurve<T> vBez = s.evalAxis(u, true);
+  SubCurve<T> uBez = s.evalAxis(v, false);
 
   return Vector<T>::normalize(vBez.getTangent(v).cross(uBez.getTangent(u)));
+}
+
+
+//evaluates a point on the patch in uv coordinates
+template <typename T>
+Point<T> BezPatch<T>::getCoord(int subPatch, float u, float v)
+{
+  if(!pointsLoaded) return Point<T>(0., 0., 0.);
+
+  SubPatch<T>& s = subPatches.at(subPatch);
+  SubCurve<T> vBez = s.evalAxis(u, true);
+  return vBez.getPercentageAlongCurve(v);
+}
+
+
+template <typename T>
+void BezPatch<T>::placeOnSurface(SceneElement& elem, int subPatch, float u, float v)
+{
+  elem.setPosition(getCoord(subPatch, u, v));
 }
 
 

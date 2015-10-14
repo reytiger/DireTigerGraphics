@@ -24,7 +24,7 @@ void Familiar::draw(bool selectionMode)
       glRotatef(*rot, 0, 1, 0);
     }
 
-    path.render(selectionMode);
+    path.render();
 
     glColor3f(1.f, 0.f, 0.f);
     glPushMatrix();
