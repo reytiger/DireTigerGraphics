@@ -24,7 +24,8 @@ class Car
 
     Point<GLfloat> location; //coordinates in scene
     float theta; // The rocket's heading, in degrees
-	int value, updown, wheelAngle;
+	float value, updown;
+	int wheelAngle;
 
     void drawHero();
 	void drawWheels();

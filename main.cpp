@@ -62,7 +62,6 @@ static float aspectRatio;
 int updown = 1;
 bool heroArc1 = false, heroArc2 = false, heroArc3 = false;
 
-float wheelAngle = 0;
 
 GLint leftMouseButton, rightMouseButton;    // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
@@ -207,7 +206,6 @@ void drawCity() {
     }
   }
 }
-
 
 // generateEnvironmentDL() /////////////////////////////////////////////////////
 //
@@ -450,7 +448,7 @@ void renderScene2(void)  {
     glPopMatrix();
 	
     mandrake.draw();
-	vehicle.drawHero();
+	vehicle.draw();
 	
 if (heroArc1 == true){
     glClear(GL_DEPTH_BUFFER_BIT );
@@ -477,13 +475,17 @@ if (heroArc1 == true){
 void drawStuff(){
 	
 	glPushMatrix();
+    testPatch.render();
+    glPopMatrix();
+	
+	glPushMatrix();
 	glCallList(environmentDL);
 	glPopMatrix();
 	
 	mandrake.draw();
-	vehicle.drawHero();
-	//drawHero();
+	vehicle.draw();
 	myFamiliar.draw(renderMode == GL_SELECT);
+	
 	
 	
 }
@@ -703,15 +705,8 @@ void myMenu( int value ) {
     heroArc1 = false;
 	heroArc2 = !heroArc2;  //set other views off just in case
 	heroArc3 = false;
-	/*if(cam.getCurrentMode() != FIRST_PERSON){
-      cam.switchMode(FIRST_PERSON);
-	  break;
-	}
-	else if(cam.getCurrentMode() != ARCBALL){	  
-      cam.switchMode(ARCBALL);
-      break;
-	}*/
-	break;
+		break;
+		
   case 6:
 	if(cam.getCurrentMode() != FREE){
       cam.switchMode(FREE);
@@ -721,6 +716,25 @@ void myMenu( int value ) {
       cam.switchMode(ARCBALL);
       break;
 	}
+	
+	case 9:
+	  if(cam.getCurrentMode() != FIRST_PERSON){
+        cam.switchMode(FIRST_PERSON);
+	    break;
+	  }
+	  else if(cam.getCurrentMode() != ARCBALL){	  
+        cam.switchMode(ARCBALL);
+        break;
+	  }
+	case 10:
+      if(cam2.getCurrentMode() != FIRST_PERSON){
+	    cam2.switchMode(FIRST_PERSON);
+	    break;
+      }
+      else if(cam2.getCurrentMode() != ARCBALL){	  
+	    cam2.switchMode(ARCBALL);
+	    break;
+      }
   }
 }
 
@@ -740,9 +754,13 @@ void createMenus() {
   glutAddMenuEntry("Hero1", 6);
 //  glutAddMenuEntry("Hero2", 7);
 //  glutAddMenuEntry("Hero3", 8);
+  int thirdSubID = glutCreateMenu(myMenu);
+  glutAddMenuEntry("Hero1", 9);
+  glutAddMenuEntry("Hero2", 10);
+//  glutAddMenuEntry("Hero3", 11);
   glutCreateMenu(myMenu);
-  glutAddSubMenu("Show/Hide First Person Camera", id);
-  //glutAddSubMenu("Put in upper left corner", id);
+  glutAddSubMenu("Toggle Viewport", id);
+  glutAddSubMenu("Toggle First Person", thirdSubID);
   glutAddSubMenu("Show/Hide Freecam", otherSubId);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
   glutAddMenuEntry("Show/Hide Curve", 1);

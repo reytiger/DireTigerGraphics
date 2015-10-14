@@ -4,7 +4,7 @@ Car::Car(double startX, double startY, double startZ) : location(startX, startY,
 {
   wheelAngle = 0;
   updown = 1;
-  value = 1;
+  value = 1.0f;
 
 }
 
@@ -72,8 +72,6 @@ void Car::tick(bool* keysDown)
     move(false);
   }
 
-  if(!keysDown[0x73] && !keysDown[0x77])
-
   //Rotation
   //d
   if(keysDown[0x64])
@@ -132,12 +130,16 @@ void Car::move(bool forward)
 //as well as managine attributes of each matrix stack frame
 void Car::draw()
 {
+	glPushMatrix();
+	glTranslatePoint(location);
+	glRotatef(theta, 0, 1, 0);
 	updown += value;
 	glutPostRedisplay();
-	if (updown <= 1){
-		value = 1;
-	} else if (updown >= 2){
-		value = -1;
+	if (updown <= 1.0f){
+		value = 0.01;
+	} else if (updown >= 2.0f){
+		value = -0.01;
 	}
 	drawHero();
+	glPopMatrix();
 }
