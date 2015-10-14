@@ -353,11 +353,21 @@ bool Bezier<T>::loadControlPoints(const char* const filename)
     return false;
   }
 
+  int nPoints;
   int nSubCurves;
-  fscanf(csv, "%d ", &nSubCurves);
-  if(nSubCurves < 1)
+  fscanf(csv, "%d ", &nPoints);
+
+  if(nPoints < 4)
   {
-    fprintf(stderr, "%d is too few subcurves to specify a Bezier curve\n", nSubCurves);
+    fprintf(stderr, "%d is too few points to specify a Bezier curve\n", nPoints);
+    return false;
+  }
+
+  //calculate the number of subcurves
+  nSubCurves = 1 + (nPoints - 4) / 3;
+  if((nPoints - 4) % 3 != 0)
+  {
+    fprintf(stderr, "Number of points expected to be 4, 7, 10, 13, 16..., got %d, %d subCurves\n", nPoints, nSubCurves);
     return false;
   }
 
@@ -366,10 +376,23 @@ bool Bezier<T>::loadControlPoints(const char* const filename)
   double startDist = 0.0;
 
   Point<T> arr[4];
-  for(int i = 0; i < nSubCurves; ++i)
+
+  //read the first point
+  for(int j = 0; j < 4; ++j)
   {
-    //read 4 points for each subcurve
-    for(int j = 0; j < 4; ++j)
+    //read a point
+    fscanf(csv, "%f, %f, %f ", &x, &y, &z);
+    printf("Read point %f %f %f\n", x, y, z);
+    arr[j] = Point<GLfloat>(x, y, z);
+  }
+  subCurves.push_back(SubCurve<T>(resolution, arr, startDist));
+  startDist = subCurves.at(0).getEndDistance();
+
+  for(int i = 1; i < nSubCurves; ++i)
+  {
+    arr[0] = arr[3]; //reuse the last point of the previous subcurve
+    //read 3 points for each subcurve
+    for(int j = 1; j < 4; ++j)
     {
       //read a point
       fscanf(csv, "%f, %f, %f ", &x, &y, &z);
@@ -380,6 +403,7 @@ bool Bezier<T>::loadControlPoints(const char* const filename)
     //add the new subcurve to the list
     subCurves.push_back(SubCurve<T>(resolution, arr, startDist));
 
+    //set the distance offset from the last subcurve end
     startDist = subCurves.at(i).getEndDistance();
   }
 

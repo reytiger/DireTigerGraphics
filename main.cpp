@@ -89,8 +89,6 @@ PatchHero* pHero;
 
 BezPatch<GLfloat> testPatch(6, Point<GLfloat>(0.f, 40.f, 0.f));
 
-void renderScene(void); //forward declare to use in our picking mouse event
-
 // getRand() ///////////////////////////////////////////////////////////////////
 //
 //  Simple helper function to return a random number between 0.0f and 1.0f.
@@ -887,7 +885,7 @@ void registerCallbacks() {
     glutMotionFunc(     mouseMotion        );
 
     // display callbacks
-    glutDisplayFunc(    renderScene2       );
+    glutDisplayFunc(    renderScene        );
     glutReshapeFunc(    resizeWindow       );
 
     // timer callback
