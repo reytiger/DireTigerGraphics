@@ -415,7 +415,7 @@ void initScene()  {
 //      front buffer (what the user sees).
 //
 ////////////////////////////////////////////////////////////////////////////////
-void renderScene(void)  {
+void renderScene2(void)  {
     // clear the render buffer
     glDrawBuffer( GL_BACK );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -437,6 +437,7 @@ void renderScene(void)  {
       glPushMatrix(); //preserve current projection
       glLoadIdentity();
       //set up our pick matrix to be an NxN area around the mouse
+	  glViewport(0, 0, windowWidth, windowHeight);
       gluPickMatrix((GLdouble) mouseX, (GLdouble) (windowHeight - mouseY), PICK_TOL, PICK_TOL, viewport);
       //This call might be redundant
       gluPerspective(45.0, aspectRatio, 0.1, 100000);
@@ -446,9 +447,7 @@ void renderScene(void)  {
       //init the name stack
       glInitNames();
       glPushName(0xFFFFFFFF); //unused first entry so we have a place to load names onto
-	  if (heroArc1 == true){
-		//create the side viewport
-	  }
+	  
     }
     else
     {
@@ -460,13 +459,13 @@ void renderScene(void)  {
 
 
     //Render our surface bezier patch
-    glPushMatrix();
-    testPatch.render();
-    glPopMatrix();
+    //glPushMatrix();
+    //testPatch.render();
+    //glPopMatrix();
 
     //draw the shipe
-    mandrake.draw();
-	drawHero();
+    //mandrake.draw();
+	//drawHero();
     //render our familiar on its bezier curve
     myFamiliar.draw(renderMode == GL_SELECT); //inline expression, not assignment
 
@@ -481,12 +480,111 @@ void renderScene(void)  {
 
       return;
     }
-
+	
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glViewport(0, 0, windowWidth, windowHeight);
+	gluPerspective(45.0, aspectRatio, 0.1, 100000);
+    glPushMatrix();
+    testPatch.render();
+    glPopMatrix();
+	
+    mandrake.draw();
+	drawHero();
+	
+if (heroArc1 == true){
+    glClear(GL_DEPTH_BUFFER_BIT );
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		glViewport(windowWidth/2, windowHeight/2, windowWidth/2, windowHeight/2);
+		gluPerspective(45.0, aspectRatio, 0.1, 100000);
+		glMatrixMode(GL_MODELVIEW);
+		memset(pickBuffer, 0, PICK_BUFFER_SIZE); //zero our pick buffer to be safe
+		//init the name stack
+		glInitNames();
+		glPushName(0xFFFFFFFF); //unused first entry so we have a place to load names onto
+	  }
+	  
+	  
     
     //2D drawing
     fpsCounter.onRender(windowWidth, windowHeight);
     //push the back buffer to the screen
     glutSwapBuffers();
+}
+
+void drawStuff(){
+	
+	glPushMatrix();
+	glCallList(environmentDL);
+	glPopMatrix();
+	
+	mandrake.draw();
+	drawHero();
+	myFamiliar.draw(renderMode == GL_SELECT);
+	
+	
+}
+
+
+void renderScene(){
+    // clear the render buffer
+    glDrawBuffer( GL_BACK );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glViewport(0, 0, windowWidth, windowHeight);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluPerspective(45.0, aspectRatio, 0.1, 100000);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	cam.updateView();
+	drawStuff();
+	
+	if (heroArc1 == true){
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glViewport(windowWidth/2, windowHeight/2, windowWidth/2, windowHeight/2);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0, 1, 0, 1);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glBegin(GL_QUADS); {
+			glColor3f(0, 0, 0);
+			glVertex2f(0, 0);
+			glVertex2f(0, 1.0f);
+			glVertex2f(1.0f, 1.0f);
+			glVertex2f(1.0f, 0);
+		} glEnd();
+		glPopMatrix();
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluPerspective(45.0, aspectRatio, 0.1, 100000);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		cam.updateView();
+		drawStuff();
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glPopMatrix();
+	}
+	
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	
+	glutSwapBuffers();
+	
 }
 
 
@@ -592,15 +690,25 @@ void myMenu( int value ) {
     break;
   case 2:
     exit(EXIT_SUCCESS);
+  case 3:
+	heroArc1 = !heroArc1;
+	heroArc2 = false;  //set other views off just in case
+	heroArc3 = false;
+	/*if(cam.getCurrentMode() != FIRST_PERSON){
+      cam.switchMode(FIRST_PERSON);
+	  break;
+	}
+	else if(cam.getCurrentMode() != ARCBALL){	  
+      cam.switchMode(ARCBALL);
+      break;
+	}*/
+	break;
   case 6:
 	if(cam.getCurrentMode() != FREE){
       cam.switchMode(FREE);
 	  break;
 	}
-	else if(cam.getCurrentMode() != ARCBALL){
-	  heroArc1 = !heroArc1;
-	  heroArc2 = false;  //set other views off just in case
-	  heroArc3 = false;
+	else if(cam.getCurrentMode() != ARCBALL){	  
       cam.switchMode(ARCBALL);
       break;
 	}
@@ -615,8 +723,8 @@ void myMenu( int value ) {
 ////////////////////////////////////////////////////////////////////////////////
 void createMenus() {
 	// TODO #01: Create a Simple Menu
- // int id = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
-  //glutAddMenuEntry("Hero1", 3);
+  int id = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
+  glutAddMenuEntry("Hero1", 3);
  // glutAddMenuEntry("Hero2", 4);
  // glutAddMenuEntry("Hero3", 5);
   int otherSubId = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
@@ -624,7 +732,8 @@ void createMenus() {
 //  glutAddMenuEntry("Hero2", 7);
 //  glutAddMenuEntry("Hero3", 8);
   glutCreateMenu(myMenu);
-  //glutAddSubMenu("Show/Hide First Person Camera", id);
+  glutAddSubMenu("Show/Hide First Person Camera", id);
+  //glutAddSubMenu("Put in upper left corner", id);
   glutAddSubMenu("Show/Hide Freecam", otherSubId);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
   glutAddMenuEntry("Show/Hide Curve", 1);
