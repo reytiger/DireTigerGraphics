@@ -40,6 +40,7 @@ class BezPatch
 
     Vector<T> getNormal(int subPatch, float u, float v);
     Point<T> getCoord(int subPatch, float u, float v);
+    Basis<T> getBasis(int subPatch, float u, float v);
 
     void placeOnSurface(SceneElement& elem, int subPatch, float u, float v);
 

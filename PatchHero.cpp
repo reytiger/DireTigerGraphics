@@ -67,7 +67,10 @@ void PatchHero::render(bool selectionMode)
   //set the render context to the proper location
   glEmplaceObject();
 
-  glOrientObject();
+  Basis<float> basis = myPatch.getBasis(0, u, v);
+  glRotateToBasis(basis);
+
+  //glOrientObject();
 
   //offset off the surface
   //glTranslatefVector(normal * 0.5f);

@@ -14,14 +14,16 @@ class Vector
     //class level
     static Vector<T> normalize(const Vector<T>& in);
 
-    Vector<T> cross(const Vector<T>& other);
+    Vector<T> cross(const Vector<T>& other) const;
     T dot(const Vector<T>& other);
     double angleTo(const Vector<T>& other);
     Vector<T>& operator*=(const T& rhs);
     T magnitude() const;
+    //instance level
+    void normalize();
 	
     void draw();
-    void drawNormalized();
+    void drawNormalized() const;
 
     //Component getters
     const T& getX() const;
@@ -29,15 +31,26 @@ class Vector
     const T& getZ() const;
 
   private:
-    T determinant(T a, T b, T c, T d);
+    T determinant(T a, T b, T c, T d) const;
 
     T x, y, z;
+};
+
+
+template <typename T>
+struct Basis
+{
+  Vector<T> x;
+  Vector<T> y;
+  Vector<T> z;
 };
 
 //OpenGL helpers
 template <typename T> void glNormalVector(Vector<T>& vec);
 template <typename T> void glRotatefVector(const float, const Vector<T>& axis);
 template <typename T> void glTranslatefVector(const Vector<T>& vec);
+template <typename T> void glRotateToBasis(Vector<T>& z); //orients along a given vector
+template <typename T> void glRotateToBasis(const Basis<T>& b); //orients to a given basis
 
 //Operators
 template <typename T> Vector<T> operator-(const Vector<T>& a);

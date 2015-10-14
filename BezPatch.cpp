@@ -245,20 +245,22 @@ Point<T> BezPatch<T>::getCoord(int subPatch, float u, float v)
 
 
 template <typename T>
+Basis<T> BezPatch<T>::getBasis(int subPatch, float u, float v)
+{
+  struct Basis<T> b;
+  SubPatch<T>& s = subPatches.at(subPatch);
+  b.x = s.evalAxis(u, true).getTangent(v);
+  b.y = s.evalAxis(v, false).getTangent(u);
+  b.z = Vector<T>::normalize((b.x).cross(b.y));
+
+  return b;
+}
+
+
+template <typename T>
 void BezPatch<T>::placeOnSurface(SceneElement& elem, int subPatch, float u, float v)
 {
   elem.setPosition(getCoord(subPatch, u, v) + origin);
-
-  //generate an orientation for the place on the patch
-  Orientation<T> ori;
-  
-  Vector<T> norm = getNormal(subPatch, u, v);
-
-  ori.setPitch(norm.angleTo(Orientation<T>::pitchAxis));
-  ori.setRoll(norm.angleTo(Orientation<T>::rollAxis));
-  ori.setYaw(norm.angleTo(Orientation<T>::yawAxis));
-
-  elem.setOrientation(ori);
 }
 
 

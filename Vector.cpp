@@ -65,6 +65,64 @@ void glTranslatefVector(const Vector<T>& vec)
 
 
 template <typename T>
+void glRotateToBasis(Vector<T>& z)
+{
+  Vector<T> x = Vector<T>(0., 1., 0.).cross(z);
+  if(x.magnitude() == 0.)
+    x = Vector<T>(1., 0., 0.).cross(z);
+
+  Vector<T> y = z.cross(x);
+  Basis<T> b;
+  b.x = x;
+  b.y = y;
+  b.z = z;
+
+  glRotateToBasis(b);
+
+}
+
+
+template <typename T>
+void glRotateToBasis(const Basis<T>& b)
+{
+  Vector<T> x = b.x;
+  Vector<T> y = b.y;
+  Vector<T> z = b.z;
+
+  x.normalize();
+  y.normalize();
+  z.normalize();
+
+  //we now have 3 basis vectors. Construct a rotation matrix
+  GLfloat rotMat[16];
+  
+  //set w dimension
+  for(int i = 0; i < 3; ++i)
+  {
+    rotMat[i * 4 + 3] = 0; //bottom left row
+    rotMat[i + 12] = 0; //top right column
+  }
+  rotMat[15] = 1; //w
+
+  //Set the vectors as the components of the matrix
+  rotMat[0]  = x.getX();
+  rotMat[1]  = x.getY();
+  rotMat[2]  = x.getZ();
+
+  rotMat[4]  = y.getX();
+  rotMat[5]  = y.getY();
+  rotMat[6]  = y.getZ();
+
+  rotMat[8]  = z.getX();
+  rotMat[9]  = z.getY();
+  rotMat[10] = z.getZ();
+
+  //apply the rotation
+  glMultMatrixf(rotMat);
+}
+
+
+template <typename T>
 void Vector<T>::draw()
 {
   glDisable(GL_LIGHTING);
@@ -77,7 +135,7 @@ void Vector<T>::draw()
 
 
 template <typename T>
-void Vector<T>::drawNormalized()
+void Vector<T>::drawNormalized() const
 {
   normalize(*this).draw();
 }
@@ -100,7 +158,7 @@ Vector<T> Vector<T>::normalize(const Vector& in)
 
 //cross product
 template <typename T>
-Vector<T> Vector<T>::cross(const Vector<T>& other)
+Vector<T> Vector<T>::cross(const Vector<T>& other) const
 {
   return Vector<T>(determinant(y, z, other.y, other.z),
                    -determinant(x, z, other.x, other.z),
@@ -136,12 +194,22 @@ T Vector<T>::magnitude() const
   return sqrt(x * x + y * y + z * z);
 }
 
+
+template <typename T>
+void Vector<T>::normalize()
+{
+  T mag = magnitude();
+  x /= mag;
+  y /= mag;
+  z /= mag;
+}
+
 //helper function for computing cross products
 //Format is as follows:
 //| a b |
 //| c d |
 template <typename T>
-T Vector<T>::determinant(T a, T b, T c, T d)
+T Vector<T>::determinant(T a, T b, T c, T d) const
 {
   return a * d - b * c;
 }
@@ -163,3 +231,5 @@ template Vector<float> operator-<float>(const Vector<float>&);
 template void glNormalVector(Vector<float>&);
 template void glRotatefVector(const float, const Vector<float>&);
 template void glTranslatefVector(const Vector<float>&);
+template void glRotateToBasis(Vector<float>&);
+template void glRotateToBasis(const Basis<float>&);
