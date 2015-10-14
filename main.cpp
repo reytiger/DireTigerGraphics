@@ -51,9 +51,6 @@ using namespace std;
 #include "FPSCounter.h"
 #include "PatchHero.h"
 
-//constants
-#define PICK_TOL 20
-#define PICK_BUFFER_SIZE  64
 
 // GLOBAL VARIABLES ////////////////////////////////////////////////////////////
 
@@ -72,9 +69,6 @@ Light* mainLight = NULL;
 FPSCounter fpsCounter;
 Camera cam2(ARCBALL, 0.0, 2 * M_PI / 3, 20);
 GLint menuId;				    // handle for our menu
-
-unsigned int pickBuffer[PICK_BUFFER_SIZE];
-int renderMode;
 
 bool keysDown[256];
 bool ctrlState;
@@ -358,35 +352,10 @@ void renderScene2(void)  {
     //count frames
     //cam.resetPerspective(aspectRatio); //setup projection matrix back to 3D
 
-    if(renderMode == GL_SELECT)
-    {
-      int viewport[4];
-      glGetIntegerv(GL_VIEWPORT, viewport);
-      
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix(); //preserve current projection
-      glLoadIdentity();
-      //set up our pick matrix to be an NxN area around the mouse
-	  glViewport(0, 0, windowWidth, windowHeight);
-      gluPickMatrix((GLdouble) mouseX, (GLdouble) (windowHeight - mouseY), PICK_TOL, PICK_TOL, viewport);
-      //This call might be redundant
-      gluPerspective(45.0, aspectRatio, 0.1, 100000);
-      glMatrixMode(GL_MODELVIEW);
-
-      memset(pickBuffer, 0, PICK_BUFFER_SIZE); //zero our pick buffer to be safe
-      //init the name stack
-      glInitNames();
-      glPushName(0xFFFFFFFF); //unused first entry so we have a place to load names onto
-	  
-    }
-    else
-    {
-      //only bother drawing the grid in rendering mode
-      glPushMatrix();
-        glCallList(environmentDL);
-      glPopMatrix();
-    }
-
+    //only bother drawing the grid in rendering mode
+    glPushMatrix();
+      glCallList(environmentDL);
+    glPopMatrix();
 
     //Render our surface bezier patch
     glPushMatrix();
@@ -399,51 +368,11 @@ void renderScene2(void)  {
     glPopMatrix();
 
     //draw the shipe
-    //mandrake.draw();
-	//drawHero();
-    //render our familiar on its bezier curve
-    myFamiliar.draw(renderMode == GL_SELECT); //inline expression, not assignment
-
-
-    //We don't need to bother rendering anything but the control points in select mode
-    if(renderMode == GL_SELECT)
-    {
-      //return to the previous perspective
-      glMatrixMode(GL_PROJECTION);
-      glPopMatrix(); 
-      glMatrixMode(GL_MODELVIEW);
-
-      return;
-    }
-	
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glViewport(0, 0, windowWidth, windowHeight);
-	gluPerspective(45.0, aspectRatio, 0.1, 100000);
-    glPushMatrix();
-    testPatch.render();
-    glPopMatrix();
-	
     mandrake.draw();
-	vehicle.draw();
-	
-if (heroArc1 == true){
-    glClear(GL_DEPTH_BUFFER_BIT );
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		glViewport(windowWidth/2, windowHeight/2, windowWidth/2, windowHeight/2);
-		gluPerspective(45.0, aspectRatio, 0.1, 100000);
-		glMatrixMode(GL_MODELVIEW);
-		memset(pickBuffer, 0, PICK_BUFFER_SIZE); //zero our pick buffer to be safe
-		//init the name stack
-		glInitNames();
-		glPushName(0xFFFFFFFF); //unused first entry so we have a place to load names onto
-	  }
-	  
-	  
-    
+    //render our familiar on its bezier curve
+    myFamiliar.draw(false); //inline expression, not assignment
+
+
     //2D drawing
     fpsCounter.onRender(windowWidth, windowHeight);
     //push the back buffer to the screen
@@ -454,7 +383,7 @@ void drawStuff(){
 	
 	glPushMatrix();
     testPatch.render();
-    glPopMatrix();
+  glPopMatrix();
 	
 	glPushMatrix();
 	glCallList(environmentDL);
@@ -462,7 +391,7 @@ void drawStuff(){
 	
 	mandrake.draw();
 	vehicle.draw();
-	myFamiliar.draw(renderMode == GL_SELECT);
+	myFamiliar.draw(false);
 	
 	
 	
@@ -583,16 +512,6 @@ void normalKeysDown( unsigned char key, int x, int y ) {
     else if(key == ']')
       testPatch.setResolution(testPatch.getResolution() + 1);
 
-    //move hero around on patch
-    if(key == 'i')
-      pHero->incV(0.05f);
-    else if(key == 'k')
-      pHero->incV(-0.05f);
-
-    if(key == 'l')
-      pHero->incU(0.05f);
-    else if(key == 'h')
-      pHero->incU(-0.05f);
 
 
     keysDown[key] = true;
@@ -636,7 +555,18 @@ void myTimer( int value )
       cam.move(false);
   }
 
-  //update the camera's view and redraw
+  //move hero around on patch
+  if(keysDown['i'])
+    pHero->incV(0.01f);
+  else if(keysDown['k'])
+    pHero->incV(-0.01f);
+
+  if(keysDown['l'])
+    pHero->incU(0.01f);
+  else if(keysDown['j'])
+    pHero->incU(-0.01f);
+
+  //update the camera's view and ask for a redraw
   cam.updateView();
   // register a new timer callback
   glutTimerFunc( 1000.0f / 60.0f, myTimer, 0 );
@@ -756,7 +686,7 @@ void registerCallbacks() {
     glutMotionFunc(     mouseMotion        );
 
     // display callbacks
-    glutDisplayFunc(    renderScene        );
+    glutDisplayFunc(    renderScene2       );
     glutReshapeFunc(    resizeWindow       );
 
     // timer callback
@@ -792,10 +722,6 @@ int main( int argc, char **argv ) {
     glutInitWindowPosition( 50, 50 );
     glutInitWindowSize( windowWidth, windowHeight );
     glutCreateWindow( "DireTiger" );
-
-    //Specify the picking array
-    glSelectBuffer(PICK_BUFFER_SIZE, pickBuffer);
-    renderMode = GL_RENDER;
 
     fprintf(stdout, "[INFO]: /-------------------------------------------------------------\\\n");
     fprintf(stdout, "[INFO]: | OpenGL Information                                          |\n");

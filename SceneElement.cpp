@@ -12,42 +12,30 @@
 
 //ctors
 SceneElement::SceneElement() : position(Point<float>(0.f, 0.f, 0.f)),
-                               normal(Vector<float>(0.f, 1.f, 0.f)),
-                               theta(0.f) {};
+                               orientation(0.f, 0.f, 0.f) {};
 
-SceneElement::SceneElement(const Point<float>& pos, const Vector<float>& norm, const float heading) :
-                           position(pos), normal(norm), theta(heading) {};
+SceneElement::SceneElement(const Point<float>& pos, const Orientation<float>& ori) :
+                           position(pos), orientation(ori) {};
 
 Point<float> SceneElement::getPosition() const
 {
   return position;
 }
 
-Vector<float> SceneElement::getNormal() const
+Orientation<float> SceneElement::getOrientation() const
 {
-  return normal;
+  return orientation;
 }
 
-
-float SceneElement::getHeading() const
-{
-  return theta;
-}
 
 void SceneElement::setPosition(const Point<float>& pos)
 {
   position = pos;
 }
 
-void SceneElement::setNormal(const Vector<float>& norm)
+void SceneElement::setOrientation(const Orientation<float>& ori)
 {
-  normal = norm;
-}
-
-
-void SceneElement::setHeading(const float degrees)
-{
-  theta = degrees;
+  orientation = ori;
 }
 
 
@@ -58,5 +46,19 @@ void SceneElement::glEmplaceObject()
   glMatrixMode(GL_MODELVIEW);
   //This should probably accept the scene up vector from our main, but
   //having it hardcoded doesn't seem unreasonable
-  glRotatefVector(theta, normal);
+  glTranslatePoint(position);
 }
+
+
+void SceneElement::glOrientObject()
+{
+  glMatrixMode(GL_MODELVIEW);
+  orientation.glOrient();
+  //TODO:
+  //rotate the object so it has the correct tilt
+  //glRotatefVector(-normal.angleTo(up), normal.cross(up));
+  //and rotate around the normal by our heading
+  //glRotatefVector(theta, normal);
+}
+
+const Vector<float> SceneElement::up = Vector<float>(0.f, 1.f, 0.f);

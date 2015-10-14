@@ -181,6 +181,7 @@ void BezPatch<T>::render()
       glPopMatrix();
 
 
+      /*
       glPushMatrix();
       glTranslatef(0.f, 1.f, 0.f); //slightly offset so we can see
       //iterate through v again, drawing the computed tangent
@@ -198,7 +199,7 @@ void BezPatch<T>::render()
           
           //blue v tangent
           glColor3f(0.f, 0.f, 1.f);
-          (s.evalAxis(v, false).getTangentByPercentage(u)).drawNormalized();
+          //(s.evalAxis(v, false).getTangentByPercentage(u)).drawNormalized();
           glColor3f(1.f, 0.f, 0.f);
           //draw the normal
           getNormal(p, u, v).draw();
@@ -208,10 +209,11 @@ void BezPatch<T>::render()
         glColor3f(0.f, 1.f, 0.f);
         glTranslatePoint(vBezFar.getPercentageAlongCurve(v));
         //draw the tangent that is computed at this point
-          (vBezFar.getTangentByPercentage(v)).drawNormalized();
+          //(vBezFar.getTangentByPercentage(v)).drawNormalized();
         glPopMatrix();
       }
       glPopMatrix();
+      */
     }
   }
 }
@@ -245,7 +247,18 @@ Point<T> BezPatch<T>::getCoord(int subPatch, float u, float v)
 template <typename T>
 void BezPatch<T>::placeOnSurface(SceneElement& elem, int subPatch, float u, float v)
 {
-  elem.setPosition(getCoord(subPatch, u, v));
+  elem.setPosition(getCoord(subPatch, u, v) + origin);
+
+  //generate an orientation for the place on the patch
+  Orientation<T> ori;
+  
+  Vector<T> norm = getNormal(subPatch, u, v);
+
+  ori.setPitch(norm.angleTo(Orientation<T>::pitchAxis));
+  ori.setRoll(norm.angleTo(Orientation<T>::rollAxis));
+  ori.setYaw(norm.angleTo(Orientation<T>::yawAxis));
+
+  elem.setOrientation(ori);
 }
 
 

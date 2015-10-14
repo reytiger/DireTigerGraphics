@@ -11,6 +11,8 @@
 	#include <GL/glu.h>
 #endif
 
+#define RAD2DEG 180/M_PI
+
 template <typename T>
 Vector<T> operator-(const Vector<T>& a)
 {
@@ -52,6 +54,13 @@ template <typename T>
 void glRotatefVector(const float degrees, const Vector<T>& axis)
 {
   glRotatef(degrees, axis.getX(), axis.getY(), axis.getZ());
+}
+
+
+template <typename T>
+void glTranslatefVector(const Vector<T>& vec)
+{
+  glTranslatef(vec.getX(), vec.getY(), vec.getZ());
 }
 
 
@@ -110,7 +119,7 @@ T Vector<T>::dot(const Vector<T>& other)
 template <typename T>
 double Vector<T>::angleTo(const Vector<T>& other)
 {
-  return acos(this->dot(other) / (this->magnitude() * other.magnitude()));
+  return RAD2DEG * acos(this->dot(other) / (this->magnitude() * other.magnitude()));
 }
 
 template <typename T>
@@ -153,3 +162,4 @@ template class Vector<float>;
 template Vector<float> operator-<float>(const Vector<float>&);
 template void glNormalVector(Vector<float>&);
 template void glRotatefVector(const float, const Vector<float>&);
+template void glTranslatefVector(const Vector<float>&);

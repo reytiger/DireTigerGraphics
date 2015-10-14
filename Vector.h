@@ -29,14 +29,16 @@ class Vector
     const T& getZ() const;
 
   private:
-    T x, y, z;
-
     T determinant(T a, T b, T c, T d);
+
+    T x, y, z;
 };
 
 //OpenGL helpers
 template <typename T> void glNormalVector(Vector<T>& vec);
 template <typename T> void glRotatefVector(const float, const Vector<T>& axis);
+template <typename T> void glTranslatefVector(const Vector<T>& vec);
+
 //Operators
 template <typename T> Vector<T> operator-(const Vector<T>& a);
 

@@ -46,7 +46,6 @@ void PatchHero::setV(const float newV)
 }
 
 
-
 void PatchHero::incU(const float amt)
 {
   setU(u + amt);
@@ -67,6 +66,11 @@ void PatchHero::render(bool selectionMode)
 
   //set the render context to the proper location
   glEmplaceObject();
+
+  glOrientObject();
+
+  //offset off the surface
+  //glTranslatefVector(normal * 0.5f);
 
   //draw the hero
   glutSolidCube(1);
