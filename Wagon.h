@@ -25,8 +25,8 @@ class Wagon {
 	void drawWagon();
 	void updateCharacterLeft();
 	void updateCharacterRight();
-	void updateWheelsForward();
-	void updateWheelsBackward();
+	void updateCharacterForward();
+	void updateCharacterBackward();
 	// void rotate()? glRotatef(characterTheta*(180.0/M_PI), 0, 1, 0);
 	
 };
