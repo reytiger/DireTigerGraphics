@@ -465,8 +465,9 @@ void mouseMotion(int x, int y)
   {
     if(ctrlState)
       cam.adjustDistFromOrigin(y - mouseY);
-    else
+    else if(cam.getCurrentMode() != FIRST_PERSON){
       cam.mouseRotate(x - mouseX, mouseY - y);
+	}
   }
   cam.updateView();
 
@@ -648,6 +649,9 @@ void renderScene(){
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
+	if(cam.getCurrentMode() == FIRST_PERSON){
+	  cam.mouseRotate(vehicle.theta, 0);
+	}
 	cam.updateView();
 	drawStuff();
 	
@@ -677,6 +681,9 @@ void renderScene(){
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glLoadIdentity();
+		if(cam.getCurrentMode() == FIRST_PERSON){
+	      cam.mouseRotate(vehicle.theta, 0);
+		}
 		cam.updateView();
 		drawStuff();
 		glPopMatrix();
@@ -865,6 +872,7 @@ void myMenu( int value ) {
 	case 9:
 	  if(cam.getCurrentMode() != FIRST_PERSON){
         cam.switchMode(FIRST_PERSON);
+		cam.mouseRotate(vehicle.theta, 0);
 	    break;
 	  }
 	  else if(cam.getCurrentMode() != ARCBALL){	  
@@ -874,6 +882,7 @@ void myMenu( int value ) {
 	case 10:
       if(cam2.getCurrentMode() != FIRST_PERSON){
 	    cam2.switchMode(FIRST_PERSON);
+		cam2.mouseRotate(vehicle.theta, 0);
 	    break;
       }
       else if(cam2.getCurrentMode() != ARCBALL){	  

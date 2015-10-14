@@ -58,7 +58,7 @@ void Camera::updateView()
 }
 
 
-void Camera::mouseRotate(int mouseDeltaX, double mouseDeltaY)
+void Camera::mouseRotate(float mouseDeltaX, double mouseDeltaY)
 {
   switch(currentMode)
   {
@@ -72,6 +72,11 @@ void Camera::mouseRotate(int mouseDeltaX, double mouseDeltaY)
   case ARCBALL:
     theta = thetaRef + mouseDeltaX * 0.001;
     phi = phiRef + mouseDeltaY * 0.001;
+
+    break;
+	
+  case FIRST_PERSON:
+    theta = thetaRef - mouseDeltaX * .0175;
 
     break;
   //can't rotate in other modes
