@@ -1,6 +1,7 @@
 //Color.h - Defines an RGBA color type for use with
 //openGl funcfv() type calls
 
+#pragma once
 class Color
 {
   public:

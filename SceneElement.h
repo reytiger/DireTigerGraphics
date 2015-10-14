@@ -2,6 +2,7 @@
 //  Mainly to be used as an abstract base class for inheritence and operations on any object
 //Kevin Carbaugh
 
+#pragma once
 #include "Point.h"
 #include "Vector.h"
 
@@ -22,7 +23,8 @@ class SceneElement
     void glEmplaceObject();
 
     virtual void render(bool SelectionMode) = 0;
-  private:
+
+  protected:
     Point<float> position;
     Vector<float> normal; //where is up for this model?
     float theta; //rotation about normal to determine heading

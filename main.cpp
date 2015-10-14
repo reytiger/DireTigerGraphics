@@ -48,6 +48,7 @@ using namespace std;
 #include "rocketship.h"
 #include "Light.h"
 #include "FPSCounter.h"
+#include "PatchHero.h"
 
 //constants
 #define PICK_TOL 20
@@ -83,6 +84,7 @@ GLuint environmentDL;
 rocketship mandrake(0, 40, 0, 0.3);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
+PatchHero* pHero;
 
 BezPatch<GLfloat> testPatch(6, Point<GLfloat>(0.f, 40.f, 0.f));
 
@@ -318,34 +320,6 @@ void mouseCallback(int button, int state, int thisX, int thisY) {
 
     //allow passive mouse motion to know if control is held
     ctrlState = glutGetModifiers() == GLUT_ACTIVE_CTRL;
-    
-    //shift + left click to pick
-    if(state == GLUT_DOWN && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
-    {
-      renderMode = GL_SELECT;
-      glRenderMode(renderMode);
-      //pretend to render
-      renderScene();
-      renderMode = GL_RENDER;
-      int nhits = glRenderMode(renderMode); //switch back to rendering normally
-
-      for(int i =0, index = 0; i < nhits; ++i)
-      {
-        //Hit headers
-        unsigned int nitems = pickBuffer[index++];
-        //Skip the Z information
-        index += 2;
-        /*unsigned int zmin = pickBuffer[index++];
-        unsigned int zmax = pickBuffer[index++];*/
-
-        for(unsigned int j = 0; j < nitems; ++j)
-        {
-          unsigned int item = pickBuffer[index++];
-          //this item was on the namestack when the hit occured
-          myFamiliar.path.setSelectedPoint(item);
-        }
-      }
-    }
 }
 
 // mouseMotion() ///////////////////////////////////////////////////////////////
@@ -397,6 +371,7 @@ void initScene()  {
     treeTrunk = gluNewQuadric();
     generateEnvironmentDL();
 
+    pHero = new PatchHero(testPatch, 0.5f, 0.5f);
     //attach our familiar to the ship
     myFamiliar.attachToObj(&mandrake.location, &mandrake.theta);
 
@@ -459,9 +434,12 @@ void renderScene2(void)  {
 
 
     //Render our surface bezier patch
-    //glPushMatrix();
-    //testPatch.render();
-    //glPopMatrix();
+    glPushMatrix();
+    testPatch.render();
+    glPopMatrix();
+
+    //render the hero on the patch
+    pHero->render(false);
 
     //draw the shipe
     //mandrake.draw();
@@ -603,10 +581,23 @@ void normalKeysDown( unsigned char key, int x, int y ) {
     if(key == 'p' || key == 'P')
       myFamiliar.path.saveControlPoints();
 
+    //change resolution of bezier patch
     if(key == '[')
       testPatch.setResolution(testPatch.getResolution() - 1);
     else if(key == ']')
       testPatch.setResolution(testPatch.getResolution() + 1);
+
+    //move hero around on patch
+    if(key == 'i')
+      pHero->incV(0.05f);
+    else if(key == 'k')
+      pHero->incV(-0.05f);
+
+    if(key == 'l')
+      pHero->incU(0.05f);
+    else if(key == 'h')
+      pHero->incU(-0.05f);
+
 
     keysDown[key] = true;
 }
@@ -646,26 +637,6 @@ void myTimer( int value )
     else if(keysDown['x'] || keysDown['X'])
       cam.move(false);
   }
-
-  //Manipulation of bezier's control points
-  //X and Y axis are controled with vim movement keys (hjkl)
-  //h & l for X axis 
-  if( keysDown['l'] || keysDown['L'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.1f, 0.f, 0.f));
-  else if( keysDown['h'] || keysDown['H'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(-0.1f, 0.f, 0.f));
-
-  //J & K for Y axis
-  if( keysDown['j'] || keysDown['J'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.f, 0.1f, 0.f));
-  else if( keysDown['k'] || keysDown['K'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.f, -0.1f, 0.f));
-
-  //I & U for Z axis
-  if( keysDown['i'] || keysDown['I'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.f, 0.f, 0.1f));
-  else if( keysDown['u'] || keysDown['U'] )
-    myFamiliar.path.moveSelectedPoint(Vector<GLfloat>(0.f, 0.f, -0.1f));
 
   //update the camera's view and redraw
   cam.updateView();
@@ -758,7 +729,7 @@ void registerCallbacks() {
     glutMotionFunc(     mouseMotion        );
 
     // display callbacks
-    glutDisplayFunc(    renderScene        );
+    glutDisplayFunc(    renderScene2       );
     glutReshapeFunc(    resizeWindow       );
 
     // timer callback

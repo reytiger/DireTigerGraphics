@@ -1,4 +1,7 @@
 //Light.h - defines an openGL light for use in scenes
+//Kevin Carbaugh
+
+#pragma once
 #include "Point.h"
 #include "Vector.h"
 #include "Color.h"
