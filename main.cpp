@@ -207,151 +207,6 @@ void drawCity() {
   }
 }
 
-// Code for drawing my character (Ryan) ----------------------------------------------
-// Code for drawing fire spirit
-void drawSpiritPlume() {
-	// Draw the spirit's plume
-	glPushMatrix();
-	
-	glTranslatef(0, 2, 0);
-	glRotatef(-90.0, 1.0, 0.0, 0.0);
-	
-	glColor3f(1.0, 0.0, 0.0);
-	
-	//glutSolidCone(3 + cosf(spiritT), 4 + 2 * sinf(spiritT), 30, 30);
-	
-	glRotatef(90.0, 1.0, 0.0, 0.0);
-	glTranslatef(0, -2, 0);
-	
-	glPopMatrix();	
-}
-
-void drawSpiritBody() {
-	// Function for drawing the spirit's body
-	glPushMatrix();
-	
-	glColor3f(1.0, 0.0, 0.0);
-	glutSolidSphere(3, 30, 30);
-	
-	glPopMatrix();
-}
-
-void drawSpirit() {
-	// Function for drawing spirit
-	glPushMatrix();
-	
-	drawSpiritPlume();
-	drawSpiritBody();
-	
-	glPopMatrix();
-}
-
-// Code for drawing my character 
-void drawBench() {
-	// Function for drawing the bench of the wagon
-	glPushMatrix();
-	glColor3f(0.4, 0.4, 0.4);
-	
-	glScalef(3.2, 1.0, 1);
-	glutSolidCube(1);
-	glScalef(0.3125, 1.0, 1.0);
-	
-	glPopMatrix();
-}
-
-void drawWheel() {
-	// This function simply draws a single wheel
-	glPushMatrix();
-	
-	glColor3f(0.1, 0.1, 0.1);
-	glRotatef(-90.0, 0.0, 1.0, 0.0);
-	glScalef(0.5, 0.5, 0.5);
-	//glRotatef(-1 * wheelTheta, 0.0, 0.0, 1.0);
-	glutSolidTorus(2.5, 2, 8, 8);
-	//glRotatef(wheelTheta, 0.0, 0.0, 1.0);
-	glScalef(2.0, 2.0, 2.0);
-	glRotatef(90.0, 0.0, 1.0, 0.0);
-	
-	glPopMatrix();	
-}
-
-void drawTheWheels() {
-	// Function for drawing the wheels of the wagon
-	glPushMatrix();
-	
-	// Draw Front Left Wheel
-	glTranslatef(3.0, 0.0, 2.1);
-	drawWheel();
-	
-	// Draw Front Right Wheel
-	glTranslatef(-6.0, 0.0, 0.0);
-	drawWheel();
-	
-	// Draw Rear Right Wheel
-	glTranslatef(0.0, 0.0, -4.2);
-	drawWheel();
-	
-	// Draw Rear Left Wheel
-	glTranslatef(6.0, 0.0, 0.0);
-	drawWheel();
-	glTranslatef(0.0, 0.0, 2.1);
-	
-	glPopMatrix();
-}
-
-void drawBox() {
-	// Function for drawing the main box of the wagon
-	glPushMatrix();
-	
-	// Draw the box
-	glColor3f(0.7, 0.0, 0.0);
-	glTranslatef(0.0, 3.0, 0.0);
-	glScalef(2.0, 1.0, 3.2);
-	glutSolidCube(2);
-	glScalef(0.50, 1.0, 0.3125);
-	
-	// Call the function for drawing the bench
-	glTranslatef(0.0, 1.0, 1.0);
-	drawBench();
-	glTranslatef(0.0, -1.0, -1.0);
-	
-	// Call the function for drawing the wheels
-	glTranslatef(0.0, -1.0, 0.0);
-	drawTheWheels();
-	glTranslatef(0.0, -2.0, 0.0);
-	
-	glPopMatrix();
-}
-/*
-void drawCharacter() {
-	 // Function that calls the  functions for drawing my 'character,' 
-	 // which will be a wizard's wagon.
-	 
-	 glPushMatrix();
-	 
-	 // Function for drawing the body of the wagon
-	 drawBox();
-	 
-	 //Function for drawing accompanying fire spirit
-	 Point spiritPoint;
-	 if (controlPoints.size() == 4) {
-		spiritPoint = spiritPoint + evaluateBezierCurve(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3], (float)spiritT / (float)spiritRes);
-	 }
-	 
-	 glTranslatef(spiritPoint.getX(), spiritPoint.getY(), spiritPoint.getZ());
-	 
-	 drawSpirit();
-	 
-	 glTranslatef(-(spiritPoint.getX()), -(spiritPoint.getY()), -(spiritPoint.getZ()));
-	 
-	 glPopMatrix();
-	 
-	 // This function is easily adapted to a more complex character construct.
-}*/
-
-// End of code for drawing Ryan's character ---------------------------------------
-
-
 // generateEnvironmentDL() /////////////////////////////////////////////////////
 //
 //  This function creates a display list with the code to draw a simple 
@@ -821,15 +676,8 @@ void myMenu( int value ) {
     heroArc1 = false;
 	heroArc2 = !heroArc2;  //set other views off just in case
 	heroArc3 = false;
-	/*if(cam.getCurrentMode() != FIRST_PERSON){
-      cam.switchMode(FIRST_PERSON);
-	  break;
-	}
-	else if(cam.getCurrentMode() != ARCBALL){	  
-      cam.switchMode(ARCBALL);
-      break;
-	}*/
-	break;
+		break;
+		
   case 6:
 	if(cam.getCurrentMode() != FREE){
       cam.switchMode(FREE);
@@ -839,6 +687,25 @@ void myMenu( int value ) {
       cam.switchMode(ARCBALL);
       break;
 	}
+	
+	case 9:
+	  if(cam.getCurrentMode() != FIRST_PERSON){
+        cam.switchMode(FIRST_PERSON);
+	    break;
+	  }
+	  else if(cam.getCurrentMode() != ARCBALL){	  
+        cam.switchMode(ARCBALL);
+        break;
+	  }
+	case 10:
+      if(cam2.getCurrentMode() != FIRST_PERSON){
+	    cam2.switchMode(FIRST_PERSON);
+	    break;
+      }
+      else if(cam2.getCurrentMode() != ARCBALL){	  
+	    cam2.switchMode(ARCBALL);
+	    break;
+      }
   }
 }
 
@@ -858,9 +725,13 @@ void createMenus() {
   glutAddMenuEntry("Hero1", 6);
 //  glutAddMenuEntry("Hero2", 7);
 //  glutAddMenuEntry("Hero3", 8);
+  int thirdSubID = glutCreateMenu(myMenu);
+  glutAddMenuEntry("Hero1", 9);
+  glutAddMenuEntry("Hero2", 10);
+//  glutAddMenuEntry("Hero3", 11);
   glutCreateMenu(myMenu);
   glutAddSubMenu("Toggle Viewport", id);
-  //glutAddSubMenu("Put in upper left corner", id);
+  glutAddSubMenu("Toggle First Person", thirdSubID);
   glutAddSubMenu("Show/Hide Freecam", otherSubId);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
   glutAddMenuEntry("Show/Hide Curve", 1);
