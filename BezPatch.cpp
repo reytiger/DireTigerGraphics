@@ -181,9 +181,8 @@ void BezPatch<T>::render()
       glPopMatrix();
 
 
-      /*
       glPushMatrix();
-      glTranslatef(0.f, 1.f, 0.f); //slightly offset so we can see
+      glTranslatef(0.f, 0.2f, 0.f); //slightly offset so we can see
       //iterate through v again, drawing the computed tangent
       for(int j = 0; j <= resolution; ++j)
       {
@@ -199,7 +198,7 @@ void BezPatch<T>::render()
           
           //blue v tangent
           glColor3f(0.f, 0.f, 1.f);
-          //(s.evalAxis(v, false).getTangentByPercentage(u)).drawNormalized();
+          (s.evalAxis(v, false).getTangentByPercentage(u)).drawNormalized();
           glColor3f(1.f, 0.f, 0.f);
           //draw the normal
           getNormal(p, u, v).draw();
@@ -209,11 +208,10 @@ void BezPatch<T>::render()
         glColor3f(0.f, 1.f, 0.f);
         glTranslatePoint(vBezFar.getPercentageAlongCurve(v));
         //draw the tangent that is computed at this point
-          //(vBezFar.getTangentByPercentage(v)).drawNormalized();
+          (vBezFar.getTangentByPercentage(v)).drawNormalized();
         glPopMatrix();
       }
       glPopMatrix();
-      */
     }
   }
 }
@@ -275,6 +273,13 @@ template <typename T>
 void BezPatch<T>::setOrigin(const Point<T>& p)
 {
   origin = p;
+}
+
+
+template <typename T>
+int BezPatch<T>::getNSubPatches()
+{
+  return numPatches;
 }
 
 

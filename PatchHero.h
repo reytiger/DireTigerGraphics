@@ -7,17 +7,20 @@
 class PatchHero : public SceneElement
 {
   public:
-    PatchHero(BezPatch<float>& patch, const float u, const float v);
+    PatchHero(BezPatch<float>& patch, int subPatch, const float u, const float v);
 
     void setU(const float newU);
     void setV(const float newV);
 
     void incU(const float amt);
     void incV(const float amt);
+    bool nextSubPatch();
+    bool prevSubPatch();
 
     void render(bool selectionMode);
   private:
     BezPatch<float>& myPatch;
+    int subPatch;
     float u;
     float v;
 };

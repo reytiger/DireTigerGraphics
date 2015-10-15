@@ -46,6 +46,7 @@ class BezPatch
 
     //getter
     int getResolution();
+    int getNSubPatches();
 
     //setter
     void setOrigin(const Point<T>& p);

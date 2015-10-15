@@ -10,39 +10,66 @@
 	#include <GL/glu.h>
 #endif
 
-PatchHero::PatchHero(BezPatch<float>& patch, const float u, const float v) : myPatch(patch), u(u), v(v) {};
+PatchHero::PatchHero(BezPatch<float>& patch, int subPatch, const float u, const float v) :
+                     myPatch(patch), subPatch(subPatch), u(u), v(v) {};
 
 
 void PatchHero::setU(const float newU)
 {
+  float tmp = newU;
   if(newU < 0.f)
   {
-    u = 0.f;
-    return;
+    do
+    {
+      //don't go any further if this is the 0th patch
+      if(prevSubPatch())
+        tmp++;
+      else
+        tmp = 0.f;
+    }
+    while(tmp < 0.f);
   }
   else if(newU > 1.f)
   {
-    u = 1.f;
-    return;
+    do
+    {
+      //
+      if(nextSubPatch())
+        tmp--;
+      else
+        tmp = 1.f;
+    }
+    while(tmp > 1.f);
   }
-  else
-    u = newU;
+  u = tmp;
 }
 
 
 void PatchHero::setV(const float newV)
 {
+  float tmp = newV;
   if(newV < 0.f)
   {
-    v = 0.f;
-    return;
+    do
+    {
+      if(prevSubPatch())
+        tmp++;
+      else break;
+    }
+    while(tmp < 0.f);
   }
   else if(newV > 1.f)
   {
-    v = 1.f;
-    return;
+    do
+    {
+      if(nextSubPatch())
+        tmp--;
+      else
+        tmp = 1.f;
+    }
+    while(tmp > 1.f);
   }
-  v = newV;
+  v = tmp;
 }
 
 
@@ -57,12 +84,37 @@ void PatchHero::incV(const float amt)
   setV(v + amt);
 }
 
+
+//indicates if the next subpatch was reached
+bool PatchHero::nextSubPatch()
+{
+  //subpatch is an index, so offset
+  if(myPatch.getNSubPatches() - 1 > subPatch)
+  {
+    ++subPatch;
+    return true;
+  }
+  return false;
+}
+
+
+bool PatchHero::prevSubPatch()
+{
+  if(subPatch > 0)
+  {
+    --subPatch;
+    return true;
+  }
+  return false;
+}
+
+
 void PatchHero::render(bool selectionMode)
 {
   if(selectionMode) return;
 
   //update the position on the patch
-  myPatch.placeOnSurface(*this, 0, u, v);
+  myPatch.placeOnSurface(*this, subPatch, u, v);
 
   //set the render context to the proper location
   glEmplaceObject();

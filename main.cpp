@@ -321,7 +321,7 @@ void initScene()  {
     treeTrunk = gluNewQuadric();
     generateEnvironmentDL();
 
-    pHero = new PatchHero(testPatch, 0.5f, 0.5f);
+    pHero = new PatchHero(testPatch, 0, 0.5f, 0.5f);
     //attach our familiar to the ship
     myFamiliar.attachToObj(&mandrake.location, &mandrake.theta);
 
@@ -563,15 +563,24 @@ void myTimer( int value )
   }
 
   //move hero around on patch
+  //between patches
+  if(keysDown['u'])
+    pHero->prevSubPatch();
+  else if(keysDown['o'])
+    pHero->nextSubPatch();
+
+  //V axis
   if(keysDown['i'])
     pHero->incV(0.01f);
   else if(keysDown['k'])
     pHero->incV(-0.01f);
 
+  //U axis
   if(keysDown['l'])
     pHero->incU(0.01f);
   else if(keysDown['j'])
     pHero->incU(-0.01f);
+
 
   //update the camera's view and ask for a redraw
   cam.updateView();
