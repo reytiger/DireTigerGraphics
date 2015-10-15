@@ -106,9 +106,11 @@ void Wagon::drawWagon() {
 	 
 	 // Function for drawing the body of the wagon
 	 
-	 /// ADD ROTATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 drawBox();
-	 
+	 {
+		glRotatef(0.0, characterTheta, 0.0, 1.0);
+		drawBox();
+		glRotatef(0.0, -characterTheta, 0.0, 1.0);
+	 }
 	 glPopMatrix();
 	 
 	 // This function is easily adapted to a more complex character construct.
@@ -116,34 +118,29 @@ void Wagon::drawWagon() {
 
 void Wagon::tick(bool* keysDown) {
 	// Function for updating character
+	float movementConstant = 0.5f;
 	
-	// Needs to be set up yet
-}
-
-void updateCharacterForward() {
-	// Function for moving the wagon forward
-	if (abs(characterX + movementConstant*(sinf(characterTheta))) < 45 && abs(characterZ + movementConstant*(cosf(characterTheta))) < 45) {
+    if (keysDown[0x71] || keysDown[0x51] || key == 27) {
+        exit(0);
+	}
+	else if (keysDown[0x77] || keysDown[0x57]) {
+		if (abs(characterX + movementConstant*(sinf(characterTheta))) < 45 && abs(characterZ + movementConstant*(cosf(characterTheta))) < 45) {
 			characterX += movementConstant*(sinf(characterTheta));
 			characterZ += movementConstant*(cosf(characterTheta));
 			wheelTheta += 10;
+		}
 	}
-}
-
-void Wagon::updateCharacterBackward() {
-	// Function for moving the wagon backward
-	if (abs(characterX - movementConstant*(sinf(characterTheta))) < 45 && abs(characterZ - movementConstant*(cosf(characterTheta))) < 45) {
+	else if (keysDown[0x73] || keysDown[0x53]) {
+		if (abs(characterX - movementConstant*(sinf(characterTheta))) < 45 && abs(characterZ - movementConstant*(cosf(characterTheta))) < 45) {
 			characterX -= movementConstant*(sinf(characterTheta));
 			characterZ -= movementConstant*(cosf(characterTheta));
 			wheelTheta -= 10;
+		}
 	}
-}
-
-void Wagon::updateCharacterLeft() {
-	// Function for turning left
-	characterTheta += M_PI / 20.0f;
-}
-
-void Wagon::updateCharacterRight() {
-	// Function for turning right
-	characterTheta -= M_PI / 20.0f;
+	else if (keysDown[0x61] || keysDown[0x41]) {
+		characterTheta += M_PI / 20.0f;
+	}
+	else if (keysDown[0x64] || key[0x44]) {
+		characterTheta -= M_PI / 20.0f;
+	}
 }
