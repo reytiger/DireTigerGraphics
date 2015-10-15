@@ -2,23 +2,8 @@
 #include "Wagon.h"
 
 // Constructors
-
-Wagon::Wagon() {
-	location.push_back(0.0);
-	location.push_back(0.0);
-	location.push_back(0.0);
-	
+Wagon::Wagon(float x, float y, float z) : location(x, y, z) {
 	theta = 0;
-	wheelTheta = 0;
-}
-
-// Constructors
-Wagon::Wagon(float x, float y, float z, float th) {
-	location.push_back(x);
-	location.push_back(y);
-	location.push_back(z);
-	
-	theta = th;
 	wheelTheta = 0;
 }
 
@@ -136,24 +121,23 @@ void Wagon::draw() {
 
 void Wagon::timetick(bool* keysDown) {
 	// Function for updating character
-	if (abs(characterX + movementConstant*(sinf(theta))) < 45 && abs(characterZ + movementConstant*(cosf(theta))) < 45) {
-			characterX += movementConstant*(sinf(theta));
-			characterZ += movementConstant*(cosf(theta));
-	}
+	float movementConstant = 0.5f;
+	float gridSize = 100.0;
+	
     if (keysDown[0x71] || keysDown[0x51]) {
         exit(0);
 	}
 	else if (keysDown[0x77] || keysDown[0x57]) {
-		if (abs(characterX + movementConstant*(sinf(theta))) < 45 && abs(characterZ + movementConstant*(cosf(theta))) < 45) {
-			characterX += movementConstant*(sinf(theta));
-			characterZ += movementConstant*(cosf(theta));
+		if (abs(location.getX() + movementConstant*(sinf(theta))) < gridSize && abs(location.getZ() + movementConstant*(cosf(theta))) < gridSize) {
+			location.setX(location.getX() + movementConstant*(sinf(theta)));
+			location.setZ(location.getZ() + movementConstant*(cosf(theta)));
 			wheelTheta += 10;
 		}
 	}
 	else if (keysDown[0x73] || keysDown[0x53]) {
-		if (abs(characterX - movementConstant*(sinf(theta))) < 45 && abs(characterZ - movementConstant*(cosf(theta))) < 45) {
-			characterX -= movementConstant*(sinf(theta));
-			characterZ -= movementConstant*(cosf(theta));
+		if (abs(location.getX() - movementConstant*(sinf(theta))) < gridSize && abs(location.getZ() - movementConstant*(cosf(theta))) < gridSize) {
+			location.setX(location.getX() - movementConstant*(sinf(theta)));
+			location.setZ(location.getZ() - movementConstant*(cosf(theta)));
 			wheelTheta -= 10;
 		}
 	}

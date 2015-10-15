@@ -13,13 +13,11 @@
 
 class Wagon {
   public:
-	float characterX, characterY, characterZ;   // character position in cartesian coordinates
 	Point<GLfloat> location;
 	float theta;                       // Character bearing in spherical coordinates
 	float wheelTheta;                           // Wheel rotation variable
 	
-	Wagon();
-	Wagon(float x, float y, float z, float th);
+	Wagon(float x, float y, float z);
 	static const float movementConstant = 0.5f;
 	
 	void drawBench();

@@ -78,7 +78,7 @@ bool ctrlState;
 GLuint environmentDL;
 rocketship mandrake(0, 40, 0, 0.3);
 Car vehicle(0, 0, 0);
-Wagon wagon(25.0f, 0.0f, 25.0f, 0.0f);
+Wagon wagon(25.0f, 0.0f, 25.0f);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 PatchHero* pHero;
