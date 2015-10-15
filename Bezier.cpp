@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "Bezier.h"
 
 #ifdef __APPLE__			// if compiling on Mac OS
 	#include <GLUT/glut.h>
@@ -9,9 +9,6 @@
 	#include <GL/gl.h>
 	#include <GL/glu.h>
 #endif
-
-#include "Bezier.h"
-
 
 //ctors
 template <typename T>
@@ -150,11 +147,8 @@ template <typename T>
 void SubCurve<T>::getCtrlPoints(Point<T> (&arr)[4])
 {
   //write the point data into the provided array
-  if(sizeof(arr) / sizeof(T) == 4)
-    for(int i = 0; i < 4; ++i)
-      arr[i] = controlPoints.at(i);
-  else
-    fprintf(stderr, "Size of provided control point array is wrong size!\n");
+  for(int i = 0; i < 4; ++i)
+    arr[i] = controlPoints.at(i);
 }
 
 
@@ -309,6 +303,20 @@ void Bezier<T>::render()
 }
 
 
+template <typename T>
+Point<T> Bezier<T>::evaluateCurves(float t)
+{
+  if(t < 0.f)
+    t = 0.f;
+  int subCurv = t; //intentional truncation
+  //scale the time to [0-1]
+  while(t > 1.f)
+    t--;
+
+  return subCurves.at(subCurv).evaluateCurve(t);
+}
+
+
 //Returns the point that is a percentage of the total curve length
 template <typename T>
 Point<T> Bezier<T>::getPercentageAlongCurve(float percentage)
@@ -352,10 +360,19 @@ bool Bezier<T>::loadControlPoints(const char* const filename)
     fprintf(stderr, "Error opening %s\n", filename);
     return false;
   }
+  bool res = loadControlPoints(csv);
+  fclose(csv);
 
+  return res;
+}
+
+
+template <typename T>
+bool Bezier<T>::loadControlPoints(FILE* fd)
+{
   int nPoints;
   int nSubCurves;
-  fscanf(csv, "%d ", &nPoints);
+  fscanf(fd, "%d ", &nPoints);
 
   if(nPoints < 4)
   {
@@ -381,7 +398,7 @@ bool Bezier<T>::loadControlPoints(const char* const filename)
   for(int j = 0; j < 4; ++j)
   {
     //read a point
-    fscanf(csv, "%f, %f, %f ", &x, &y, &z);
+    fscanf(fd, "%f, %f, %f ", &x, &y, &z);
     printf("Read point %f %f %f\n", x, y, z);
     arr[j] = Point<GLfloat>(x, y, z);
   }
@@ -395,7 +412,7 @@ bool Bezier<T>::loadControlPoints(const char* const filename)
     for(int j = 1; j < 4; ++j)
     {
       //read a point
-      fscanf(csv, "%f, %f, %f ", &x, &y, &z);
+      fscanf(fd, "%f, %f, %f ", &x, &y, &z);
       printf("Read point %f %f %f\n", x, y, z);
       arr[j] = Point<GLfloat>(x, y, z);
     }
@@ -406,8 +423,6 @@ bool Bezier<T>::loadControlPoints(const char* const filename)
     //set the distance offset from the last subcurve end
     startDist = subCurves.at(i).getEndDistance();
   }
-
-  fclose(csv);
   
   return true;
 }
@@ -433,6 +448,12 @@ void Bezier<T>::saveControlPoints()
       fprintf(fd, "%f, %f, %f\n", p[j].getX(), p[j].getY(), p[j].getZ());
   }
   fclose(fd);
+}
+
+template <typename T>
+int Bezier<T>::getNumSubCurves()
+{
+  return subCurves.size();
 }
 
 

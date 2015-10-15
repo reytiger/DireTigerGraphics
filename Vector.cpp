@@ -65,11 +65,14 @@ void glTranslatefVector(const Vector<T>& vec)
 
 
 template <typename T>
-void glRotateToBasis(Vector<T>& z)
+void glRotateToBasis(Vector<T>& z, const Vector<T>& translation)
 {
-  Vector<T> x = Vector<T>(0., 1., 0.).cross(z);
-  if(x.magnitude() == 0.)
+  //cross with the world up vector to get the x axis
+  Vector<T> x = z.cross(Vector<T>(0., 1., 0.));
+  if(x.magnitude() == 0.) //if they are parallel
     x = Vector<T>(1., 0., 0.).cross(z);
+
+  x.normalize();
 
   Vector<T> y = z.cross(x);
   Basis<T> b;
@@ -77,13 +80,13 @@ void glRotateToBasis(Vector<T>& z)
   b.y = y;
   b.z = z;
 
-  glRotateToBasis(b);
+  glRotateToBasis(b, translation);
 
 }
 
 
 template <typename T>
-void glRotateToBasis(const Basis<T>& b)
+void glRotateToBasis(const Basis<T>& b, const Vector<T>& translation)
 {
   Vector<T> x = b.x;
   Vector<T> y = b.y;
@@ -100,8 +103,12 @@ void glRotateToBasis(const Basis<T>& b)
   for(int i = 0; i < 3; ++i)
   {
     rotMat[i * 4 + 3] = 0; //bottom left row
-    rotMat[i + 12] = 0; //top right column
   }
+  
+  //set the 4th dimension column
+  rotMat[12] = translation.getX() * y.getX();
+  rotMat[13] = translation.getY() * y.getY();
+  rotMat[14] = translation.getZ() * y.getZ();
   rotMat[15] = 1; //w
 
   //Set the vectors as the components of the matrix
@@ -149,7 +156,7 @@ Vector<T>::Vector(const T magX, const T magY, const T magZ) : x(magX), y(magY), 
 
 
 template <typename T>
-Vector<T> Vector<T>::normalize(const Vector& in)
+Vector<T> Vector<T>::normalize(const Vector<T>& in)
 {
   T mag = in.magnitude();
   return Vector<T>(in.x / mag, in.y / mag, in.z / mag);
@@ -177,7 +184,7 @@ T Vector<T>::dot(const Vector<T>& other)
 template <typename T>
 double Vector<T>::angleTo(const Vector<T>& other)
 {
-  return RAD2DEG * acos(this->dot(other) / (this->magnitude() * other.magnitude()));
+  return RAD2DEG * acos(dot(other) / (magnitude() * other.magnitude()));
 }
 
 template <typename T>
@@ -185,6 +192,14 @@ Vector<T>& Vector<T>::operator*=(const T& rhs)
 {
   *this = *this * rhs;
   return *this;
+}
+
+
+template <typename T>
+Vector<T> Vector<T>::projectOnto(const Vector<T>& other)
+{
+  //projects this vector onto the given vector
+  return other * ((dot(other)) / (other.magnitude() * other.magnitude()));
 }
 
 
@@ -231,5 +246,5 @@ template Vector<float> operator-<float>(const Vector<float>&);
 template void glNormalVector(Vector<float>&);
 template void glRotatefVector(const float, const Vector<float>&);
 template void glTranslatefVector(const Vector<float>&);
-template void glRotateToBasis(Vector<float>&);
-template void glRotateToBasis(const Basis<float>&);
+template void glRotateToBasis(Vector<float>&, const Vector<float>&);
+template void glRotateToBasis(const Basis<float>&, const Vector<float>&);

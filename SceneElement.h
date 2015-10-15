@@ -18,8 +18,9 @@ class SceneElement
 
     void setPosition(const Point<float>& pos);
     void setOrientation(const Orientation<float>& ori);
+    void setMaterial(const Material& mat);
 
-    void glRender();
+    void glSetupRender();
     void glEmplaceObject();
     void glOrientObject();
     void glApplyMaterial();
@@ -27,10 +28,12 @@ class SceneElement
     //override with your drawing code, use glRender when you want to
     //place the object in worldspace with the above helper functions,
     //and then your render function will be called
-    virtual void render(bool SelectionMode);
+    virtual void render();
+    virtual void tick();
+
+    Point<float> position;
 
   protected:
-    Point<float> position;
     Orientation<float> orientation;
     Material material;
 

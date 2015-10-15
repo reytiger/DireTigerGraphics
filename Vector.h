@@ -18,6 +18,7 @@ class Vector
     T dot(const Vector<T>& other);
     double angleTo(const Vector<T>& other);
     Vector<T>& operator*=(const T& rhs);
+    Vector<T> projectOnto(const Vector<T>& other);
     T magnitude() const;
     //instance level
     void normalize();
@@ -49,8 +50,8 @@ struct Basis
 template <typename T> void glNormalVector(Vector<T>& vec);
 template <typename T> void glRotatefVector(const float, const Vector<T>& axis);
 template <typename T> void glTranslatefVector(const Vector<T>& vec);
-template <typename T> void glRotateToBasis(Vector<T>& z); //orients along a given vector
-template <typename T> void glRotateToBasis(const Basis<T>& b); //orients to a given basis
+template <typename T> void glRotateToBasis(Vector<T>& z, const Vector<T>& translation); //orients along a given vector
+template <typename T> void glRotateToBasis(const Basis<T>& b, const Vector<T>& translation); //orients to a given basis
 
 //Operators
 template <typename T> Vector<T> operator-(const Vector<T>& a);

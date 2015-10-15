@@ -45,7 +45,7 @@ using namespace std;
 #include "Camera.h"
 #include "BezPatch.h"
 #include "Familiar.h"
-#include "rocketship.h"
+#include "Rocketship.h"
 #include "Car.h"
 #include "Light.h"
 #include "FPSCounter.h"
@@ -75,7 +75,7 @@ bool ctrlState;
 
 //Scene objects
 GLuint environmentDL;
-rocketship mandrake(0, 40, 0, 0.3);
+Rocketship mandrake(0.3);
 Car vehicle(0, 0, 0);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
@@ -323,7 +323,10 @@ void initScene()  {
 
     pHero = new PatchHero(testPatch, 0, 0.5f, 0.5f);
     //attach our familiar to the ship
-    myFamiliar.attachToObj(&mandrake.location, &mandrake.theta);
+    myFamiliar.attachToObj(&mandrake.position, &mandrake.theta);
+
+    //offset the rocketship
+    mandrake.setPosition(Point<float>(0.f, 10.f, 0.f));
 
     if(!testPatch.loadControlPoints("testPatch.csv", 10.f))
       fprintf(stderr, "Could not load test bezier patch data from file\n");
@@ -369,7 +372,7 @@ void renderScene2(void)  {
     glPopMatrix();
 
     //draw the shipe
-    mandrake.draw();
+    mandrake.render();
     //render our familiar on its bezier curve
     myFamiliar.draw(false); //inline expression, not assignment
 
@@ -510,9 +513,6 @@ void normalKeysDown( unsigned char key, int x, int y ) {
       exit(0);
     }
 
-    if(key == 'p' || key == 'P')
-      myFamiliar.path.saveControlPoints();
-
     //change resolution of bezier patch
     if(key == '[')
       testPatch.setResolution(testPatch.getResolution() - 1);
@@ -542,7 +542,9 @@ void normalKeysUp( unsigned char key, int x, int y )
 void myTimer( int value )
 {
   //animate the ship
-  mandrake.tick(keysDown);
+  //mandrake.tick(keysDown);
+  mandrake.BezierHero::tick();
+
   vehicle.tick(keysDown);
   
   myFamiliar.tick();
@@ -581,6 +583,8 @@ void myTimer( int value )
   else if(keysDown['j'])
     pHero->incU(-0.01f);
 
+  //tick events
+  pHero->tick();
 
   //update the camera's view and ask for a redraw
   cam.updateView();
@@ -712,6 +716,25 @@ void registerCallbacks() {
 }
 
 
+bool loadWorldFile(const char* const filename)
+{
+  FILE* fp = fopen(filename, "r");
+  if(!fp)
+  {
+    perror("Could not open worldfile");
+    return false;
+  }
+
+  //load the control curves for heros to follow
+  if(!mandrake.loadCtrlPoints(fp))
+  {
+    fprintf(stderr, "Could not curve load control points from %s.\n", filename);
+    return false;
+  }
+  return true;
+}
+
+
 // main() //////////////////////////////////////////////////////////////////////
 //
 //  Program entry point. Takes a single command line argument for our 
@@ -727,11 +750,11 @@ int main( int argc, char **argv ) {
       exit(EXIT_SUCCESS);
     }
 
-    //pass our filename to the file reader function
-    if(!myFamiliar.path.loadControlPoints(argv[1]))
+    //load world data
+    if(!loadWorldFile("controlPoints10.csv"))
     {
-      fprintf(stderr, "Could not load control points from %s.\n", argv[1]);
-      exit(EXIT_FAILURE);
+      fprintf(stderr, "Could not load worldfile data\n");
+      exit(EXIT_SUCCESS);
     }
 
     // create a double-buffered GLUT window at (50, 50) with predefined window size
@@ -760,7 +783,7 @@ int main( int argc, char **argv ) {
     registerCallbacks();
 
     //set the camera to watch the ship
-    cam.objFollow(&mandrake.location, &mandrake.theta);
+    cam.objFollow(&mandrake.position, &mandrake.theta);
 	cam2.objFollow(&vehicle.location, &vehicle.theta);
     //cam.objWatch(&mandrake.location);
 

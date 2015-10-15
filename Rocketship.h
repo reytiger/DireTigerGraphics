@@ -1,6 +1,6 @@
 /*
- * rocketship.h
- * Sesloc Avandara's vehicle of choice - a rocketship
+ * Rocketship.h
+ * Sesloc Avandara's vehicle of choice - a Rocketship
  * Defines an OpenGL object
  */
 
@@ -15,21 +15,22 @@
 	#include <GL/glu.h>
 #endif
 
-#include "Point.h"
-#include <math.h>
+#include "BezierHero.h"
+#include <cmath>
+
 const double DEG2RAD = M_PI / 180;
 
-class rocketship
+class Rocketship : public BezierHero
 {
   public:
     //ctor, detor
-    rocketship(double startX, double startY, double startZ, float rocketScale); //constructor
-    ~rocketship();
+    Rocketship(float rocketScale); //constructor
+    ~Rocketship();
 
     void draw();
     void tick(bool* keysDown);
+    virtual void render();
 
-    Point<GLfloat> location; //coordinates in scene
     float theta; // The rocket's heading, in degrees
     void setThrustState(bool);
 

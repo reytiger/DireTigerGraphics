@@ -54,7 +54,8 @@ void PatchHero::setV(const float newV)
     {
       if(prevSubPatch())
         tmp++;
-      else break;
+      else
+        tmp = 0.f;
     }
     while(tmp < 0.f);
   }
@@ -119,14 +120,38 @@ void PatchHero::render(bool selectionMode)
   //set the render context to the proper location
   glEmplaceObject();
 
-  Basis<float> basis = myPatch.getBasis(0, u, v);
-  glRotateToBasis(basis);
+  Basis<float> basis = myPatch.getBasis(subPatch, u, v);
 
-  //glOrientObject();
+  glPushMatrix();
+    glLineWidth(3.0f);
+    //draw the basis
+    glTranslatef(0.f, 2.f, 0.f);
+    glColor3ub(226, 229, 39);
+    (basis.x).draw();
+    glColor3ub(39, 216, 229);
+    (basis.y).draw();
+    glColor3ub(140, 37, 131);
+    basis.z.draw();
+    glLineWidth(1.0f);
+  glPopMatrix();
+
+  glOrientObject();
+
+  glRotateToBasis(basis, Vector<float>(0.f, 2.f, 0.f));
 
   //offset off the surface
   //glTranslatefVector(normal * 0.5f);
 
   //draw the hero
+  glScalef(2.f, 1.f, 1.f);
   glutSolidCube(1);
+}
+
+
+void PatchHero::tick()
+{
+  //increase the yaw
+  //orientation.setYaw(orientation.getYaw() + 1.f);
+  //orientation.setPitch(orientation.getPitch() + 1.f);
+  //orientation.setRoll(orientation.getRoll() + 1.f);
 }

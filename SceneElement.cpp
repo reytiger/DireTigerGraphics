@@ -39,16 +39,17 @@ void SceneElement::setOrientation(const Orientation<float>& ori)
   orientation = ori;
 }
 
+void SceneElement::setMaterial(const Material& mat)
+{
+  material = mat;
+}
 
-void SceneElement::glRender()
+
+void SceneElement::glSetupRender()
 {
   glEmplaceObject();
   glOrientObject();
   glApplyMaterial();
-  
-  //TODO determine GL render mode
-  //to expand to allow picking?
-  render(false);
 }
 
 
@@ -84,10 +85,12 @@ void SceneElement::glApplyMaterial()
 }
 
 
-void SceneElement::render(bool SelectionMode)
+void SceneElement::render()
 {
   //TODO
   //render orientation of this object
 }
+
+void SceneElement::tick() {}
 
 const Vector<float> SceneElement::up = Vector<float>(0.f, 1.f, 0.f);

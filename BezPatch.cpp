@@ -247,9 +247,16 @@ Basis<T> BezPatch<T>::getBasis(int subPatch, float u, float v)
 {
   struct Basis<T> b;
   SubPatch<T>& s = subPatches.at(subPatch);
-  b.x = s.evalAxis(u, true).getTangent(v);
-  b.y = s.evalAxis(v, false).getTangent(u);
-  b.z = Vector<T>::normalize((b.x).cross(b.y));
+
+  //get the two tangent vectors of the curves
+  b.x = Vector<T>::normalize(s.evalAxis(u, true).getTangent(v));
+  b.z = Vector<T>::normalize(s.evalAxis(v, false).getTangent(u));
+
+  //calculate a normal
+  b.y = Vector<T>::normalize((b.x).cross(b.z));
+
+  //make a new vector orothonormal to the u derivative and the normal
+  b.x = Vector<T>::normalize((b.y).cross(b.z));
 
   return b;
 }

@@ -18,6 +18,7 @@ class PatchHero : public SceneElement
     bool prevSubPatch();
 
     void render(bool selectionMode);
+    void tick();
   private:
     BezPatch<float>& myPatch;
     int subPatch;

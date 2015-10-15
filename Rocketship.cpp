@@ -1,6 +1,6 @@
-#include "rocketship.h"
+#include "Rocketship.h"
 
-rocketship::rocketship(double startX, double startY, double startZ, float rocketScale) : location(startX, startY, startZ), rocketScale(rocketScale)
+Rocketship::Rocketship(float rocketScale) : BezierHero(), rocketScale(rocketScale)
 {
   finRotation = 0.f;
   nozzleRotation = 0.f;
@@ -17,14 +17,14 @@ rocketship::rocketship(double startX, double startY, double startZ, float rocket
   gluQuadricDrawStyle(bodyBottomCap, GLU_FILL);
 }
 
-rocketship::~rocketship()
+Rocketship::~Rocketship()
 {
   gluDeleteQuadric(bodyCylinder);
   gluDeleteQuadric(engineNozzle);
   gluDeleteQuadric(bodyBottomCap);
 }
 
-void rocketship::tick(bool* keysDown)
+void Rocketship::tick(bool* keysDown)
 {
   finRotation += 0.3f;
   nozzleRotation -= 0.3f;
@@ -60,7 +60,7 @@ void rocketship::tick(bool* keysDown)
   }
 }
 
-void rocketship::move(bool forward)
+void Rocketship::move(bool forward)
 {
   //determine our heading vector
   float dX, dZ;
@@ -80,26 +80,26 @@ void rocketship::move(bool forward)
   }
 
   //move our rocket
-  location += Point<GLfloat>(moveSpeed * dX, 0.f, 0.f);
-  location += Point<GLfloat>(0.f, 0.f, moveSpeed * dZ);
+  position += Point<GLfloat>(moveSpeed * dX, 0.f, 0.f);
+  position += Point<GLfloat>(0.f, 0.f, moveSpeed * dZ);
   //check to see if our movement would put us out of bounds
   
   //Maybe TODO: make this depend on the variable in main
   int gridSize = 200 / 2;
   //x bounds
-  if(location.getX() > gridSize)
-    location.setX(gridSize);
-  if(location.getX() < -gridSize)
-    location.setX(-gridSize);
+  if(position.getX() > gridSize)
+    position.setX(gridSize);
+  if(position.getX() < -gridSize)
+    position.setX(-gridSize);
   //and now z
-  if(location.getZ() > gridSize)
-    location.setZ(gridSize);
-  if(location.getZ() < -gridSize)
-    location.setZ(-gridSize);
+  if(position.getZ() > gridSize)
+    position.setZ(gridSize);
+  if(position.getZ() < -gridSize)
+    position.setZ(-gridSize);
 
 }
 
-void rocketship::setThrustState(bool yn)
+void Rocketship::setThrustState(bool yn)
 {
   thrustState = yn;
 }
@@ -107,13 +107,10 @@ void rocketship::setThrustState(bool yn)
 //The main render function
 //In charge of all GlStack operations
 //as well as managine attributes of each matrix stack frame
-void rocketship::draw()
+void Rocketship::draw()
 {
   //start with the body
   glPushMatrix();
-
-    //translate into world coordinates
-    glTranslatePoint(location);
 
     //set the heading, rotated on the xz plane (normal to y = 1)
     glRotatef(theta, 0, 1, 0);
@@ -202,14 +199,22 @@ void rocketship::draw()
   glPopMatrix();
 }
 
-void rocketship::drawBody()
+void Rocketship::drawBody()
 {
   gluCylinder(bodyCylinder, 3., 3., 25., 40., 4.);
   //fills in the bottom. The top is covered by the nosecone
   gluDisk(bodyBottomCap, 0, 3, 40, 20);
 }
 
-void rocketship::drawFin()
+
+void Rocketship::render()
+{
+  BezierHero::render();
+  draw();
+}
+
+
+void Rocketship::drawFin()
 {
   glBegin(GL_TRIANGLES);
   //a nice, right triangle
@@ -219,17 +224,17 @@ void rocketship::drawFin()
   glEnd();
 }
 
-void rocketship::drawNozzle()
+void Rocketship::drawNozzle()
 {
   gluCylinder(engineNozzle, 1, 1, 0.5, 30, 1);
 }
 
-void rocketship::drawNose()
+void Rocketship::drawNose()
 {
   glutSolidCone(3.,10., 30, 10);
 }
 
-void rocketship::drawThrust()
+void Rocketship::drawThrust()
 {
   glutSolidCone(1, 3, 20, 3);
 }

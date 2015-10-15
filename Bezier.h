@@ -4,6 +4,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <cstdio> //FILE* type
 
 #include "Point.h"
 #include "Vector.h"
@@ -70,16 +71,20 @@ class Bezier
 
     void render();
 
-    Vector<T> getTangent(int subCurve, float t);
+    Point<T> evaluateCurves(float t);
     Point<T> getPercentageAlongCurve(float percentage);
+
+    Vector<T> getTangent(int subCurve, float t);
     Vector<T> getTangentByPercentage(float percentage);
 
     void toggleControlCageVisible();
     void toggleCurveVisible();
 
     bool loadControlPoints(const char* const filename);
+    bool loadControlPoints(FILE* fd);
     void saveControlPoints();
 
+    int getNumSubCurves();
     bool valid();
 
   private:

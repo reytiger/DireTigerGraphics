@@ -1,8 +1,8 @@
 TARGET   = diretiger
 OBJECTS  = main.o Bezier.o Camera.o Point.o Vector.o
-OBJECTS += rocketship.o Familiar.o BezPatch.o Light.o
+OBJECTS += Rocketship.o Familiar.o BezPatch.o Light.o
 OBJECTS += Color.o FPSCounter.o SceneElement.o PatchHero.o
-OBJECTS += Car.o Orientation.o Material.o
+OBJECTS += Car.o Orientation.o Material.o BezierHero.o
 
 CXX    = g++
 CFLAGS = -Wall -g
@@ -87,20 +87,27 @@ $(TARGET): $(OBJECTS)
 
 # DEPENDENCIES
 BezPatch.o: BezPatch.cpp BezPatch.h Bezier.h Point.h Vector.h \
- SceneElement.h
+ SceneElement.h Orientation.h Material.h
 Bezier.o: Bezier.cpp Bezier.h Point.h Vector.h
+BezierHero.o: BezierHero.cpp BezierHero.h Bezier.h Point.h Vector.h \
+ SceneElement.h Orientation.h Material.h
 Camera.o: Camera.cpp Camera.h Point.h Vector.h
 Car.o: Car.cpp Car.h Point.h Vector.h
 Color.o: Color.cpp Color.h
 FPSCounter.o: FPSCounter.cpp FPSCounter.h
 Familiar.o: Familiar.cpp Familiar.h Bezier.h Point.h Vector.h
 Light.o: Light.cpp Light.h Point.h Vector.h Color.h
+Material.o: Material.cpp Material.h
+Orientation.o: Orientation.cpp Orientation.h Vector.h
 PatchHero.o: PatchHero.cpp PatchHero.h SceneElement.h Point.h Vector.h \
- BezPatch.h Bezier.h
+ Orientation.h Material.h BezPatch.h Bezier.h
 Point.o: Point.cpp Point.h Vector.h
-SceneElement.o: SceneElement.cpp SceneElement.h Point.h Vector.h
+Rocketship.o: Rocketship.cpp Rocketship.h BezierHero.h Bezier.h Point.h \
+ Vector.h SceneElement.h Orientation.h Material.h
+SceneElement.o: SceneElement.cpp SceneElement.h Point.h Vector.h \
+ Orientation.h Material.h
 Vector.o: Vector.cpp Vector.h
+Wagon.o: Wagon.cpp Wagon.h
 main.o: main.cpp Point.h Vector.h Camera.h BezPatch.h Bezier.h \
- SceneElement.h Familiar.h rocketship.h Car.h Light.h Color.h \
- FPSCounter.h PatchHero.h
-rocketship.o: rocketship.cpp rocketship.h Point.h Vector.h
+ SceneElement.h Orientation.h Material.h Familiar.h Rocketship.h \
+ BezierHero.h Car.h Light.h Color.h FPSCounter.h PatchHero.h
