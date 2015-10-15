@@ -9,9 +9,11 @@
 #endif
 
 #include <math.h>
+#include "Point.h"
 
 class Wagon {
 	float characterX, characterY, characterZ;   // character position in cartesian coordinates
+	Point<GLfloat> location;
 	float theta;                       // Character bearing in spherical coordinates
 	float wheelTheta;                           // Wheel rotation variable
 	

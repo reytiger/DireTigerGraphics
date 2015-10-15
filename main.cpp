@@ -47,6 +47,7 @@ using namespace std;
 #include "Familiar.h"
 #include "rocketship.h"
 #include "Car.h"
+#include "Wagon.h"
 #include "Light.h"
 #include "FPSCounter.h"
 #include "PatchHero.h"
@@ -705,20 +706,6 @@ void registerCallbacks() {
     glutTimerFunc( 1000.0f / 60.0f, myTimer, 0 );
 }
 
-// loadData() /////////////////////////////////////////////////////////
-//
-// Load the control points, object numbers and positions, etc.
-//
-///////////////////////////////////////////////////////////////////////
-void loadData(char **argv) {  // preliminary data loading function
-	
-	
-	
-	
-	
-}
-
-
 // main() //////////////////////////////////////////////////////////////////////
 //
 //  Program entry point. Takes a single command line argument for our 
@@ -769,6 +756,7 @@ int main( int argc, char **argv ) {
     //set the camera to watch the ship
     cam.objFollow(&mandrake.location, &mandrake.theta);
 	cam2.objFollow(&vehicle.location, &vehicle.theta);
+	//cam3.objFollow(&wagon.location, &wagon.theta);
     //cam.objWatch(&mandrake.location);
 
     // and enter the GLUT loop, never to exit.

@@ -3,9 +3,9 @@
 
 // Constructors
 Wagon::Wagon() {
-	characterX = 0;
-	characterY = 0;
-	characterZ = 0;
+	location.push_back(0.0);
+	location.push_back(0.0);
+	location.push_back(0.0);
 	
 	theta = 0;
 	wheelTheta = 0;
@@ -13,9 +13,9 @@ Wagon::Wagon() {
 
 // Constructors
 Wagon::Wagon(float x, float y, float z, float th) {
-	characterX = x;
-	characterY = y;
-	characterZ = z;
+	location.push_back(x);
+	location.push_back(y);
+	location.push_back(z);
 	
 	theta = th;
 	wheelTheta = 0;
@@ -124,16 +124,16 @@ void Wagon::tick(bool* keysDown) {
         exit(0);
 	}
 	else if (keysDown[0x77] || keysDown[0x57]) {
-		if (abs(characterX + movementConstant*(sinf(theta))) < 45 && abs(characterZ + movementConstant*(cosf(theta))) < 45) {
-			characterX += movementConstant*(sinf(theta));
-			characterZ += movementConstant*(cosf(theta));
+		if (abs(location[0] + movementConstant*(sinf(theta))) < 45 && abs(location[2] + movementConstant*(cosf(theta))) < 45) {
+			location[0] += movementConstant*(sinf(theta));
+			location[2] += movementConstant*(cosf(theta));
 			wheelTheta += 10;
 		}
 	}
 	else if (keysDown[0x73] || keysDown[0x53]) {
-		if (abs(characterX - movementConstant*(sinf(theta))) < 45 && abs(characterZ - movementConstant*(cosf(theta))) < 45) {
-			characterX -= movementConstant*(sinf(theta));
-			characterZ -= movementConstant*(cosf(theta));
+		if (abs(location[0] - movementConstant*(sinf(theta))) < 45 && abs(location[2] - movementConstant*(cosf(theta))) < 45) {
+			location[0] -= movementConstant*(sinf(theta));
+			location[2] -= movementConstant*(cosf(theta));
 			wheelTheta -= 10;
 		}
 	}
