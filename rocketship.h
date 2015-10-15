@@ -41,6 +41,7 @@ class rocketship
     void drawNose();
     void drawNozzle();
     void drawThrust();
+	void drawName();
 
     //draw thrust only when going forward
     bool thrustState;

@@ -47,6 +47,7 @@ using namespace std;
 #include "Familiar.h"
 #include "rocketship.h"
 #include "Car.h"
+#include "Wagon.h"
 #include "Light.h"
 #include "FPSCounter.h"
 #include "PatchHero.h"
@@ -77,6 +78,7 @@ bool ctrlState;
 GLuint environmentDL;
 rocketship mandrake(0, 40, 0, 0.3);
 Car vehicle(0, 0, 0);
+Wagon cart(25.0f, 0.0f, 25.0f, 0.0f);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 PatchHero* pHero;
@@ -384,7 +386,7 @@ void drawStuff(){
 	
 	glPushMatrix();
     testPatch.render();
-  glPopMatrix();
+    glPopMatrix();
 	
 	glPushMatrix();
 	glCallList(environmentDL);
@@ -392,6 +394,7 @@ void drawStuff(){
 	
 	mandrake.draw();
 	vehicle.draw();
+	cart.draw();
 	myFamiliar.draw(false);
 	
 	
@@ -695,7 +698,7 @@ void registerCallbacks() {
     glutMotionFunc(     mouseMotion        );
 
     // display callbacks
-    glutDisplayFunc(    renderScene2       );
+    glutDisplayFunc(    renderScene       );
     glutReshapeFunc(    resizeWindow       );
 
     // timer callback

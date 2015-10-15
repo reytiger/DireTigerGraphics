@@ -2,7 +2,7 @@ TARGET   = diretiger
 OBJECTS  = main.o Bezier.o Camera.o Point.o Vector.o
 OBJECTS += rocketship.o Familiar.o BezPatch.o Light.o
 OBJECTS += Color.o FPSCounter.o SceneElement.o PatchHero.o
-OBJECTS += Car.o Orientation.o Material.o
+OBJECTS += Car.o Orientation.o Material.o Wagon.o
 
 CXX    = g++
 CFLAGS = -Wall -g
@@ -102,5 +102,6 @@ SceneElement.o: SceneElement.cpp SceneElement.h Point.h Vector.h
 Vector.o: Vector.cpp Vector.h
 main.o: main.cpp Point.h Vector.h Camera.h BezPatch.h Bezier.h \
  SceneElement.h Familiar.h rocketship.h Car.h Light.h Color.h \
- FPSCounter.h PatchHero.h
+ FPSCounter.h PatchHero.h Wagon.o
 rocketship.o: rocketship.cpp rocketship.h Point.h Vector.h
+Wagon.o: Wagon.cpp Wagon.h

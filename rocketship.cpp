@@ -124,6 +124,7 @@ void rocketship::draw()
     glColor3ub(170, 181, 173);
     drawBody();
 
+  drawName();
     //Draw the rocket fins
     glPushMatrix();
     {
@@ -232,4 +233,20 @@ void rocketship::drawNose()
 void rocketship::drawThrust()
 {
   glutSolidCone(1, 3, 20, 3);
+}
+
+void rocketship::drawName(){
+	char scrtext[64]= "<Kevin>";
+
+	// choose a colour
+	glPushMatrix();
+	glColor3ub(0, 0, 255);
+	// where we want it written
+	glTranslatef(3, 10, 8);
+	glRotatef(180, 0, 1, 0);
+	// how big we want it
+	glScalef(.01, .01, .01);
+	for (int c=0; scrtext[c] != 0; ++c)
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, scrtext[c]);
+	glPopMatrix(); 
 }

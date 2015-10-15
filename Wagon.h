@@ -11,6 +11,7 @@
 #include <math.h>
 
 class Wagon {
+  public:
 	float characterX, characterY, characterZ;   // character position in cartesian coordinates
 	float characterTheta;                       // Character bearing in spherical coordinates
 	float wheelTheta;                           // Wheel rotation variable
@@ -22,14 +23,15 @@ class Wagon {
 	void drawWheel();
 	void drawWheels();
 	void drawBox();
-	void drawWagon();
+	void draw();
+	void drawName();
 	
 	void tick(bool* keysDown);
 	
 	void updateCharacterLeft();
 	void updateCharacterRight();
-	void updateCharacterForward();
-	void updateCharacterBackward();
+//	void updateCharacterForward();
+//	void updateCharacterBackward();
 	// void rotate()? glRotatef(characterTheta*(180.0/M_PI), 0, 1, 0);
 	
 };

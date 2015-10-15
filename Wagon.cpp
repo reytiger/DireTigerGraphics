@@ -2,7 +2,7 @@
 #include "Wagon.h"
 
 // Constructors
-Wagon::Wagon() {
+Wagon::Wagon()  {
 	characterX = 0;
 	characterY = 0;
 	characterZ = 0;
@@ -98,16 +98,32 @@ void Wagon::drawBox() {
 	glPopMatrix();
 }
 
-void Wagon::drawWagon() {
+void Wagon::drawName(){
+	char scrtext[64]= "<Ryan>";
+
+	// choose a colour
+	glPushMatrix();
+	glColor3ub(0, 0, 255);
+	// where we want it written
+	glTranslatef(2, 5, 0);
+	glRotatef(180, 0, 1, 0);
+	// how big we want it
+	glScalef(.01, .01, .01);
+	for (int c=0; scrtext[c] != 0; ++c)
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, scrtext[c]);
+	glPopMatrix(); 
+}
+
+void Wagon::draw() {
 	/* Function that calls the  functions for drawing my 'character,' 
 	 * which will be a wizard's wagon.
 	 */
 	 glPushMatrix();
 	 
 	 // Function for drawing the body of the wagon
-	 
 	 /// ADD ROTATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	 drawBox();
+	 drawName();
 	 
 	 glPopMatrix();
 	 
@@ -119,8 +135,8 @@ void Wagon::tick(bool* keysDown) {
 	
 	// Needs to be set up yet
 }
-
-void updateCharacterForward() {
+/*
+void Wagon::updateCharacterForward() {
 	// Function for moving the wagon forward
 	if (abs(characterX + movementConstant*(sinf(characterTheta))) < 45 && abs(characterZ + movementConstant*(cosf(characterTheta))) < 45) {
 			characterX += movementConstant*(sinf(characterTheta));
@@ -136,7 +152,7 @@ void Wagon::updateCharacterBackward() {
 			characterZ -= movementConstant*(cosf(characterTheta));
 			wheelTheta -= 10;
 	}
-}
+}*/
 
 void Wagon::updateCharacterLeft() {
 	// Function for turning left
