@@ -214,7 +214,7 @@ void Camera::recomputeCoordsAndDirection()
       lookAtPoint = *watchPoint;
 
   case FIRST_PERSON:
-	worldPos = *originObj + Point<GLfloat>(0.0f, 0.0f, 13.0f);
+	worldPos = *originObj + Point<GLfloat>(0.0f, 10.0f, 0.0f);
 	lookStraight (true, false);
     break;
   }

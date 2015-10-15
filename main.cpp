@@ -266,7 +266,8 @@ void mouseCallback(int button, int state, int thisX, int thisY) {
     if(button == GLUT_LEFT_BUTTON)
     {
         leftMouseButton = state;
-        cam.saveReferenceFrame();
+		cam.saveReferenceFrame();
+        cam2.saveReferenceFrame();
     }
 
     //allow passive mouse motion to know if control is held
@@ -287,12 +288,15 @@ void mouseMotion(int x, int y)
   if(leftMouseButton == GLUT_DOWN)
   {
     if(ctrlState)
-      cam.adjustDistFromOrigin(y - mouseY);
-    else if(cam.getCurrentMode() != FIRST_PERSON){
+      cam2.adjustDistFromOrigin(y - mouseY);
+    if(cam.getCurrentMode() != FIRST_PERSON){
       cam.mouseRotate(x - mouseX, mouseY - y);
 	}
+	if(cam2.getCurrentMode() != FIRST_PERSON){
+      cam2.mouseRotate(x - mouseX, mouseY - y);
+	}
   }
-  cam.updateView();
+  cam2.updateView();
 
   /*mouseX = x;
   mouseY = y;*/
@@ -409,7 +413,10 @@ void renderScene(){
 	if(cam.getCurrentMode() == FIRST_PERSON){
 	  cam.mouseRotate(vehicle.theta, 0);
 	}
-	cam.updateView();
+	if(cam2.getCurrentMode() == FIRST_PERSON){
+	  cam2.mouseRotate(vehicle.theta, 0);
+	}
+	cam2.updateView();
 	drawStuff();
 	
 	if (heroArc1 == true){
