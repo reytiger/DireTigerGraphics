@@ -65,10 +65,10 @@ bool heroArc1 = false, heroArc2 = false, heroArc3 = false;
 GLint leftMouseButton, rightMouseButton;    // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 
-Camera cam(ARCBALL, 0.0, 2 * M_PI / 3, 40);
+Camera cam(ARCBALL, 45.0, 2 * M_PI / 3, 30);
 Light* mainLight = NULL;
 FPSCounter fpsCounter;
-Camera cam2(ARCBALL, 0.0, 2 * M_PI / 3, 20);
+Camera cam2(ARCBALL, 0.0, 2 * M_PI / 3, 30);
 GLint menuId;				    // handle for our menu
 
 bool keysDown[256];
@@ -77,7 +77,7 @@ bool ctrlState;
 //Scene objects
 GLuint environmentDL;
 Rocketship mandrake(0.3);
-Car vehicle(0, 0, 0);
+Car vehicle(15, 0, 15);
 Wagon wagon(25.0f, 0.0f, 25.0f);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
@@ -289,9 +289,6 @@ void mouseMotion(int x, int y)
   {
     if(ctrlState)
       cam2.adjustDistFromOrigin(y - mouseY);
-    if(cam.getCurrentMode() != FIRST_PERSON){
-      cam.mouseRotate(x - mouseX, mouseY - y);
-	}
 	if(cam2.getCurrentMode() != FIRST_PERSON){
       cam2.mouseRotate(x - mouseX, mouseY - y);
 	}
