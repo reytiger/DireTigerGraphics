@@ -12,17 +12,17 @@
 
 class Wagon {
 	float characterX, characterY, characterZ;   // character position in cartesian coordinates
-	float characterTheta;                       // Character bearing in spherical coordinates
+	float theta;                       // Character bearing in spherical coordinates
 	float wheelTheta;                           // Wheel rotation variable
 	
 	Wagon();
-	Wagon(float x, float y, float z, float cth);
+	Wagon(float x, float y, float z, float th);
 	
 	void drawBench();
 	void drawWheel();
 	void drawWheels();
 	void drawBox();
-	void drawWagon();
+	void draw();
 	
 	void tick(bool* keysDown);
 

@@ -77,6 +77,7 @@ bool ctrlState;
 GLuint environmentDL;
 rocketship mandrake(0, 40, 0, 0.3);
 Car vehicle(0, 0, 0);
+Wagon wagon(0.0, 0.0, 0.0, 0.0);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 PatchHero* pHero;
@@ -392,6 +393,7 @@ void drawStuff(){
 	
 	mandrake.draw();
 	vehicle.draw();
+	wagon.draw();
 	myFamiliar.draw(false);
 	
 	
@@ -544,6 +546,7 @@ void myTimer( int value )
   //animate the ship
   mandrake.tick(keysDown);
   vehicle.tick(keysDown);
+  wagon.tick(keysDown);
   
   myFamiliar.tick();
 
@@ -700,6 +703,19 @@ void registerCallbacks() {
 
     // timer callback
     glutTimerFunc( 1000.0f / 60.0f, myTimer, 0 );
+}
+
+// loadData() /////////////////////////////////////////////////////////
+//
+// Load the control points, object numbers and positions, etc.
+//
+///////////////////////////////////////////////////////////////////////
+void loadData(char **argv) {  // preliminary data loading function
+	
+	
+	
+	
+	
 }
 
 

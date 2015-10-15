@@ -7,17 +7,17 @@ Wagon::Wagon() {
 	characterY = 0;
 	characterZ = 0;
 	
-	characterTheta = 0;
+	theta = 0;
 	wheelTheta = 0;
 }
 
 // Constructors
-Wagon::Wagon(float x, float y, float z, float cth) {
+Wagon::Wagon(float x, float y, float z, float th) {
 	characterX = x;
 	characterY = y;
 	characterZ = z;
 	
-	characterTheta = cth;
+	theta = th;
 	wheelTheta = 0;
 }
 
@@ -98,7 +98,7 @@ void Wagon::drawBox() {
 	glPopMatrix();
 }
 
-void Wagon::drawWagon() {
+void Wagon::draw() {
 	/* Function that calls the  functions for drawing my 'character,' 
 	 * which will be a wizard's wagon.
 	 */
@@ -107,9 +107,9 @@ void Wagon::drawWagon() {
 	 // Function for drawing the body of the wagon
 	 
 	 {
-		glRotatef(0.0, characterTheta, 0.0, 1.0);
+		glRotatef(0.0, theta, 0.0, 1.0);
 		drawBox();
-		glRotatef(0.0, -characterTheta, 0.0, 1.0);
+		glRotatef(0.0, -theta, 0.0, 1.0);
 	 }
 	 glPopMatrix();
 	 
@@ -124,23 +124,23 @@ void Wagon::tick(bool* keysDown) {
         exit(0);
 	}
 	else if (keysDown[0x77] || keysDown[0x57]) {
-		if (abs(characterX + movementConstant*(sinf(characterTheta))) < 45 && abs(characterZ + movementConstant*(cosf(characterTheta))) < 45) {
-			characterX += movementConstant*(sinf(characterTheta));
-			characterZ += movementConstant*(cosf(characterTheta));
+		if (abs(characterX + movementConstant*(sinf(theta))) < 45 && abs(characterZ + movementConstant*(cosf(theta))) < 45) {
+			characterX += movementConstant*(sinf(theta));
+			characterZ += movementConstant*(cosf(theta));
 			wheelTheta += 10;
 		}
 	}
 	else if (keysDown[0x73] || keysDown[0x53]) {
-		if (abs(characterX - movementConstant*(sinf(characterTheta))) < 45 && abs(characterZ - movementConstant*(cosf(characterTheta))) < 45) {
-			characterX -= movementConstant*(sinf(characterTheta));
-			characterZ -= movementConstant*(cosf(characterTheta));
+		if (abs(characterX - movementConstant*(sinf(theta))) < 45 && abs(characterZ - movementConstant*(cosf(theta))) < 45) {
+			characterX -= movementConstant*(sinf(theta));
+			characterZ -= movementConstant*(cosf(theta));
 			wheelTheta -= 10;
 		}
 	}
 	else if (keysDown[0x61] || keysDown[0x41]) {
-		characterTheta += M_PI / 20.0f;
+		theta += M_PI / 20.0f;
 	}
 	else if (keysDown[0x64] || key[0x44]) {
-		characterTheta -= M_PI / 20.0f;
+		theta -= M_PI / 20.0f;
 	}
 }
