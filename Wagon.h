@@ -25,11 +25,7 @@ class Wagon {
 	void drawWagon();
 	
 	void tick(bool* keysDown);
-	
-	void updateCharacterLeft();
-	void updateCharacterRight();
-	void updateCharacterForward();
-	void updateCharacterBackward();
+
 	// void rotate()? glRotatef(characterTheta*(180.0/M_PI), 0, 1, 0);
 	
 };
