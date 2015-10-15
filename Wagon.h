@@ -13,11 +13,12 @@
 class Wagon {
   public:
 	float characterX, characterY, characterZ;   // character position in cartesian coordinates
-	float characterTheta;                       // Character bearing in spherical coordinates
+	float theta;                       // Character bearing in spherical coordinates
 	float wheelTheta;                           // Wheel rotation variable
 	
 	Wagon();
-	Wagon(float x, float y, float z, float cth);
+	Wagon(float x, float y, float z, float th);
+	static const float movementConstant = 0.5f;
 	
 	void drawBench();
 	void drawWheel();
@@ -26,12 +27,15 @@ class Wagon {
 	void draw();
 	void drawName();
 	
-	void tick(bool* keysDown);
+	void timetick(bool* keysDown);
 	
 	void updateCharacterLeft();
 	void updateCharacterRight();
-//	void updateCharacterForward();
+	void updateCharacterForward();
 //	void updateCharacterBackward();
+	
+	void tick(bool* keysDown);
+
 	// void rotate()? glRotatef(characterTheta*(180.0/M_PI), 0, 1, 0);
 	
 };
