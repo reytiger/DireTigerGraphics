@@ -41,9 +41,9 @@ Input File Format:
 <control point jx>, <control point jy>, <control point jz>
 <Empty line>
 <Number of buildings>
-<location point 1x>, <location point 1y>, <location point 1z>
+<location point 1x>, <location point 1y>, <location point 1z>, <height>, <width>, <rotation>
 ...
-<location point mx>, <location point my>, <location point mz>
+<location point mx>, <location point my>, <location point mz>, <height>, <width>, <rotation>
 <Empty line>
 <Number of trees>
 <location point 1x>, <location point 1y>, <location point 1z>
