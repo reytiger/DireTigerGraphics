@@ -78,7 +78,7 @@ bool ctrlState;
 GLuint environmentDL;
 rocketship mandrake(0, 40, 0, 0.3);
 Car vehicle(0, 0, 0);
-Wagon wagon(0.0, 0.0, 0.0, 0.0);
+Wagon wagon(25.0f, 0.0f, 25.0f, 0.0f);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 PatchHero* pHero;
@@ -386,7 +386,7 @@ void drawStuff(){
 	
 	glPushMatrix();
     testPatch.render();
-  glPopMatrix();
+    glPopMatrix();
 	
 	glPushMatrix();
 	glCallList(environmentDL);
@@ -547,7 +547,7 @@ void myTimer( int value )
   //animate the ship
   mandrake.tick(keysDown);
   vehicle.tick(keysDown);
-  wagon.tick(keysDown);
+  wagon.timetick(keysDown);
   
   myFamiliar.tick();
 
@@ -699,7 +699,7 @@ void registerCallbacks() {
     glutMotionFunc(     mouseMotion        );
 
     // display callbacks
-    glutDisplayFunc(    renderScene2       );
+    glutDisplayFunc(    renderScene       );
     glutReshapeFunc(    resizeWindow       );
 
     // timer callback

@@ -29,6 +29,7 @@ class Car
 
     void drawHero();
 	void drawWheels();
+	void drawName();
 	
   private:
     void move(bool forward);

@@ -12,6 +12,7 @@
 #include "Point.h"
 
 class Wagon {
+  public:
 	float characterX, characterY, characterZ;   // character position in cartesian coordinates
 	Point<GLfloat> location;
 	float theta;                       // Character bearing in spherical coordinates
@@ -19,12 +20,21 @@ class Wagon {
 	
 	Wagon();
 	Wagon(float x, float y, float z, float th);
+	static const float movementConstant = 0.5f;
 	
 	void drawBench();
 	void drawWheel();
 	void drawWheels();
 	void drawBox();
 	void draw();
+	void drawName();
+	
+	void timetick(bool* keysDown);
+	
+	void updateCharacterLeft();
+	void updateCharacterRight();
+	void updateCharacterForward();
+//	void updateCharacterBackward();
 	
 	void tick(bool* keysDown);
 

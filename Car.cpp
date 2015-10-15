@@ -124,6 +124,22 @@ void Car::move(bool forward)
 
 }
 
+void Car::drawName(){
+	char scrtext[64]= "<Maeva Frostfall>";
+
+	// choose a colour
+	glPushMatrix();
+	glColor3ub(0, 0, 255);
+	// where we want it written
+	glTranslatef(5, 5, 0);
+	glRotatef(180, 0, 1, 0);
+	// how big we want it
+	glScalef(.01, .01, .01);
+	for (int c=0; scrtext[c] != 0; ++c)
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, scrtext[c]);
+	glPopMatrix(); 
+}
+
 
 //The main render function
 //In charge of all GlStack operations
@@ -141,5 +157,6 @@ void Car::draw()
 		value = -0.01;
 	}
 	drawHero();
+	drawName();
 	glPopMatrix();
 }
