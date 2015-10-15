@@ -47,6 +47,7 @@ using namespace std;
 #include "Familiar.h"
 #include "Rocketship.h"
 #include "Car.h"
+#include "Wagon.h"
 #include "Light.h"
 #include "FPSCounter.h"
 #include "PatchHero.h"
@@ -77,6 +78,7 @@ bool ctrlState;
 GLuint environmentDL;
 Rocketship mandrake(0.3);
 Car vehicle(0, 0, 0);
+Wagon wagon(25.0f, 0.0f, 25.0f);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 PatchHero* pHero;
@@ -308,15 +310,15 @@ void initScene()  {
     glEnable(GL_DEPTH_TEST);
 
     //construct our primary light source
-    Color diffCol(1.f, 1.f, 1.f, 1.f);
+    Color diffCol(0.4f, 0.4f, 0.4f, 1.f);
     Color ambientCol(0.1f, 0.1f, 0.1f, 1.0f);
     Color specularCol(0.2f, 0.2f, 0.2f, 1.f);
-    Point<float> pos(10.f, 10.f, 10.f);
+    Point<float> pos(20.f, 30.f, 10.f);
 
     glEnable( GL_LIGHTING );
     mainLight = new Light(OMNI, pos, diffCol, specularCol, ambientCol);
 	
-    glShadeModel(GL_FLAT);
+    glShadeModel(GL_SMOOTH);
 
     treeTrunk = gluNewQuadric();
     generateEnvironmentDL();
@@ -328,11 +330,41 @@ void initScene()  {
     //offset the rocketship
     mandrake.setPosition(Point<float>(0.f, 10.f, 0.f));
 
+    //TODO
+    //set materials
+    GLfloat diffuse[4] = {0.55f, 0.25f, 0.25f, 1.f};
+    GLfloat specular[4] = {0.7f, 0.7f, 0.7f, 1.f};
+    GLfloat ambient[4] = {0.f, 0.f, 0.f, 1.f};
+
+    mandrake.setMaterial(Material(diffuse, specular, ambient, 0.25f));
+
     if(!testPatch.loadControlPoints("testPatch.csv", 10.f))
       fprintf(stderr, "Could not load test bezier patch data from file\n");
 
     srand( time(NULL) );	// seed our random number generator
 
+}
+
+
+void drawStuff(){
+	
+	glPushMatrix();
+    testPatch.render();
+  glPopMatrix();
+
+	glPushMatrix();
+    pHero->render();
+  glPopMatrix();
+	
+	glPushMatrix();
+	glCallList(environmentDL);
+	glPopMatrix();
+	
+	mandrake.render();
+	vehicle.draw();
+	wagon.draw();
+	myFamiliar.draw(false);
+	
 }
 
 
@@ -353,52 +385,12 @@ void renderScene2(void)  {
     glLoadIdentity();
     cam.updateView();
 
-    //count frames
-    //cam.resetPerspective(aspectRatio); //setup projection matrix back to 3D
-
-    //only bother drawing the grid in rendering mode
-    glPushMatrix();
-      glCallList(environmentDL);
-    glPopMatrix();
-
-    //Render our surface bezier patch
-    glPushMatrix();
-    testPatch.render();
-    glPopMatrix();
-
-    //render the hero on the patch
-    glPushMatrix();
-    pHero->render(false);
-    glPopMatrix();
-
-    //draw the shipe
-    mandrake.render();
-    //render our familiar on its bezier curve
-    myFamiliar.draw(false); //inline expression, not assignment
-
+    drawStuff();
 
     //2D drawing
     fpsCounter.onRender(windowWidth, windowHeight);
     //push the back buffer to the screen
     glutSwapBuffers();
-}
-
-void drawStuff(){
-	
-	glPushMatrix();
-    testPatch.render();
-  glPopMatrix();
-	
-	glPushMatrix();
-	glCallList(environmentDL);
-	glPopMatrix();
-	
-	mandrake.draw();
-	vehicle.draw();
-	myFamiliar.draw(false);
-	
-	
-	
 }
 
 
@@ -546,6 +538,7 @@ void myTimer( int value )
   mandrake.BezierHero::tick();
 
   vehicle.tick(keysDown);
+  wagon.timetick(keysDown);
   
   myFamiliar.tick();
 
@@ -708,13 +701,12 @@ void registerCallbacks() {
     glutMotionFunc(     mouseMotion        );
 
     // display callbacks
-    glutDisplayFunc(    renderScene2       );
+    glutDisplayFunc(    renderScene       );
     glutReshapeFunc(    resizeWindow       );
 
     // timer callback
     glutTimerFunc( 1000.0f / 60.0f, myTimer, 0 );
 }
-
 
 bool loadWorldFile(const char* const filename)
 {
@@ -741,9 +733,8 @@ bool loadWorldFile(const char* const filename)
 //    control points file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-int main( int argc, char **argv ) {
-
-    // TODO #03: make sure a control point CSV file was passed in.  Then read the points from file
+int main( int argc, char **argv )
+{
     if(argc < 2)
     {
       printf("Usage: %s ctrl-points.csv\n", argv[0]);
@@ -784,7 +775,8 @@ int main( int argc, char **argv ) {
 
     //set the camera to watch the ship
     cam.objFollow(&mandrake.position, &mandrake.theta);
-	cam2.objFollow(&vehicle.location, &vehicle.theta);
+    cam2.objFollow(&vehicle.location, &vehicle.theta);
+    //cam3.objFollow(&wagon.location, &wagon.theta);
     //cam.objWatch(&mandrake.location);
 
     // and enter the GLUT loop, never to exit.

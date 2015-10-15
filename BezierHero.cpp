@@ -16,7 +16,7 @@ void BezierHero::setPercentageMode(bool mode)
 
 void BezierHero::render()
 {
-  glEmplaceObject();
+  glSetupRender();
   if(curve.valid())
   {
     curve.render();
@@ -26,9 +26,6 @@ void BezierHero::render()
     else
       glTranslatePoint(curve.evaluateCurves(t));
   }
-  glApplyMaterial();
-  //debug cube
-  glutSolidCube(1);
 }
 
 

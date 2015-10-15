@@ -49,7 +49,7 @@ void SceneElement::glSetupRender()
 {
   glEmplaceObject();
   glOrientObject();
-  glApplyMaterial();
+  Material::glApplyMaterial(material);
 }
 
 
@@ -76,20 +76,8 @@ void SceneElement::glOrientObject()
 }
 
 
-void SceneElement::glApplyMaterial()
-{
-  const GLenum face = GL_FRONT_AND_BACK;
-  glMaterialfv(face, GL_DIFFUSE, material.getDiffuseColor());
-  glMaterialfv(face, GL_SPECULAR, material.getSpecularColor());
-  glMaterialfv(face, GL_AMBIENT, material.getAmbientColor());
-}
-
-
-void SceneElement::render()
-{
-  //TODO
-  //render orientation of this object
-}
+//virtual methods do nothing by default
+void SceneElement::render() {}
 
 void SceneElement::tick() {}
 

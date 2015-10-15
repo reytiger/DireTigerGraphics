@@ -110,10 +110,8 @@ bool PatchHero::prevSubPatch()
 }
 
 
-void PatchHero::render(bool selectionMode)
+void PatchHero::render()
 {
-  if(selectionMode) return;
-
   //update the position on the patch
   myPatch.placeOnSurface(*this, subPatch, u, v);
 

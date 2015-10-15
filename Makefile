@@ -3,6 +3,7 @@ OBJECTS  = main.o Bezier.o Camera.o Point.o Vector.o
 OBJECTS += Rocketship.o Familiar.o BezPatch.o Light.o
 OBJECTS += Color.o FPSCounter.o SceneElement.o PatchHero.o
 OBJECTS += Car.o Orientation.o Material.o BezierHero.o
+OBJECTS += Car.o Orientation.o Material.o Wagon.o BezierHero.o
 
 CXX    = g++
 CFLAGS = -Wall -g
@@ -107,7 +108,7 @@ Rocketship.o: Rocketship.cpp Rocketship.h BezierHero.h Bezier.h Point.h \
 SceneElement.o: SceneElement.cpp SceneElement.h Point.h Vector.h \
  Orientation.h Material.h
 Vector.o: Vector.cpp Vector.h
-Wagon.o: Wagon.cpp Wagon.h
+Wagon.o: Wagon.cpp Wagon.h Point.h Vector.h
 main.o: main.cpp Point.h Vector.h Camera.h BezPatch.h Bezier.h \
  SceneElement.h Orientation.h Material.h Familiar.h Rocketship.h \
- BezierHero.h Car.h Light.h Color.h FPSCounter.h PatchHero.h
+ BezierHero.h Car.h Wagon.h Light.h Color.h FPSCounter.h PatchHero.h

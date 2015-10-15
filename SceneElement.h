@@ -23,7 +23,6 @@ class SceneElement
     void glSetupRender();
     void glEmplaceObject();
     void glOrientObject();
-    void glApplyMaterial();
 
     //override with your drawing code, use glRender when you want to
     //place the object in worldspace with the above helper functions,

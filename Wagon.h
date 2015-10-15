@@ -9,20 +9,30 @@
 #endif
 
 #include <math.h>
+#include "Point.h"
 
 class Wagon {
-	float characterX, characterY, characterZ;   // character position in cartesian coordinates
-	float characterTheta;                       // Character bearing in spherical coordinates
+  public:
+	Point<GLfloat> location;
+	float theta;                       // Character bearing in spherical coordinates
 	float wheelTheta;                           // Wheel rotation variable
 	
-	Wagon();
-	Wagon(float x, float y, float z, float cth);
+	Wagon(float x, float y, float z);
+	static const float movementConstant = 0.5f;
 	
 	void drawBench();
 	void drawWheel();
 	void drawWheels();
 	void drawBox();
-	void drawWagon();
+	void draw();
+	void drawName();
+	
+	void timetick(bool* keysDown);
+	
+	void updateCharacterLeft();
+	void updateCharacterRight();
+	void updateCharacterForward();
+//	void updateCharacterBackward();
 	
 	void tick(bool* keysDown);
 
