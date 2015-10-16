@@ -1,5 +1,4 @@
 #include "Car.h"
-#include <vector>
 
 Car::Car(double startX, double startY, double startZ) : location(startX, startY, startZ)
 {
