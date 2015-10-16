@@ -598,12 +598,12 @@ void myTimer( int value )
   //  cam.switchMode(ARCBALL);
 
   //camera movement
-  if(cam.getCurrentMode() == FREE)
+  if(cam2.getCurrentMode() == FREE)
   {
     if(keysDown['z'] || keysDown['Z'])
-      cam.move(true);
+      cam2.move(true);
     else if(keysDown['x'] || keysDown['X'])
-      cam.move(false);
+      cam2.move(false);
   }
 
   //move hero around on patch
@@ -677,12 +677,12 @@ void myMenu( int value ) {
 		break;
 		
   case 6:
-	if(cam.getCurrentMode() != FREE){
-      cam.switchMode(FREE);
+	if(cam2.getCurrentMode() != FREE){
+      cam2.switchMode(FREE);
 	  break;
 	}
-	else if(cam.getCurrentMode() != ARCBALL){	  
-      cam.switchMode(ARCBALL);
+	else if(cam2.getCurrentMode() != ARCBALL){	  
+      cam2.switchMode(ARCBALL);
       break;
 	}
 	
@@ -722,17 +722,17 @@ void createMenus() {
   glutAddMenuEntry("Hero2", 4);
   glutAddMenuEntry("Hero3", 5);
   int otherSubId = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
-  glutAddMenuEntry("Hero1", 6);
+//  glutAddMenuEntry("Hero1", 6);
 //  glutAddMenuEntry("Hero2", 7);
 //  glutAddMenuEntry("Hero3", 8);
-  int thirdSubID = glutCreateMenu(myMenu);
+//  int thirdSubID = glutCreateMenu(myMenu);
   glutAddMenuEntry("Hero1", 9);
   glutAddMenuEntry("Hero2", 10);
 //  glutAddMenuEntry("Hero3", 11);
   glutCreateMenu(myMenu);
   glutAddSubMenu("Toggle Viewport", id);
-  glutAddSubMenu("Toggle First Person", thirdSubID);
-  glutAddSubMenu("Show/Hide Freecam", otherSubId);
+  glutAddSubMenu("Toggle First Person", otherSubId);
+  glutAddMenuEntry("Show/Hide Freecam", 6);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
   glutAddMenuEntry("Show/Hide Curve", 1);
   glutAddMenuEntry("Quit", 2);
