@@ -1,5 +1,7 @@
 Names: Kevin Carbaugh, Allison Crouch, Ryan Porter
 
+Code submitter: Kevin Carbaugh
+
 Assignment: Midterm - Guild Wars
 
 Description: A culmination of all the previous openGL techniques we've learned
