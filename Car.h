@@ -26,6 +26,10 @@ class Car
     float theta; // The rocket's heading, in degrees
 	float value, updown;
 	int wheelAngle;
+	
+	// Headlights
+	Light* leftHeadlight;
+	Light* rightHeadlight;
 
     void drawHero();
 	void drawWheels();
