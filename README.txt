@@ -48,7 +48,7 @@ Usage:
 
 Compilation: Run 'make' from the main directory to build
 
-Details: 
+Details: Run with ./diretiger worldFile.dat
 
 Time taken:
 Kevin - 35 hours
