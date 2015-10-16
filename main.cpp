@@ -152,7 +152,7 @@ void drawTree()
 
 // Function for generating data about the city
 void generateCity() {
-	ifstream test_input(CITY_DATA.c_str);
+	ifstream test_input(CITY_DATA.c_str());
 	
 	bool input_found = (test_input);
 	
@@ -190,22 +190,22 @@ void generateCity() {
 		  }
 		
 		// Write to file
-		ofstream output_data(CITY_DATA.c_str());
+		ofstream output_conn(CITY_DATA.c_str());
 		
 		if (!output_conn) {
-			return (false);
+			return;
 		}
 		
 		// Write building data
-		output_conn << to_string(nBuildings);
+		output_conn << nBuildings << endl;
 		for (unsigned int i = 0; i < nBuildings; i++) {
-			output_conn << to_string(buildingVector[2*i]) + ", " + to_string(buildingVector[2*i + i]);
+			output_conn << buildingVector[2*i] << ", " << buildingVector[2*i + i] << endl;
 		}
 		
 		// Write tree location data
-		output_conn << to_string(nTrees);
+		output_conn << nTrees <<endl;
 		for (unsigned int j = 0; j < nTrees; j++) {
-			output_conn << to_string(treeVector[2*j]) + ", " + to_string(treeVector[2*j + i]);
+			output_conn << treeVector[2*j] << ", " << treeVector[2*j + j] << endl;
 		}
 		
 		output_conn.close();
@@ -235,7 +235,7 @@ void drawCity() {
 	int tz;
 	
 	input_conn >> t1;
-	nb = atoi(t1);
+	nb = atoi(t1.c_str());
 	
 	for (int i = 0; i < nb; i++) {
 		input_conn >> tempLine;
@@ -246,7 +246,7 @@ void drawCity() {
 	}
 	
 	input_conn >> t2;
-	nt = atoi(t2);
+	nt = atoi(t2.c_str());
 	
 	for (int j = 0; j < nt; j++) {
 		input_conn >> tempLine;
