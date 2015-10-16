@@ -360,7 +360,7 @@ void drawCity() {/*
     for(int z = -gridSize; z <= gridSize; ++z)
     {
       //Determines the density of buildings on our grid
-      if(buildingCoords[])
+      if(getRand() < 0.004)
       {
         glPushMatrix();
           //choose a random color
