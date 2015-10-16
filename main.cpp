@@ -210,6 +210,58 @@ void generateCity() {
 		
 		output_conn.close();
 	}
+	
+	/*
+	
+	ofstream output_data(CITY_DATA.c_str());
+ int nTrees = 0;
+	  vector<float> treeVector;
+	  int nBuildings = 0;
+	  vector<float> buildingVector; // write in blocks of 5
+	  
+	  for(int x = -gridSize; x <= gridSize; ++x)
+	  {
+		for(int z = -gridSize; z <= gridSize; ++z)
+		{
+		  //Determines the density of buildings on our grid
+		  if(getRand() < 0.004)
+			   {
+			glPushMatrix();
+			  //choose a random color
+			  glColor3f(getRand(), getRand(), getRand());
+
+			  //scale the cube by some random factor to vary the heights
+			  float cubeHeight = getRand() * 30 + 4;
+			  float cubeWidth = getRand() * 9 + 2;
+
+			  //place the cube on the grid so the bottom is on the xz plane
+			  glTranslatef(x, cubeHeight / 2, z);
+
+			  //and rotate to give the scene a bit more variety
+			  glRotatef(getRand() * 180, 0, 1, 0);
+			  //glScalef(1, cubeHeight, 1);
+			  glScalef(cubeWidth, cubeHeight, cubeWidth);
+
+			  //draw a cube of a random size
+			  glutSolidCube(1);
+			glPopMatrix();
+
+			//now translate over additonally so we help prevent the next building
+			//from clipping into the one we just placed
+			//z += (2 * cubeWidth) - 1; //-1 since the for loop is about to increment z anyway
+		  }
+		  else if(getRand() < 0.002)
+		  {
+			glPushMatrix();
+			  //place in worldspace
+			  glTranslatef(x, 0, z);
+			  
+			  //scale randomly
+			  glScalef(getRand() * .9 + 0.5, getRand() * 0.7 + 0.4, getRand() * 0.5 + 0.3);
+			  drawTree();
+			glPopMatrix();
+		  }
+		}*/
 }
 
 // drawCity() //////////////////////////////////////////////////////////////////
@@ -217,7 +269,7 @@ void generateCity() {
 //  Function to draw a random city using GLUT 3D Primitives
 //
 ////////////////////////////////////////////////////////////////////////////////
-void drawCity() {
+void drawCity() {/*
 	ifstream input_conn(CITY_DATA.c_str());
 	
 	if (!input_conn) {
@@ -298,15 +350,17 @@ void drawCity() {
     glScalef(getRand() * .9 + 0.5, getRand() * 0.7 + 0.4, getRand() * 0.5 + 0.3);
     drawTree();
     glPopMatrix();
-  }
+  }*/
   
-  /* // Old Code, left as guide
+   // Old Code, left as guide
+   
+  int gridSize = 200 / 2;
   for(int x = -gridSize; x <= gridSize; ++x)
   {
     for(int z = -gridSize; z <= gridSize; ++z)
     {
       //Determines the density of buildings on our grid
-      if(buildingCoords[])
+      if(getRand() < 0.004)
       {
         glPushMatrix();
           //choose a random color
@@ -345,7 +399,7 @@ void drawCity() {
       }
     }
   }
-  */
+  
 }
 
 // generateEnvironmentDL() /////////////////////////////////////////////////////

@@ -107,6 +107,7 @@ void Wagon::draw() {
 	 glPushMatrix();
 	 
 	 // Function for drawing the body of the wagon
+	 glTranslatef(location.getX(), 0, location.getZ());
 	 
 	 {
 		glRotatef(0.0, theta, 0.0, 1.0);
@@ -141,10 +142,10 @@ void Wagon::timetick(bool* keysDown) {
 			wheelTheta -= 10;
 		}
 	}
-	else if (keysDown[0x61] || keysDown[0x41]) {
+	if (keysDown[0x61] || keysDown[0x41]) {
 		theta += M_PI / 20.0f;
 	}
-	else if (keysDown[0x64]) {
+	if (keysDown[0x64]) {
 		theta -= M_PI / 20.0f;
 	}
 	// Needs to be set up yet
