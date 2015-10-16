@@ -59,12 +59,26 @@ Lab effectiveness on this assignment: 6/10
 
 Fun factor: 5/10
 
-Input File Format:
+Input File Format
+-----------------
+
+All whitespace is ignored, so it's for human readability:
+
+Single empty lines denote end of sub-objects
+Two spaces denote separations of objects
+Three spaces separate between different sections
+
+
 <Number of Bezier surfaces>
-<Empty line>
+<3 Empty line>
 <control point 1x>, <control point 1y>, <control point 1z>
 ...
 <control point 16x>, <control point 16y>, <control point 16z>
+<Empty line>
+<Number of control points for familiar's path>
+<control point 1x>, <control point 1y>, <control point 1z>
+...
+<control point fx>, <control point fy>, <control point fz>
 <Empty line>
 <Number of control points for Bezier track>
 <control point 1x>, <control point 1y>, <control point 1z>

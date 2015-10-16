@@ -331,6 +331,7 @@ void initScene()  {
     //attach our familiar to the ship
     myFamiliar.attachToObj(&mandrake.position, &mandrake.theta);
 
+
     //offset the rocketship
     mandrake.setPosition(Point<float>(0.f, 10.f, 0.f));
 
@@ -347,8 +348,6 @@ void initScene()  {
     mandrake.setMaterial(Material(diffuse, specular, ambient, 0.25f));
     //vehicle.setMaterial(Material(diffuse2, specular2, ambient2, .25f));
 
-    if(!testPatch.loadControlPoints("testPatch.csv", 10.f))
-      fprintf(stderr, "Could not load test bezier patch data from file\n");
 
     srand( time(NULL) );	// seed our random number generator
 
@@ -766,21 +765,43 @@ void registerCallbacks() {
     glutTimerFunc( 1000.0f / 60.0f, myTimer, 0 );
 }
 
-bool loadWorldFile(const char* const filename)
+bool loadWorldFromFile(const char* const filename)
 {
   FILE* fp = fopen(filename, "r");
   if(!fp)
   {
     perror("Could not open worldfile");
+    fprintf(stderr, "Named %s\n", filename);
+    return false;
+  }
+
+  if(!testPatch.loadControlPoints(fp, 10.f))
+  {
+    fprintf(stderr, "Could not load test bezier patch data from file\n");
+    return false;
+  }
+
+  if(!myFamiliar.path.loadControlPoints(fp))
+  {
+    fprintf(stderr, "Could not curve load control points for familiar from %s.\n", filename);
     return false;
   }
 
   //load the control curves for heros to follow
   if(!mandrake.loadCtrlPoints(fp))
   {
-    fprintf(stderr, "Could not curve load control points from %s.\n", filename);
+    fprintf(stderr, "Could not curve load control points for rocketship from %s.\n", filename);
     return false;
   }
+
+  /*
+  if(!wagon.loadCtrlPoints(fp))
+  {
+    fprintf(stderr, "Could not curve load control points for wagon from %s.\n", filename);
+    return false;
+  }
+  */
+
   return true;
 }
 
@@ -795,12 +816,12 @@ int main( int argc, char **argv )
 {
     if(argc < 2)
     {
-      printf("Usage: %s ctrl-points.csv\n", argv[0]);
+      printf("Usage: %s worldfile\n", argv[0]);
       exit(EXIT_SUCCESS);
     }
 
     //load world data
-    if(!loadWorldFile("controlPoints10.csv"))
+    if(!loadWorldFromFile(argv[1]))
     {
       fprintf(stderr, "Could not load worldfile data\n");
       exit(EXIT_SUCCESS);
