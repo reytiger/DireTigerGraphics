@@ -9,6 +9,7 @@
 #endif
 
 #include "Point.h"
+#include "Light.h"
 #include <math.h>
 const double DEGREE2RAD = M_PI / 180;
 
