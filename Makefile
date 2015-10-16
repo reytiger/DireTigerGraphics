@@ -93,7 +93,8 @@ Bezier.o: Bezier.cpp Bezier.h Point.h Vector.h
 BezierHero.o: BezierHero.cpp BezierHero.h Bezier.h Point.h Vector.h \
  SceneElement.h Orientation.h Material.h
 Camera.o: Camera.cpp Camera.h Point.h Vector.h
-Car.o: Car.cpp Car.h Point.h Vector.h
+Car.o: Car.cpp Car.h Point.h Vector.h SceneElement.h Orientation.h \
+ Material.h PatchHero.h Bezier.h
 Color.o: Color.cpp Color.h
 FPSCounter.o: FPSCounter.cpp FPSCounter.h
 Familiar.o: Familiar.cpp Familiar.h Bezier.h Point.h Vector.h

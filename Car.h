@@ -11,9 +11,11 @@
 #include "Point.h"
 #include "Light.h"
 #include <math.h>
+#include "SceneElement.h"
+#include "PatchHero.h"
 const double DEGREE2RAD = M_PI / 180;
 
-class Car
+class Car : public SceneElement
 {
   public:
     //ctor, detor
