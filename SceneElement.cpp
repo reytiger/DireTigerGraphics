@@ -48,7 +48,7 @@ void SceneElement::setMaterial(const Material& mat)
 void SceneElement::glSetupRender()
 {
   glEmplaceObject();
-  glOrientObject();
+  //glOrientObject();
   Material::glApplyMaterial(material);
 }
 

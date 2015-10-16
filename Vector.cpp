@@ -130,7 +130,7 @@ void glRotateToBasis(const Basis<T>& b, const Vector<T>& translation)
 
 
 template <typename T>
-void Vector<T>::draw()
+void Vector<T>::draw() const
 {
   glDisable(GL_LIGHTING);
   glBegin(GL_LINES);
@@ -175,14 +175,14 @@ Vector<T> Vector<T>::cross(const Vector<T>& other) const
 
 //dot product
 template <typename T>
-T Vector<T>::dot(const Vector<T>& other)
+T Vector<T>::dot(const Vector<T>& other) const
 {
   return x * other.x + y * other.y + z * other.z;
 }
 
 
 template <typename T>
-double Vector<T>::angleTo(const Vector<T>& other)
+double Vector<T>::angleTo(const Vector<T>& other) const
 {
   return RAD2DEG * acos(dot(other) / (magnitude() * other.magnitude()));
 }

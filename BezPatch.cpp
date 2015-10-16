@@ -229,6 +229,16 @@ Vector<T> BezPatch<T>::getNormal(int subPatch, float u, float v)
   return Vector<T>::normalize(vBez.getTangent(v).cross(uBez.getTangent(u)));
 }
 
+template <typename T>
+Vector<T> BezPatch<T>::getTangent(int subPatch, float u, float v, bool uAxis)
+{
+  SubPatch<T>& s = subPatches.at(subPatch);
+
+  if(uAxis)
+    return s.evalAxis(v, false).getTangent(u);
+  else
+    return s.evalAxis(u, true).getTangent(v);
+}
 
 //evaluates a point on the patch in uv coordinates
 template <typename T>
@@ -263,9 +273,73 @@ Basis<T> BezPatch<T>::getBasis(int subPatch, float u, float v)
 
 
 template <typename T>
-void BezPatch<T>::placeOnSurface(SceneElement& elem, int subPatch, float u, float v)
+void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
 {
-  elem.setPosition(getCoord(subPatch, u, v) + origin);
+  //translate onto to the surface
+  glTranslatePoint(getCoord(subPatch, u, v) + origin);
+
+  //calc axis of rotation so the object's heading is aligned with the u axis
+  Vector<T> norm = getNormal(subPatch, u, v);
+  const Vector<T> zRef(0.0, 0.0, 1.0);
+  const Vector<T> axis = norm.cross(zRef);
+
+  //axis so object's up is along the normal
+  const Vector<T> yRef(0.0, 1.0, 0.0);
+  const Vector<T> axis2 = axis.cross(yRef);
+
+  //draw the world XYZ vectors
+  glPushMatrix();
+    glLineWidth(4.0f);
+    //+X is red
+    glColor3ub(255, 0, 0);
+    Vector<T>(1.0, 0.0, 0.0).draw();
+
+    //+Y is blue
+    glColor3ub(0, 255, 0);
+    yRef.draw();
+
+    //+Z is green
+    glColor3ub(0, 0, 255);
+    zRef.draw();
+
+    //the normal is grey
+    glColor3ub(145, 145, 145);
+    norm.draw();
+
+    glLineWidth(1.0f);
+  glPopMatrix();
+
+  //apply rotations
+  glRotatefVector(norm.angleTo(zRef), axis);
+//  glRotatefVector(axis.angleTo(yRef), axis2);
+
+  //draw the transformed axes
+  glPushMatrix();
+    glLineWidth(2.0f);
+    //+X is yellow
+    glColor3ub(226, 229, 39);
+    Vector<T>(1.0, 0.0, 0.0).draw();
+
+    //+Y is blue
+    glColor3ub(39, 216, 229);
+    yRef.draw();
+
+    //+Z is purplse
+    glColor3ub(140, 37, 131);
+    zRef.draw();
+
+    //First axis is pink
+    glColor3ub(216, 147, 183);
+    axis.draw();
+
+    //Second axis is cyan
+    glColor3ub(22, 122, 120);
+    axis2.draw();
+
+    glLineWidth(1.0f);
+  glPopMatrix();
+  
+  //and now the object should draw itself
 }
 
 

@@ -113,36 +113,26 @@ bool PatchHero::prevSubPatch()
 void PatchHero::render()
 {
   //update the position on the patch
-  myPatch.placeOnSurface(*this, subPatch, u, v);
+  myPatch.glOrientToSurface(subPatch, u, v);
 
-  //set the render context to the proper location
-  glEmplaceObject();
-
+  /*
   Basis<float> basis = myPatch.getBasis(subPatch, u, v);
 
-  glPushMatrix();
-    glLineWidth(3.0f);
-    //draw the basis
-    glTranslatef(0.f, 2.f, 0.f);
-    glColor3ub(226, 229, 39);
-    (basis.x).draw();
-    glColor3ub(39, 216, 229);
-    (basis.y).draw();
-    glColor3ub(140, 37, 131);
-    basis.z.draw();
-    glLineWidth(1.0f);
-  glPopMatrix();
 
   glOrientObject();
+  
 
   glRotateToBasis(basis, Vector<float>(0.f, 2.f, 0.f));
+  */
 
   //offset off the surface
   //glTranslatefVector(normal * 0.5f);
 
   //draw the hero
-  glScalef(2.f, 1.f, 1.f);
+  /*
+  glScalef(2.f, 0.2f, 0.5f);
   glutSolidCube(1);
+  */
 }
 
 

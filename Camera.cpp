@@ -7,7 +7,7 @@
 
 #define DEG2RAD M_PI / 180
 
-const float Camera::moveSpeed = 8.5f;
+const float Camera::moveSpeed = 2.5f;
 
 Camera::Camera(cameraMode startingMode, double startTheta, double startPhi, double dfo)
 {

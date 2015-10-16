@@ -333,7 +333,7 @@ void initScene()  {
     //TODO
     //set materials
     GLfloat diffuse[4] = {0.55f, 0.25f, 0.25f, 1.f};
-    GLfloat specular[4] = {0.7f, 0.7f, 0.7f, 1.f};
+    GLfloat specular[4] = {0.03f, 0.03f, 0.03f, 1.f};
     GLfloat ambient[4] = {0.f, 0.f, 0.f, 1.f};
 
     mandrake.setMaterial(Material(diffuse, specular, ambient, 0.25f));

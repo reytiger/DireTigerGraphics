@@ -15,15 +15,15 @@ class Vector
     static Vector<T> normalize(const Vector<T>& in);
 
     Vector<T> cross(const Vector<T>& other) const;
-    T dot(const Vector<T>& other);
-    double angleTo(const Vector<T>& other);
+    T dot(const Vector<T>& other) const;
+    double angleTo(const Vector<T>& other) const;
     Vector<T>& operator*=(const T& rhs);
     Vector<T> projectOnto(const Vector<T>& other);
     T magnitude() const;
     //instance level
     void normalize();
 	
-    void draw();
+    void draw() const;
     void drawNormalized() const;
 
     //Component getters

@@ -16,16 +16,21 @@ void BezierHero::setPercentageMode(bool mode)
 
 void BezierHero::render()
 {
-  glSetupRender();
   if(curve.valid())
   {
     curve.render();
-    //glRender();
     if(percentageMode)
-      glTranslatePoint(curve.getPercentageAlongCurve(t));
+    {
+      position = curve.getPercentageAlongCurve(t);
+      //glTranslatePoint(position);
+    }
     else
-      glTranslatePoint(curve.evaluateCurves(t));
+    {
+      position = curve.evaluateCurves(t);
+      //glTranslatePoint(position);
+    }
   }
+  glSetupRender();
 }
 
 
