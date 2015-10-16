@@ -61,6 +61,7 @@ static float aspectRatio;
 int updown = 1;
 bool heroArc1 = false, heroArc2 = false, heroArc3 = false;
 
+static const string CITY_DATA = "city_data.txt";
 
 GLint leftMouseButton, rightMouseButton;    // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
@@ -149,6 +150,67 @@ void drawTree()
   glPopMatrix();
 }
 
+// Function for generating data about the city
+void generateCity() {
+	ifstream test_input(CITY_DATA.c_str);
+	
+	bool input_found = (test_input);
+	
+	test_input.close();
+	
+	if (!input_found) { // if input not found, generate data
+			//expanded 100x100 grid
+		  int gridSize = 200 / 2;
+		  
+		  int nTrees = 0;
+		  vector<float> treeVector; // write in blocks of 2 (x, 0, z)
+		  int nBuildings = 0;
+		  vector<float> buildingVector; // write in blocks of 2
+		  
+		  for(int x = -gridSize; x <= gridSize; ++x)
+		  {
+			for(int z = -gridSize; z <= gridSize; ++z)
+			{
+			  //Determines the density of buildings on our grid
+			  if(getRand() < 0.004)
+			  {
+				// store coordinates
+				buildingVector.push_back(x);
+				buildingVector.push_back(z);
+				++nBuildings;
+			  }
+			  else if(getRand() < 0.002)
+			  {
+				//store coordinates
+				treeVector.push_back(x);
+				treeVector.push_back(z);
+				++nTrees;
+			  }
+			}
+		  }
+		
+		// Write to file
+		ofstream output_data(CITY_DATA.c_str());
+		
+		if (!output_conn) {
+			return (false);
+		}
+		
+		// Write building data
+		output_conn << to_string(nBuildings);
+		for (unsigned int i = 0; i < nBuildings; i++) {
+			output_conn << to_string(buildingVector[2*i]) + ", " + to_string(buildingVector[2*i + i]);
+		}
+		
+		// Write tree location data
+		output_conn << to_string(nTrees);
+		for (unsigned int j = 0; j < nTrees; j++) {
+			output_conn << to_string(treeVector[2*j]) + ", " + to_string(treeVector[2*j + i]);
+		}
+		
+		output_conn.close();
+	}
+}
 
 // drawCity() //////////////////////////////////////////////////////////////////
 //
@@ -156,14 +218,95 @@ void drawTree()
 //
 ////////////////////////////////////////////////////////////////////////////////
 void drawCity() {
+	ifstream input_conn(CITY_DATA.c_str());
+	
+	if (!input_conn) {
+		cerr << "Cannot find output file" << endl;
+	}
+	
+	int nb;
+	vector<float> buildingCoords;
+	int nt;
+	vector<float> treeCoords;
+	string t1;
+	string t2;
+	string tempLine;
+	int tx;
+	int tz;
+	
+	input_conn >> t1;
+	nb = atoi(t1);
+	
+	for (int i = 0; i < nb; i++) {
+		input_conn >> tempLine;
+		t1 = atof((tempLine.substr(0, tempLine.find_first_of(','))).c_str());
+		t2 = atof((tempLine.substr(tempLine.find_last_of(',') + 1, tempLine.length() - 1)).c_str());
+		buildingCoords.push_back(tx);
+		buildingCoords.push_back(tz);
+	}
+	
+	input_conn >> t2;
+	nt = atoi(t2);
+	
+	for (int j = 0; j < nt; j++) {
+		input_conn >> tempLine;
+		t1 = atof((tempLine.substr(0, tempLine.find_first_of(','))).c_str());
+		t2 = atof((tempLine.substr(tempLine.find_last_of(',') + 1, tempLine.length() - 1)).c_str());
+		treeCoords.push_back(tx);
+		treeCoords.push_back(tz);
+	}
+	
   //expanded 100x100 grid
   int gridSize = 200 / 2;
+  
+  // Draw buildiings
+  for (unsigned int b = 0; b < buildingCoords.size(); b++) {
+	float xc = treeCoords[b];
+	float zc = treeCoords[b++];
+	  
+	glPushMatrix();
+    //choose a random color
+    glColor3f(getRand(), getRand(), getRand());
+
+    //scale the cube by some random factor to vary the heights
+    float cubeHeight = getRand() * 30 + 4;
+    float cubeWidth = getRand() * 9 + 2;
+
+    //place the cube on the grid so the bottom is on the xz plane
+    glTranslatef(xc, cubeHeight / 2, zc);
+
+    //and rotate to give the scene a bit more variety
+    glRotatef(getRand() * 180, 0, 1, 0);
+    //glScalef(1, cubeHeight, 1);
+    glScalef(cubeWidth, cubeHeight, cubeWidth);
+
+    //draw a cube of a random size
+    glutSolidCube(1);
+    glPopMatrix();
+  }
+  
+  // Draw trees
+  for (unsigned int t = 0; t < treeCoords.size(); t++) {
+	float xc = treeCoords[t];
+	float zc = treeCoords[t++];
+	
+	glPushMatrix();
+    //place in worldspace
+    glTranslatef(xc, 0, zc);
+          
+    //scale randomly
+    glScalef(getRand() * .9 + 0.5, getRand() * 0.7 + 0.4, getRand() * 0.5 + 0.3);
+    drawTree();
+    glPopMatrix();
+  }
+  
+  /* // Old Code, left as guide
   for(int x = -gridSize; x <= gridSize; ++x)
   {
     for(int z = -gridSize; z <= gridSize; ++z)
     {
       //Determines the density of buildings on our grid
-      if(getRand() < 0.004)
+      if(buildingCoords[])
       {
         glPushMatrix();
           //choose a random color
@@ -202,6 +345,7 @@ void drawCity() {
       }
     }
   }
+  */
 }
 
 // generateEnvironmentDL() /////////////////////////////////////////////////////
