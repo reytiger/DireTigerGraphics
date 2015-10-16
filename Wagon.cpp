@@ -85,7 +85,7 @@ void Wagon::drawBox() {
 }
 
 void Wagon::drawName(){
-	char scrtext[64]= "<Ryan>";
+	char scrtext[64]= "<Bolgrath>";
 
 	// choose a colour
 	glPushMatrix();
@@ -149,7 +149,7 @@ void Wagon::timetick(bool* keysDown) {
 	}
 	// Needs to be set up yet
 }
-/*void Wagon::updateCharacterForward() {
+/*void Wagon::updateCharacterForward() {  // Code used as guide while writing timetick
 	// Function for moving the wagon forward
 	if (abs(characterX + movementConstant*(sinf(characterTheta))) < 45 && abs(characterZ + movementConstant*(cosf(characterTheta))) < 45) {
 			characterX += movementConstant*(sinf(characterTheta));

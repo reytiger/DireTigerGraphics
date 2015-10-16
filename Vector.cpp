@@ -187,6 +187,40 @@ double Vector<T>::angleTo(const Vector<T>& other) const
   return RAD2DEG * acos(dot(other) / (magnitude() * other.magnitude()));
 }
 
+
+//Rotates this vector around the given axis vector
+template <typename T>
+Vector<T> Vector<T>::rotateAround(float degrees, Vector<T> axis) const
+{
+  T ux = axis.x * x;
+  T uy = axis.x * y;
+  T uz = axis.x * z;
+
+  T vx = axis.y * x;
+  T vy = axis.y * y;
+  T vz = axis.y * z;
+
+  T wx = axis.z * x;
+  T wy = axis.z * y;
+  T wz = axis.z * z;
+
+  double sinA = sin(degrees);
+  double cosA = cos(degrees);
+
+  T newX = axis.x * (ux+vy+wz) +
+           (x * (axis.y * axis.y + axis.z * axis.z) - axis.x * (vy + wz))
+           * cosA + (-wy + vz) * sinA;
+  
+  T newY = axis.y * (ux +vy + wz) +
+           (y * (axis.x * axis.x + axis.z * axis.z) - axis.y * (ux + wz))
+           * cosA + (wx - uz) * sinA;
+
+  T newZ = axis.z * (ux + vy + wz) +
+           (z * (axis.x * axis.x + axis.y * axis.y) - axis.z * (ux + wz))
+           * cosA + (-vx + uy) * sinA;
+  return Vector<T>(newX, newY, newZ);
+}
+
 template <typename T>
 Vector<T>& Vector<T>::operator*=(const T& rhs)
 {

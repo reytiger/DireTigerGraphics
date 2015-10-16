@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cmath>
 #include "BezPatch.h"
 
 #ifdef __APPLE__			// if compiling on Mac OS
@@ -10,6 +11,8 @@
 	#include <GL/gl.h>
 	#include <GL/glu.h>
 #endif
+
+#define RAD2DEG 180/M_PI
 
 //Ctors
 
@@ -280,18 +283,16 @@ Basis<T> BezPatch<T>::getBasis(int subPatch, float u, float v)
 template <typename T>
 void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
 {
+  const Vector<T> xRef(1.0, 0.0, 0.0);
+  const Vector<T> yRef(0.0, 1.0, 0.0);
+  const Vector<T> zRef(0.0, 0.0, 1.0);
+
   //translate onto to the surface
   glTranslatePoint(getCoord(subPatch, u, v) + origin);
 
   //axis so object's up is along the normal
   Vector<T> norm = getNormal(subPatch, u, v);
-  const Vector<T> yRef(0.0, 1.0, 0.0);
   Vector<T> axis = yRef.cross(norm);
-
-  //calc axis of rotation so the object's up is along the normal
-  const Vector<T> zRef(0.0, 0.0, 1.0);
-  Vector<T> axis2 = zRef.cross(axis);
-
 
   //draw the world XYZ vectors
   glPushMatrix();
@@ -316,9 +317,14 @@ void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
   glPopMatrix();
 
   //apply rotations
-  glRotatefVector(norm.angleTo(yRef), axis);
-//  glRotatefVector(axis.angleTo(zRef), axis2);
+  //orient the Y to the normal of the surface
+  float deg = norm.angleTo(yRef);
+  glRotatefVector(deg, axis);
 
+  //rotate about the normal, the difference in angle
+  //between the new X axis and the old one
+  glRotatefVector(xRef.rotateAround(deg, axis).angleTo(xRef), yRef);
+  
   //draw the transformed axes
   glPushMatrix();
     glLineWidth(2.0f);
@@ -338,11 +344,6 @@ void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
     glColor3ub(216, 147, 183);
     axis *= 4;
     axis.draw();
-
-    //Second axis is cyan
-    glColor3ub(22, 122, 120);
-    axis2 *= 4;
-    axis2.draw();
 
     glLineWidth(1.0f);
   glPopMatrix();

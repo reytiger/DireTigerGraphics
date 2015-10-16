@@ -17,6 +17,7 @@ class Vector
     Vector<T> cross(const Vector<T>& other) const;
     T dot(const Vector<T>& other) const;
     double angleTo(const Vector<T>& other) const;
+    Vector<T> rotateAround(float degrees, Vector<T> axis) const;
     Vector<T>& operator*=(const T& rhs);
     Vector<T> projectOnto(const Vector<T>& other);
     T magnitude() const;
