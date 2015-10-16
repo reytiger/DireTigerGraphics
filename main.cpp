@@ -85,7 +85,7 @@ Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
 PatchHero* pHero;
 
-BezPatch<GLfloat> testPatch(6, Point<GLfloat>(0.f, 40.f, 0.f));
+BezPatch<GLfloat> testPatch(10, Point<GLfloat>(0.f, 40.f, 0.f));
 
 // getRand() ///////////////////////////////////////////////////////////////////
 //
@@ -620,6 +620,8 @@ void renderScene(){
 	}
 	cam2.updateView();
 	drawStuff();
+
+  fpsCounter.onRender(windowWidth, windowHeight);
 	
 	if (heroArc1 == true){
 		glClear(GL_DEPTH_BUFFER_BIT);
