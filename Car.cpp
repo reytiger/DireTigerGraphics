@@ -158,7 +158,6 @@ void Car::drawName(){
 	glPopMatrix(); 
 }
 
-
 //The main render function
 //In charge of all GlStack operations
 //as well as managine attributes of each matrix stack frame

@@ -486,11 +486,11 @@ void initScene()  {
     GLfloat ambient[4] = {0.f, 0.f, 0.f, 1.f};
 
 	
-    /*GLfloat diffuse2[4] = {0.54f, 0.89f, 0.63f, 1.f};
+    GLfloat diffuse2[4] = {0.54f, 0.89f, 0.63f, 1.f};
     GLfloat specular2[4] = {0.316228f, 0.7316228f, 0.316228f, 1.f};
-    GLfloat ambient2[4] = {0.135f, 0.2225f, 0.1575f, 1.f};*/
+    GLfloat ambient2[4] = {0.135f, 0.2225f, 0.1575f, 1.f};
     mandrake.setMaterial(Material(diffuse, specular, ambient, 0.25f));
-    //vehicle.setMaterial(Material(diffuse2, specular2, ambient2, .25f));
+    vehicle.setMaterial(Material(diffuse2, specular2, ambient2, .25f));
 
 
     srand( time(NULL) );	// seed our random number generator
