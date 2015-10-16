@@ -244,11 +244,11 @@ void resizeWindow(int w, int h) {
 
     //update the viewport to fill the window
     glViewport(0, 0, w, h);
-	//glViewport(w - 100, h-100, w, h);
+    //glViewport(w - 100, h-100, w, h);
 
     cam.resetPerspective(aspectRatio);
-	cam2.resetPerspective(aspectRatio);
-	cam3.resetPerspective(aspectRatio);
+    cam2.resetPerspective(aspectRatio);
+    cam3.resetPerspective(aspectRatio);
 }
 
 
@@ -268,9 +268,9 @@ void mouseCallback(int button, int state, int thisX, int thisY) {
     if(button == GLUT_LEFT_BUTTON)
     {
         leftMouseButton = state;
-		cam.saveReferenceFrame();
+        cam.saveReferenceFrame();
         cam2.saveReferenceFrame();
-		cam3.saveReferenceFrame();
+        cam3.saveReferenceFrame();
     }
 
     //allow passive mouse motion to know if control is held
@@ -630,6 +630,9 @@ void myTimer( int value )
 
   //update the camera's view and ask for a redraw
   cam.updateView();
+  cam2.updateView();
+  cam3.updateView();
+
   // register a new timer callback
   glutTimerFunc( 1000.0f / 60.0f, myTimer, 0 );
 }

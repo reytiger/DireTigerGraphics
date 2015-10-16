@@ -112,6 +112,7 @@ bool PatchHero::prevSubPatch()
 
 void PatchHero::render()
 {
+  glSetupRender();
 
   //update the position on the patch
   myPatch.glOrientToSurface(subPatch, u, v);
