@@ -323,7 +323,11 @@ void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
 
   //rotate about the normal, the difference in angle
   //between the new X axis and the old one
-  glRotatefVector(xRef.rotateAround(deg, axis).angleTo(xRef), yRef);
+  /*
+  Vector<T> tan = getTangent(subPatch, u, v, true);
+  Vector<T> tanXY = Vector<T>(tan.getX(), tan.getY(), 0.0);
+  glRotatefVector(xRef.rotateAround(deg, axis).angleTo(tanXY), yRef);
+  */
   
   //draw the transformed axes
   glPushMatrix();

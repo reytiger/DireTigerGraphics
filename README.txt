@@ -52,6 +52,7 @@ Details:
 
 Time taken:
 Kevin - 35 hours
+  Bezier curves and surfaces, rocketship, materials and lighting
 Allison - 
 Ryan - 
 
