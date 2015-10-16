@@ -65,10 +65,11 @@ bool heroArc1 = false, heroArc2 = false, heroArc3 = false;
 GLint leftMouseButton, rightMouseButton;    // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 
-Camera cam(ARCBALL, 0.0, 2 * M_PI / 3, 40);
+Camera cam(ARCBALL, 45.0, 2 * M_PI / 3, 30);
 Light* mainLight = NULL;
 FPSCounter fpsCounter;
-Camera cam2(ARCBALL, 0.0, 2 * M_PI / 3, 20);
+Camera cam2(ARCBALL, 0.0, 2 * M_PI / 3, 30);
+Camera cam3(ARCBALL, 0.0, 2 * M_PI / 3, 30);
 GLint menuId;				    // handle for our menu
 
 bool keysDown[256];
@@ -77,7 +78,7 @@ bool ctrlState;
 //Scene objects
 GLuint environmentDL;
 Rocketship mandrake(0.3);
-Car vehicle(0, 0, 0);
+Car vehicle(15, 0, 15);
 Wagon wagon(25.0f, 0.0f, 25.0f);
 Familiar myFamiliar;
 GLUquadricObj* treeTrunk;
@@ -247,6 +248,7 @@ void resizeWindow(int w, int h) {
 
     cam.resetPerspective(aspectRatio);
 	cam2.resetPerspective(aspectRatio);
+	cam3.resetPerspective(aspectRatio);
 }
 
 
@@ -266,7 +268,9 @@ void mouseCallback(int button, int state, int thisX, int thisY) {
     if(button == GLUT_LEFT_BUTTON)
     {
         leftMouseButton = state;
-        cam.saveReferenceFrame();
+		cam.saveReferenceFrame();
+        cam2.saveReferenceFrame();
+		cam3.saveReferenceFrame();
     }
 
     //allow passive mouse motion to know if control is held
@@ -287,12 +291,12 @@ void mouseMotion(int x, int y)
   if(leftMouseButton == GLUT_DOWN)
   {
     if(ctrlState)
-      cam.adjustDistFromOrigin(y - mouseY);
-    else if(cam.getCurrentMode() != FIRST_PERSON){
-      cam.mouseRotate(x - mouseX, mouseY - y);
+      cam2.adjustDistFromOrigin(y - mouseY);
+	if(cam2.getCurrentMode() != FIRST_PERSON){
+      cam2.mouseRotate(x - mouseX, mouseY - y);
 	}
   }
-  cam.updateView();
+  cam2.updateView();
 
   /*mouseX = x;
   mouseY = y;*/
@@ -336,7 +340,12 @@ void initScene()  {
     GLfloat specular[4] = {0.03f, 0.03f, 0.03f, 1.f};
     GLfloat ambient[4] = {0.f, 0.f, 0.f, 1.f};
 
+	
+    GLfloat diffuse2[4] = {0.54f, 0.89f, 0.63f, 1.f};
+    GLfloat specular2[4] = {0.316228f, 0.7316228f, 0.316228f, 1.f};
+    GLfloat ambient2[4] = {0.135f, 0.2225f, 0.1575f, 1.f};
     mandrake.setMaterial(Material(diffuse, specular, ambient, 0.25f));
+	//vehicle.setMaterial(Material(diffuse2, specular2, ambient2, .25f));
 
     if(!testPatch.loadControlPoints("testPatch.csv", 10.f))
       fprintf(stderr, "Could not load test bezier patch data from file\n");
@@ -409,7 +418,10 @@ void renderScene(){
 	if(cam.getCurrentMode() == FIRST_PERSON){
 	  cam.mouseRotate(vehicle.theta, 0);
 	}
-	cam.updateView();
+	if(cam2.getCurrentMode() == FIRST_PERSON){
+	  cam2.mouseRotate(vehicle.theta, 0);
+	}
+	cam2.updateView();
 	drawStuff();
 	
 	if (heroArc1 == true){
@@ -475,7 +487,44 @@ void renderScene(){
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glLoadIdentity();
+		if(cam2.getCurrentMode() == FIRST_PERSON){
+	      cam2.mouseRotate(vehicle.theta, 0);
+		}
 		cam2.updateView();
+		drawStuff();
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glPopMatrix();
+	}
+	
+	else if (heroArc3 == true){
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glViewport(windowWidth/2, windowHeight/2, windowWidth/2, windowHeight/2);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0, 1, 0, 1);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glBegin(GL_QUADS); {
+			glColor3f(0, 0, 0);
+			glVertex2f(0, 0);
+			glVertex2f(0, 1.0f);
+			glVertex2f(1.0f, 1.0f);
+			glVertex2f(1.0f, 0);
+		} glEnd();
+		glPopMatrix();
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluPerspective(45.0, aspectRatio, 0.1, 100000);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		cam3.updateView();
 		drawStuff();
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
@@ -619,6 +668,12 @@ void myMenu( int value ) {
     heroArc1 = false;
 	heroArc2 = !heroArc2;  //set other views off just in case
 	heroArc3 = false;
+	break;
+	  
+  case 5:
+    heroArc1 = false;
+	heroArc2 = false;  //set other views off just in case
+	heroArc3 = !heroArc3;
 		break;
 		
   case 6:
@@ -665,7 +720,7 @@ void createMenus() {
   int id = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
   glutAddMenuEntry("Hero1", 3);
   glutAddMenuEntry("Hero2", 4);
- // glutAddMenuEntry("Hero3", 5);
+  glutAddMenuEntry("Hero3", 5);
   int otherSubId = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
   glutAddMenuEntry("Hero1", 6);
 //  glutAddMenuEntry("Hero2", 7);
@@ -776,7 +831,7 @@ int main( int argc, char **argv )
     //set the camera to watch the ship
     cam.objFollow(&mandrake.position, &mandrake.theta);
     cam2.objFollow(&vehicle.location, &vehicle.theta);
-    //cam3.objFollow(&wagon.location, &wagon.theta);
+    cam3.objFollow(&wagon.location, &wagon.theta);
     //cam.objWatch(&mandrake.location);
 
     // and enter the GLUT loop, never to exit.

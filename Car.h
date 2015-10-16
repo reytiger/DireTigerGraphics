@@ -9,6 +9,7 @@
 #endif
 
 #include "Point.h"
+#include "Light.h"
 #include <math.h>
 const double DEGREE2RAD = M_PI / 180;
 
@@ -26,6 +27,10 @@ class Car
     float theta; // The rocket's heading, in degrees
 	float value, updown;
 	int wheelAngle;
+	
+	// Headlights
+	Light* leftHeadlight;
+	Light* rightHeadlight;
 
     void drawHero();
 	void drawWheels();
