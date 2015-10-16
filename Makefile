@@ -1,4 +1,4 @@
-TARGET   = diretiger
+TARGET   = guildWars
 OBJECTS  = main.o Bezier.o Camera.o Point.o Vector.o
 OBJECTS += Rocketship.o Familiar.o BezPatch.o Light.o
 OBJECTS += Color.o FPSCounter.o SceneElement.o PatchHero.o
