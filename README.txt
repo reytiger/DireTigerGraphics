@@ -2,31 +2,62 @@ Names: Kevin Carbaugh, Allison Crouch, Ryan Porter
 
 Assignment: Midterm - Guild Wars
 
-Description: 
+Description: A culmination of all the previous openGL techniques we've learned
+             A world with serveral vehicles, each moving a unique way
 
 Usage: 
 
     Key               Effect
+
+  Camera
   -------------------------------------
   | 1 |  Switch Camera to free mode   |
   |-----------------------------------|
   | 2 | Switch Camera to arcball mode |
   |-----------------------------------|
-  | Z |   Move free camera forward    |
+  | z |   Move free camera forward    |
   |-----------------------------------|
-  | X |   Move free camera backward   |
+  | x |   Move free camera backward   |
   |-----------------------------------|
 
+  Free hero Movement
+  |---------------------|
+  | w |   Move forward  |
+  |---------------------|
+  | s |   Move backward |
+  |---------------------|
+  | a |   Rotate left   |
+  |---------------------|
+  | d |   Rotate right  |
+  |---------------------|
+
+  Surface hero movement
+  |------------------|
+  | i |   increase V |
+  |------------------|
+  | k |   decrease V |
+  |------------------|
+  | h |   decrease U |
+  |------------------|
+  | l |   increase U |
+  |------------------|
+  | o |   next patch |
+  |------------------|
+  | u |   prev patch |
+  |------------------|
 
 Compilation: Run 'make' from the main directory to build
 
 Details: 
 
-Time taken: hours
+Time taken:
+Kevin - 35 hours
+Allison - 
+Ryan - 
 
-Lab effectiveness on this assignment: /10
+Lab effectiveness on this assignment: 6/10
 
-Fun factor: /10
+Fun factor: 5/10
 
 
 Input File Format:

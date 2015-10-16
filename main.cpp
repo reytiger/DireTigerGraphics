@@ -388,11 +388,11 @@ void resizeWindow(int w, int h) {
 
     //update the viewport to fill the window
     glViewport(0, 0, w, h);
-	//glViewport(w - 100, h-100, w, h);
+    //glViewport(w - 100, h-100, w, h);
 
     cam.resetPerspective(aspectRatio);
-	cam2.resetPerspective(aspectRatio);
-	cam3.resetPerspective(aspectRatio);
+    cam2.resetPerspective(aspectRatio);
+    cam3.resetPerspective(aspectRatio);
 }
 
 
@@ -412,9 +412,9 @@ void mouseCallback(int button, int state, int thisX, int thisY) {
     if(button == GLUT_LEFT_BUTTON)
     {
         leftMouseButton = state;
-		cam.saveReferenceFrame();
+        cam.saveReferenceFrame();
         cam2.saveReferenceFrame();
-		cam3.saveReferenceFrame();
+        cam3.saveReferenceFrame();
     }
 
     //allow passive mouse motion to know if control is held
@@ -742,12 +742,12 @@ void myTimer( int value )
   //  cam.switchMode(ARCBALL);
 
   //camera movement
-  if(cam.getCurrentMode() == FREE)
+  if(cam2.getCurrentMode() == FREE)
   {
     if(keysDown['z'] || keysDown['Z'])
-      cam.move(true);
+      cam2.move(true);
     else if(keysDown['x'] || keysDown['X'])
-      cam.move(false);
+      cam2.move(false);
   }
 
   //move hero around on patch
@@ -774,6 +774,9 @@ void myTimer( int value )
 
   //update the camera's view and ask for a redraw
   cam.updateView();
+  cam2.updateView();
+  cam3.updateView();
+
   // register a new timer callback
   glutTimerFunc( 1000.0f / 60.0f, myTimer, 0 );
 }
@@ -821,12 +824,12 @@ void myMenu( int value ) {
 		break;
 		
   case 6:
-	if(cam.getCurrentMode() != FREE){
-      cam.switchMode(FREE);
+	if(cam2.getCurrentMode() != FREE){
+      cam2.switchMode(FREE);
 	  break;
 	}
-	else if(cam.getCurrentMode() != ARCBALL){	  
-      cam.switchMode(ARCBALL);
+	else if(cam2.getCurrentMode() != ARCBALL){	  
+      cam2.switchMode(ARCBALL);
       break;
 	}
 	
@@ -866,17 +869,17 @@ void createMenus() {
   glutAddMenuEntry("Hero2", 4);
   glutAddMenuEntry("Hero3", 5);
   int otherSubId = glutCreateMenu(myMenu); //The menu becomes the menu when it is created
-  glutAddMenuEntry("Hero1", 6);
+//  glutAddMenuEntry("Hero1", 6);
 //  glutAddMenuEntry("Hero2", 7);
 //  glutAddMenuEntry("Hero3", 8);
-  int thirdSubID = glutCreateMenu(myMenu);
+//  int thirdSubID = glutCreateMenu(myMenu);
   glutAddMenuEntry("Hero1", 9);
   glutAddMenuEntry("Hero2", 10);
 //  glutAddMenuEntry("Hero3", 11);
   glutCreateMenu(myMenu);
   glutAddSubMenu("Toggle Viewport", id);
-  glutAddSubMenu("Toggle First Person", thirdSubID);
-  glutAddSubMenu("Show/Hide Freecam", otherSubId);
+  glutAddSubMenu("Toggle First Person", otherSubId);
+  glutAddMenuEntry("Show/Hide Freecam", 6);
   glutAddMenuEntry("Show/Hide CtrlCage", 0);
   glutAddMenuEntry("Show/Hide Curve", 1);
   glutAddMenuEntry("Quit", 2);
