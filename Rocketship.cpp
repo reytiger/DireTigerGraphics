@@ -244,7 +244,7 @@ void Rocketship::drawThrust()
 
 void Rocketship::drawName()
 {
-	char scrtext[64]= "<Kevin>";
+	char scrtext[64]= "<Sesloc Avandara>";
 
 	// choose a colour
 	glPushMatrix();

@@ -71,17 +71,24 @@ template <typename T>
 bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
 {
   FILE* csv = fopen(filename, "r");
-
 	if(!csv)
   {
     fprintf(stderr, "Error opening %s\n", filename);
     return false;
   }
+  bool status = loadControlPoints(csv, scaling);
+  fclose(csv);
+  return status;
+}
 
-  if(fscanf(csv, "%d ", &numPatches) != 1)
+
+template <typename T>
+bool BezPatch<T>::loadControlPoints(FILE* fp, float scaling)
+{
+  if(fscanf(fp, "%d ", &numPatches) != 1)
   {
     fprintf(stderr, "Unable to read number of BezPatches in file!\n");
-    fclose(csv);
+    fclose(fp);
     return false;
   }
 
@@ -93,7 +100,7 @@ bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
     for(int i = 0; i < 16; ++i)
     {
       //read a point
-      int stat = fscanf(csv, "%f, %f, %f ", &x, &y, &z);
+      int stat = fscanf(fp, "%f, %f, %f ", &x, &y, &z);
       if(stat != 3)
         fprintf(stderr, "Warning: didn't read complete coordinate for BezPatch\n");
 
@@ -104,8 +111,6 @@ bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
     ctrlPoints.clear();
   }
 
-
-  fclose(csv);
   pointsLoaded = true;
   
   return true;
@@ -229,6 +234,16 @@ Vector<T> BezPatch<T>::getNormal(int subPatch, float u, float v)
   return Vector<T>::normalize(vBez.getTangent(v).cross(uBez.getTangent(u)));
 }
 
+template <typename T>
+Vector<T> BezPatch<T>::getTangent(int subPatch, float u, float v, bool uAxis)
+{
+  SubPatch<T>& s = subPatches.at(subPatch);
+
+  if(uAxis)
+    return s.evalAxis(v, false).getTangent(u);
+  else
+    return s.evalAxis(u, true).getTangent(v);
+}
 
 //evaluates a point on the patch in uv coordinates
 template <typename T>
@@ -263,9 +278,76 @@ Basis<T> BezPatch<T>::getBasis(int subPatch, float u, float v)
 
 
 template <typename T>
-void BezPatch<T>::placeOnSurface(SceneElement& elem, int subPatch, float u, float v)
+void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
 {
-  elem.setPosition(getCoord(subPatch, u, v) + origin);
+  //translate onto to the surface
+  glTranslatePoint(getCoord(subPatch, u, v) + origin);
+
+  //axis so object's up is along the normal
+  Vector<T> norm = getNormal(subPatch, u, v);
+  const Vector<T> yRef(0.0, 1.0, 0.0);
+  Vector<T> axis = yRef.cross(norm);
+
+  //calc axis of rotation so the object's up is along the normal
+  const Vector<T> zRef(0.0, 0.0, 1.0);
+  Vector<T> axis2 = zRef.cross(axis);
+
+
+  //draw the world XYZ vectors
+  glPushMatrix();
+    glLineWidth(4.0f);
+    //+X is red
+    glColor3ub(255, 0, 0);
+    Vector<T>(1.0, 0.0, 0.0).draw();
+
+    //+Y is green
+    glColor3ub(0, 255, 0);
+    yRef.draw();
+
+    //+Z is blue
+    glColor3ub(0, 0, 255);
+    zRef.draw();
+
+    //the normal is grey
+    glColor3ub(145, 145, 145);
+    norm.draw();
+
+    glLineWidth(1.0f);
+  glPopMatrix();
+
+  //apply rotations
+  glRotatefVector(norm.angleTo(yRef), axis);
+//  glRotatefVector(axis.angleTo(zRef), axis2);
+
+  //draw the transformed axes
+  glPushMatrix();
+    glLineWidth(2.0f);
+    //+X is yellow
+    glColor3ub(226, 229, 39);
+    Vector<T>(1.0, 0.0, 0.0).draw();
+
+    //+Y is white
+    glColor3f(0.8f, 0.8f, 0.8f);
+    yRef.draw();
+
+    //+Z is purplse
+    glColor3ub(140, 37, 131);
+    zRef.draw();
+
+    //First axis is pink
+    glColor3ub(216, 147, 183);
+    axis *= 4;
+    axis.draw();
+
+    //Second axis is cyan
+    glColor3ub(22, 122, 120);
+    axis2 *= 4;
+    axis2.draw();
+
+    glLineWidth(1.0f);
+  glPopMatrix();
+  
+  //and now the object should draw itself
 }
 
 

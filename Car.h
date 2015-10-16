@@ -18,6 +18,7 @@ class Car
   public:
     //ctor, detor
     Car(double startX, double startY, double startZ); //constructor
+    ~Car();
     
 
     void draw();

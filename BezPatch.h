@@ -4,7 +4,6 @@
 #pragma once
 
 #include "Bezier.h"
-#include "SceneElement.h"
 #include "Point.h" //to be explicit, even though already in Bezier
 #include "Vector.h"
 
@@ -36,13 +35,15 @@ class BezPatch
     BezPatch(int resolution); //ctor
     BezPatch(int resolution, const Point<T>& startPos); //ctor
     bool loadControlPoints(const char* const filename, float scaling);
+    bool loadControlPoints(FILE* fp, float scaling);
     void render();
 
     Vector<T> getNormal(int subPatch, float u, float v);
+    Vector<T> getTangent(int subPatch, float u, float v, bool uAxis);
     Point<T> getCoord(int subPatch, float u, float v);
     Basis<T> getBasis(int subPatch, float u, float v);
 
-    void placeOnSurface(SceneElement& elem, int subPatch, float u, float v);
+    void glOrientToSurface(int subPatch, float u, float v);
 
     //getter
     int getResolution();

@@ -1,4 +1,5 @@
 #include "Light.h"
+#include <cstdio>
 
 #ifdef __APPLE__			// if compiling on Mac OS
 	#include <GLUT/glut.h>
@@ -21,6 +22,8 @@ Light::Light() : type(OMNI),
                  angleCutoff(45.f),
                  distanceFalloff(100.f)
 {
+  //be sure ligthing is enabled
+  glEnable(GL_LIGHTING);
   assignGLLightNum();
   setGLLightProperties();
   glEnable(GL_LIGHTN); //enable the new light
@@ -117,6 +120,7 @@ void Light::assignGLLightNum()
       return;
     }
   }
+  fprintf(stderr, "Warning: too many GL lights!");
 }
 
 
