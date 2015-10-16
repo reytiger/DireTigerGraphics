@@ -112,27 +112,24 @@ bool PatchHero::prevSubPatch()
 
 void PatchHero::render()
 {
+
   //update the position on the patch
   myPatch.glOrientToSurface(subPatch, u, v);
 
   /*
   Basis<float> basis = myPatch.getBasis(subPatch, u, v);
 
-
   glOrientObject();
-  
 
   glRotateToBasis(basis, Vector<float>(0.f, 2.f, 0.f));
   */
 
   //offset off the surface
-  //glTranslatefVector(normal * 0.5f);
+  glTranslatefVector(Vector<float>(0.f, 4.f, 0.f));
 
   //draw the hero
-  /*
   glScalef(2.f, 0.2f, 0.5f);
   glutSolidCube(1);
-  */
 }
 
 

@@ -7,6 +7,23 @@ Car::Car(double startX, double startY, double startZ) : location(startX, startY,
   updown = 1;
   value = 1.0f;
 
+	// Headlights setup and placement
+	Color diffCol(1.0f, 1.0f, 1.0f, 1.0f);
+  Color ambientCol(0.1f, 0.1f, 0.1f, 1.0f);
+  Color specularCol(0.2f, 0.2f, 0.2f, 1.f);
+  Point<float> pos1(-2.0f, 0.0f, 5.0f);
+	Point<float> pos2(2.0f, 0.0f, 5.0f);
+	Vector<float> dir = Vector<float>(0.0f, 0.0f, 1.0f);
+	
+	leftHeadlight = new Light(SPOT, pos1, diffCol, specularCol, ambientCol, dir);
+	rightHeadlight = new Light(SPOT, pos2, diffCol, specularCol, ambientCol, dir);
+}
+
+
+Car::~Car()
+{
+  delete leftHeadlight;
+  delete rightHeadlight;
 }
 
 
@@ -46,17 +63,6 @@ void Car::drawHero(){
 			glPopMatrix();
 		}
 	}
-	
-	// Headlights setup and placement
-	Color diffCol(1.0f, 1.0f, 1.0f, 1.0f);
-    Color ambientCol(0.1f, 0.1f, 0.1f, 1.0f);
-    Color specularCol(0.2f, 0.2f, 0.2f, 1.f);
-    Point<float> pos1(-2.0f, 0.0f, 5.0f);
-	Vector<float> dir = Vector<float>(0.0f, 0.0f, 1.0f);
-	
-	leftHeadlight = new Light(SPOT, pos1, diffCol, specularCol, ambientCol, dir);
-	Point<float> pos2(2.0f, 0.0f, 5.0f);
-	rightHeadlight = new Light(SPOT, pos2, diffCol, specularCol, ambientCol, dir);
 	
 	glPushMatrix();
 	glTranslatef(0, 0, 2);

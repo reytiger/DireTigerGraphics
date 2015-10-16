@@ -3,9 +3,9 @@
 //ctor
 Material::Material()
 {
-  //default to white
+  //default to grey
   for(int i = 0; i < 4; ++i)
-    diffuseColor[i] = specularColor[i] = ambientColor[i] = 1.f;
+    diffuseColor[i] = specularColor[i] = ambientColor[i] = 0.2f;
 }
 
 Material::Material(const GLfloat (&diffCol)[4], const GLfloat (&specCol)[4], const GLfloat (&ambiCol)[4], GLfloat shine) : shininess(shine)

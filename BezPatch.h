@@ -35,6 +35,7 @@ class BezPatch
     BezPatch(int resolution); //ctor
     BezPatch(int resolution, const Point<T>& startPos); //ctor
     bool loadControlPoints(const char* const filename, float scaling);
+    bool loadControlPoints(FILE* fp, float scaling);
     void render();
 
     Vector<T> getNormal(int subPatch, float u, float v);

@@ -71,17 +71,24 @@ template <typename T>
 bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
 {
   FILE* csv = fopen(filename, "r");
-
 	if(!csv)
   {
     fprintf(stderr, "Error opening %s\n", filename);
     return false;
   }
+  bool status = loadControlPoints(csv, scaling);
+  fclose(csv);
+  return status;
+}
 
-  if(fscanf(csv, "%d ", &numPatches) != 1)
+
+template <typename T>
+bool BezPatch<T>::loadControlPoints(FILE* fp, float scaling)
+{
+  if(fscanf(fp, "%d ", &numPatches) != 1)
   {
     fprintf(stderr, "Unable to read number of BezPatches in file!\n");
-    fclose(csv);
+    fclose(fp);
     return false;
   }
 
@@ -93,7 +100,7 @@ bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
     for(int i = 0; i < 16; ++i)
     {
       //read a point
-      int stat = fscanf(csv, "%f, %f, %f ", &x, &y, &z);
+      int stat = fscanf(fp, "%f, %f, %f ", &x, &y, &z);
       if(stat != 3)
         fprintf(stderr, "Warning: didn't read complete coordinate for BezPatch\n");
 
@@ -104,8 +111,6 @@ bool BezPatch<T>::loadControlPoints(const char* const filename, float scaling)
     ctrlPoints.clear();
   }
 
-
-  fclose(csv);
   pointsLoaded = true;
   
   return true;
@@ -278,14 +283,15 @@ void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
   //translate onto to the surface
   glTranslatePoint(getCoord(subPatch, u, v) + origin);
 
-  //calc axis of rotation so the object's heading is aligned with the u axis
-  Vector<T> norm = getNormal(subPatch, u, v);
-  const Vector<T> zRef(0.0, 0.0, 1.0);
-  const Vector<T> axis = norm.cross(zRef);
-
   //axis so object's up is along the normal
+  Vector<T> norm = getNormal(subPatch, u, v);
   const Vector<T> yRef(0.0, 1.0, 0.0);
-  const Vector<T> axis2 = axis.cross(yRef);
+  Vector<T> axis = yRef.cross(norm);
+
+  //calc axis of rotation so the object's up is along the normal
+  const Vector<T> zRef(0.0, 0.0, 1.0);
+  Vector<T> axis2 = zRef.cross(axis);
+
 
   //draw the world XYZ vectors
   glPushMatrix();
@@ -294,11 +300,11 @@ void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
     glColor3ub(255, 0, 0);
     Vector<T>(1.0, 0.0, 0.0).draw();
 
-    //+Y is blue
+    //+Y is green
     glColor3ub(0, 255, 0);
     yRef.draw();
 
-    //+Z is green
+    //+Z is blue
     glColor3ub(0, 0, 255);
     zRef.draw();
 
@@ -310,8 +316,8 @@ void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
   glPopMatrix();
 
   //apply rotations
-  glRotatefVector(norm.angleTo(zRef), axis);
-//  glRotatefVector(axis.angleTo(yRef), axis2);
+  glRotatefVector(norm.angleTo(yRef), axis);
+//  glRotatefVector(axis.angleTo(zRef), axis2);
 
   //draw the transformed axes
   glPushMatrix();
@@ -320,8 +326,8 @@ void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
     glColor3ub(226, 229, 39);
     Vector<T>(1.0, 0.0, 0.0).draw();
 
-    //+Y is blue
-    glColor3ub(39, 216, 229);
+    //+Y is white
+    glColor3f(0.8f, 0.8f, 0.8f);
     yRef.draw();
 
     //+Z is purplse
@@ -330,10 +336,12 @@ void BezPatch<T>::glOrientToSurface(int subPatch, float u, float v)
 
     //First axis is pink
     glColor3ub(216, 147, 183);
+    axis *= 4;
     axis.draw();
 
     //Second axis is cyan
     glColor3ub(22, 122, 120);
+    axis2 *= 4;
     axis2.draw();
 
     glLineWidth(1.0f);
