@@ -154,7 +154,7 @@ void drawTree()
 void generateCity() {
 	ifstream test_input(CITY_DATA.c_str());
 	
-	bool input_found = (test_input);
+	bool input_found = !(!test_input);
 	
 	test_input.close();
 	
@@ -163,9 +163,9 @@ void generateCity() {
 		  int gridSize = 200 / 2;
 		  
 		  int nTrees = 0;
-		  vector<float> treeVector; // write in blocks of 2 (x, 0, z)
+		  vector<int> treeVector; // write in blocks of 2
 		  int nBuildings = 0;
-		  vector<float> buildingVector; // write in blocks of 2
+		  vector<int> buildingVector; // write in blocks of 2
 		  
 		  for(int x = -gridSize; x <= gridSize; ++x)
 		  {
@@ -190,78 +190,32 @@ void generateCity() {
 		  }
 		
 		// Write to file
-		ofstream output_conn(CITY_DATA.c_str());
+		ofstream output_data(CITY_DATA.c_str());
 		
-		if (!output_conn) {
-			return;
+		if (!output_data) {
+			cerr << "Problem with output connection" << endl; // This should never be needed, but still...
 		}
 		
 		// Write building data
-		output_conn << nBuildings << endl;
-		for (unsigned int i = 0; i < nBuildings; i++) {
-			output_conn << buildingVector[2*i] << ", " << buildingVector[2*i + i] << endl;
+		output_data << nBuildings << endl;
+		for (unsigned int i = 0; i < buildingVector.size(); i++) {
+			int t11 = buildingVector[i];
+			i++;
+			int t12 = buildingVector[i];
+			output_data << t11 << "," << t12 << endl;
 		}
 		
 		// Write tree location data
-		output_conn << nTrees <<endl;
-		for (unsigned int j = 0; j < nTrees; j++) {
-			output_conn << treeVector[2*j] << ", " << treeVector[2*j + j] << endl;
+		output_data << nTrees << endl;
+		for (unsigned int j = 0; j < treeVector.size(); j++) {
+			int t21 = treeVector[j];
+			j++;
+			int t22 = treeVector[j];
+			output_data << t21 << "," << t22 << endl;
 		}
 		
-		output_conn.close();
+		output_data.close();
 	}
-	
-	/*
-	
-	ofstream output_data(CITY_DATA.c_str());
- int nTrees = 0;
-	  vector<float> treeVector;
-	  int nBuildings = 0;
-	  vector<float> buildingVector; // write in blocks of 5
-	  
-	  for(int x = -gridSize; x <= gridSize; ++x)
-	  {
-		for(int z = -gridSize; z <= gridSize; ++z)
-		{
-		  //Determines the density of buildings on our grid
-		  if(getRand() < 0.004)
-			   {
-			glPushMatrix();
-			  //choose a random color
-			  glColor3f(getRand(), getRand(), getRand());
-
-			  //scale the cube by some random factor to vary the heights
-			  float cubeHeight = getRand() * 30 + 4;
-			  float cubeWidth = getRand() * 9 + 2;
-
-			  //place the cube on the grid so the bottom is on the xz plane
-			  glTranslatef(x, cubeHeight / 2, z);
-
-			  //and rotate to give the scene a bit more variety
-			  glRotatef(getRand() * 180, 0, 1, 0);
-			  //glScalef(1, cubeHeight, 1);
-			  glScalef(cubeWidth, cubeHeight, cubeWidth);
-
-			  //draw a cube of a random size
-			  glutSolidCube(1);
-			glPopMatrix();
-
-			//now translate over additonally so we help prevent the next building
-			//from clipping into the one we just placed
-			//z += (2 * cubeWidth) - 1; //-1 since the for loop is about to increment z anyway
-		  }
-		  else if(getRand() < 0.002)
-		  {
-			glPushMatrix();
-			  //place in worldspace
-			  glTranslatef(x, 0, z);
-			  
-			  //scale randomly
-			  glScalef(getRand() * .9 + 0.5, getRand() * 0.7 + 0.4, getRand() * 0.5 + 0.3);
-			  drawTree();
-			glPopMatrix();
-		  }
-		}*/
 }
 
 // drawCity() //////////////////////////////////////////////////////////////////
@@ -269,17 +223,17 @@ void generateCity() {
 //  Function to draw a random city using GLUT 3D Primitives
 //
 ////////////////////////////////////////////////////////////////////////////////
-void drawCity() {/*
+void drawCity() {
 	ifstream input_conn(CITY_DATA.c_str());
 	
 	if (!input_conn) {
-		cerr << "Cannot find output file" << endl;
+		cerr << "Cannot find input file" << endl;
 	}
 	
 	int nb;
-	vector<float> buildingCoords;
+	vector<int> buildingCoords;
 	int nt;
-	vector<float> treeCoords;
+	vector<int> treeCoords;
 	string t1;
 	string t2;
 	string tempLine;
@@ -291,8 +245,8 @@ void drawCity() {/*
 	
 	for (int i = 0; i < nb; i++) {
 		input_conn >> tempLine;
-		t1 = atof((tempLine.substr(0, tempLine.find_first_of(','))).c_str());
-		t2 = atof((tempLine.substr(tempLine.find_last_of(',') + 1, tempLine.length() - 1)).c_str());
+		tx = atoi((tempLine.substr(0, tempLine.find_first_of(','))).c_str());
+		tz = atoi((tempLine.substr(tempLine.find_last_of(',') + 1, tempLine.length() - 1)).c_str());
 		buildingCoords.push_back(tx);
 		buildingCoords.push_back(tz);
 	}
@@ -302,19 +256,19 @@ void drawCity() {/*
 	
 	for (int j = 0; j < nt; j++) {
 		input_conn >> tempLine;
-		t1 = atof((tempLine.substr(0, tempLine.find_first_of(','))).c_str());
-		t2 = atof((tempLine.substr(tempLine.find_last_of(',') + 1, tempLine.length() - 1)).c_str());
+		tx = atoi((tempLine.substr(0, tempLine.find_first_of(','))).c_str());
+		tz = atoi((tempLine.substr(tempLine.find_last_of(',') + 1, tempLine.length() - 1)).c_str());
 		treeCoords.push_back(tx);
 		treeCoords.push_back(tz);
 	}
 	
-  //expanded 100x100 grid
-  int gridSize = 200 / 2;
+	input_conn.close();
   
   // Draw buildiings
   for (unsigned int b = 0; b < buildingCoords.size(); b++) {
-	float xc = treeCoords[b];
-	float zc = treeCoords[b++];
+	float xc = buildingCoords[b];
+	b++;
+	float zc = buildingCoords[b];
 	  
 	glPushMatrix();
     //choose a random color
@@ -340,7 +294,8 @@ void drawCity() {/*
   // Draw trees
   for (unsigned int t = 0; t < treeCoords.size(); t++) {
 	float xc = treeCoords[t];
-	float zc = treeCoords[t++];
+	t++;
+	float zc = treeCoords[t];
 	
 	glPushMatrix();
     //place in worldspace
@@ -350,10 +305,10 @@ void drawCity() {/*
     glScalef(getRand() * .9 + 0.5, getRand() * 0.7 + 0.4, getRand() * 0.5 + 0.3);
     drawTree();
     glPopMatrix();
-  }*/
+  }
   
-   // Old Code, left as guide
-   
+  /*
+    //expanded 100x100 grid
   int gridSize = 200 / 2;
   for(int x = -gridSize; x <= gridSize; ++x)
   {
@@ -399,7 +354,7 @@ void drawCity() {/*
       }
     }
   }
-  
+  */
 }
 
 // generateEnvironmentDL() /////////////////////////////////////////////////////
@@ -1014,11 +969,13 @@ bool loadWorldFromFile(const char* const filename)
 ////////////////////////////////////////////////////////////////////////////////
 int main( int argc, char **argv )
 {
-    if(argc < 2)
+    if (argc < 2)
     {
       printf("Usage: %s worldfile\n", argv[0]);
       exit(EXIT_SUCCESS);
     }
+	
+	generateCity(); // Generate the city
 
     //load world data
     if(!loadWorldFromFile(argv[1]))
